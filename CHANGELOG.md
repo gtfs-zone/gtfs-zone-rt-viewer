@@ -1,3 +1,14 @@
+## v0.15.0 (2026-09-27)
+
+### Feat
+
+- **seo**: static intro, structured data, and a PNG social card
+
+### Fix
+
+- **map**: keep booting when WebGL is unavailable
+- **nginx**: return 404 for unknown paths instead of the app
+
 ## v0.14.0 (2026-09-25)
 
 ### Feat
