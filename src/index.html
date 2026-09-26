@@ -11,14 +11,37 @@
     <meta property="og:url" content="https://viz.rt.gtfs.zone/" />
     <meta property="og:title" content="viz.rt.gtfs.zone - GTFS Realtime Visualizer" />
     <meta property="og:description" content="Browser-based GTFS Realtime visualizer. Watch live vehicle positions, trip updates and service alerts from any GTFS Realtime feed on a map. Everything is decoded in your browser." />
-    <meta property="og:image" content="https://viz.rt.gtfs.zone/logo.svg" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://viz.rt.gtfs.zone/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="viz.rt.gtfs.zone: GTFS Realtime visualizer" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "GTFS Realtime visualizer",
+        "alternateName": "viz.rt.gtfs.zone",
+        "url": "https://viz.rt.gtfs.zone/",
+        "description": "Browser-based GTFS Realtime visualizer. Vehicle positions, trip updates, and service alerts from any feed on a live map.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript and WebGL",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "publisher": { "@type": "Organization", "name": "gtfs.zone", "url": "https://gtfs.zone/" }
+      }
+    </script>
     <link rel="icon" type="image/svg+xml" href="logo.svg" />
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="./styles/main.css" />
   </head>
 
   <body class="font-sans h-screen overflow-hidden">
+    <!-- The page's copy without JS; src/shell.ts moves it into the panel. -->
+    <main id="app-intro" class="p-4">
+      <!-- @intro -->
+    </main>
     <!-- The shell markup is mounted by src/shell.ts -->
     <script type="module" src="./index.ts"></script>
   </body>

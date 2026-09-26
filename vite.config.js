@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import { readFileSync } from 'fs'
 import { execSync } from 'child_process'
 
 let version
@@ -15,7 +16,16 @@ try {
   }
 }
 
+// Inlines src/intro.html at `<!-- @intro -->`, so the copy the status page
+// shows when no feed is loaded is also in the static HTML.
+const inlineIntro = {
+  name: 'inline-intro',
+  transformIndexHtml: html =>
+    html.replace('<!-- @intro -->', readFileSync(resolve(__dirname, 'src/intro.html'), 'utf-8'))
+}
+
 export default defineConfig({
+  plugins: [inlineIntro],
   define: {
     __APP_VERSION__: JSON.stringify(version)
   },

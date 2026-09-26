@@ -14,6 +14,7 @@ import { isLocalUrl, resolveRealtimeUrl } from 'interlocking/gtfs/feed-url-resol
 import { CONFIG } from '../config';
 import { notify } from 'interlocking/ui/notification-system';
 import { renderIssueCard } from 'interlocking/ui/issue-card';
+import introHtml from '../intro.html?raw';
 
 /**
  * The right panel's "nothing focused" content: what is loaded, how much of it,
@@ -209,8 +210,8 @@ function renderVehicleIdReport(ep: EndpointStatus): string {
       <p class="opacity-70">
         GTFS-RT specifies <span class="font-mono">VehicleDescriptor.id</span> "should be
         unique per vehicle, and is used for tracking the vehicle as it proceeds through
-        the system." This feed reuses it, so test-track derived an instance key
-        (${escHtml(VEHICLE_ID_STRATEGY_NOTE[strategy] ?? strategy)}) to address vehicles.
+        the system." This feed reuses it, so an instance key
+        (${escHtml(VEHICLE_ID_STRATEGY_NOTE[strategy] ?? strategy)}) was derived to address vehicles.
       </p>
       ${list}
     </div>`;
@@ -303,7 +304,7 @@ function renderFeedGaps(gaps: FeedGaps | null): string {
   }
   if (gaps.stopSequenceDerived > 0) {
     notes.push(
-      `${gaps.stopSequenceDerived} named no stop at all, so test-track took the soonest still-future <span class="font-mono">stop_time_update</span> on the same trip; those are marked "derived" wherever they appear.`,
+      `${gaps.stopSequenceDerived} named no stop at all, so the soonest still-future <span class="font-mono">stop_time_update</span> on the same trip was used; those are marked "derived" wherever they appear.`,
     );
   }
   if (unplaced > 0) {
@@ -464,7 +465,7 @@ function renderPaddedColumns(session: FeedSession): string {
             </div>
             <p class="text-xs opacity-50">
               ${rows} rows had leading or trailing whitespace. The GTFS reference forbids this;
-              test-track trimmed them. Untrimmed, no realtime
+              they were trimmed. Untrimmed, no realtime
               <span class="font-mono">${escHtml(column)}</span> would match this feed.
             </p>
           </div>`,
@@ -537,17 +538,17 @@ function renderShare(session: FeedSession): string {
 
 function renderEmpty(): string {
   return `
-    <div class="h-full flex flex-col items-center justify-center text-center gap-3 py-12">
-      <p class="text-sm opacity-70 max-w-xs">
-        Watch a transit agency's vehicles, predictions and alerts on a live map.
-      </p>
-      <p class="text-xs opacity-40 max-w-xs">
-        A session needs a scheduled GTFS feed for the routes and stops, and at
-        least one realtime endpoint for what is happening on them now.
-      </p>
-      <button type="button" id="status-empty-load" class="btn btn-primary btn-sm">
-        Pick a feed
-      </button>
+    <div class="flex flex-col gap-6 py-4">
+      ${introHtml}
+      <div class="flex flex-col items-center text-center gap-3">
+        <p class="text-xs opacity-40 max-w-xs">
+          A session needs a scheduled GTFS feed for the routes and stops, and at
+          least one realtime endpoint for what is happening on them now.
+        </p>
+        <button type="button" id="status-empty-load" class="btn btn-primary btn-sm">
+          Pick a feed
+        </button>
+      </div>
     </div>`;
 }
 
