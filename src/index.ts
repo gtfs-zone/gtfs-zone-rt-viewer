@@ -58,7 +58,15 @@ const themeController = new ThemeController();
 themeController.initialize();
 
 const mapCtrl = new MapController();
-mapCtrl.initialize('map');
+// Without WebGL the map cannot start. The rest of the app still boots, so the
+// guide, the panel, and the load modal stay usable.
+try {
+  mapCtrl.initialize('map');
+} catch (e) {
+  console.error('[map] failed to initialize:', e);
+  document.getElementById('map')!.innerHTML =
+    '<div class="h-full flex items-center justify-center p-6 text-center text-sm opacity-70">The map needs WebGL, which this browser has turned off or does not support.</div>';
+}
 // The map accent comes from the theme palette, so it has to be repainted
 // whenever the theme switches.
 themeController.onThemeChange(() => mapCtrl.refreshAccentColor());
