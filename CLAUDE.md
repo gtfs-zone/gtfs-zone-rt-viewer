@@ -47,6 +47,7 @@ flow rule still holds: coloring-book -> test-track -> yard-master.
 - Do NOT use Playwright (or any browser automation) to verify changes. The user does
   visual/browser verification themselves. Stop at `pnpm typecheck` / `pnpm build` and
   hand off.
+- UI conventions live in interlocking's `CLAUDE.md`: no `cursor-help`, `toggle` not `checkbox` for on/off settings, `SELECTED_ROW_CLASS` for picked list rows.
 
 ## Related Repos
 
