@@ -39,7 +39,7 @@ export const NAVBAR_ACTIONS: NavbarAction[] = [
     // The href is written at boot from the loaded feed's schedule URL.
     kind: 'link',
     id: 'edit-feed-btn',
-    label: 'Edit schedule in coloring-book',
+    label: 'Edit schedule in edit.gtfs.zone',
     icon: renderLocalIcon(PENCIL_PATH),
     href: '#',
     external: true,
