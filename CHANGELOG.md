@@ -1,3 +1,13 @@
+## v0.16.0 (2026-09-27)
+
+### Feat
+
+- **map**: bump interlocking to v3.5.0, fit route lines with the feed, pad fits below the map controls, cap max zoom
+
+### Fix
+
+- **navbar**: name the schedule editor edit.gtfs.zone
+
 ## v0.15.1 (2026-09-27)
 
 ## v0.15.0 (2026-09-27)
