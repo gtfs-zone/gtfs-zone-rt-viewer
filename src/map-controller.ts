@@ -6,6 +6,8 @@ import type { PageState } from './types/page-state';
 import { BasemapControl, initialMapStyle } from 'interlocking/map/basemap-control';
 import type { MapAppearance } from 'interlocking/map/basemap-control';
 import { AutoZoom } from 'interlocking/map/auto-zoom';
+import { MAP_MAX_ZOOM } from 'interlocking/map/basemap-styles';
+import { fitPadding } from 'interlocking/map/fit-padding';
 import { LayerManager } from './modules/layer-manager';
 import type { MapDataIssues } from './modules/layer-manager';
 
@@ -115,6 +117,7 @@ export class MapController {
       zoom: view.zoom,
       bearing: view.bearing,
       pitch: view.pitch,
+      maxZoom: MAP_MAX_ZOOM,
     });
     // Bottom-left is the only free corner: `#map-controls` covers the top strip
     // and the basemap FAB owns bottom-right.
@@ -248,13 +251,13 @@ export class MapController {
    * freshly loaded feed has to frame itself or the map opens on nothing.
    */
   private fitFeed(): void {
-    const bounds = this.layers.stopsBounds();
+    const bounds = this.layers.feedBounds();
     if (!bounds) return;
     this.map.fitBounds(bounds, { padding: this.padding() });
   }
 
   private padding(): maplibregl.PaddingOptions {
-    return { top: 40, left: 40, right: 40, bottom: 40 + this.bottomPadding };
+    return fitPadding(this.map, 40, this.bottomPadding);
   }
 
   /**
@@ -303,7 +306,7 @@ export class MapController {
         this.layers.setFocus(null);
         // Unfocusing frames the whole feed again, mirroring how focusing a
         // route frames that route.
-        const bounds = this.layers.stopsBounds();
+        const bounds = this.layers.feedBounds();
         if (bounds) {
           // AutoZoom takes a real LngLatBounds; the layer manager hands back
           // the corner tuple.

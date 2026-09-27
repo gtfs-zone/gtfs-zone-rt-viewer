@@ -566,11 +566,17 @@ export class LayerManager {
     return boundsOf(feature.geometry.coordinates.flat() as [number, number][]);
   }
 
-  /** Bounds of every drawn stop — the "fit the whole feed" box. */
-  stopsBounds(): [[number, number], [number, number]] | null {
+  /** Bounds of every drawn stop and route line: the "fit the whole feed" box. */
+  feedBounds(): [[number, number], [number, number]] | null {
     const coords = this.stopsData.features.map(
       f => (f.geometry as GeoJSON.Point).coordinates as [number, number],
     );
+    for (const feature of this.routesData.features) {
+      if (feature.geometry.type !== 'MultiLineString') continue;
+      for (const line of feature.geometry.coordinates) {
+        coords.push(...(line as [number, number][]));
+      }
+    }
     return boundsOf(coords);
   }
 
