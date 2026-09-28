@@ -33,6 +33,7 @@ import {
   renderVersionAndSource,
   renderProjectSection,
   renderResourcesSection,
+  renderDataSourcesSection,
   renderFeedbackSection,
   type AboutApp,
 } from 'interlocking/ui/about-links';
@@ -175,6 +176,7 @@ const aboutPage: HelpPage = {
       renderVersionAndSource(ABOUT_APP, helpRuntimeData.version),
       renderProjectSection(ABOUT_APP),
       renderResourcesSection(),
+      renderDataSourcesSection(),
       renderFeedbackSection(ABOUT_APP),
     ].join('\n'),
 };
