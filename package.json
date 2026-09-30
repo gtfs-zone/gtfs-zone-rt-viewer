@@ -21,23 +21,24 @@
   "author": "gtfs.zone contributors",
   "license": "MIT",
   "devDependencies": {
-    "@types/jszip": "^3.4.0",
-    "@types/node": "^24.12.2",
-    "@types/papaparse": "^5.3.16",
-    "autoprefixer": "^10.4.21",
-    "tailwindcss": "^4.1.13",
-    "tsx": "^4.22.3",
+    "@types/geojson": "^7946.0.16",
+    "@types/jszip": "^3.4.1",
+    "@types/node": "^24.19.0",
+    "@types/papaparse": "^5.5.2",
+    "autoprefixer": "^10.6.1",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
-    "vite": "^7.1.7"
+    "vite": "^7.3.6"
   },
   "dependencies": {
-    "@leeoniya/ufuzzy": "^1.0.14",
-    "@tailwindcss/postcss": "^4.1.13",
-    "daisyui": "^5.1.13",
+    "@leeoniya/ufuzzy": "^1.0.19",
+    "@tailwindcss/postcss": "^4.3.3",
+    "daisyui": "^5.7.46",
     "gtfs-realtime-bindings": "^1.1.1",
-    "interlocking": "git+https://git.kcfam.us/gtfs.zone/interlocking.git#v3.7.0",
-    "jszip": "^3.10.1",
-    "maplibre-gl": "^5.7.2",
-    "papaparse": "^5.5.3"
+    "interlocking": "github:gtfs-zone/interlocking#v4.0.0",
+    "jszip": "^3.10.2",
+    "maplibre-gl": "^6.11.2",
+    "papaparse": "^5.7.0"
   }
 }

@@ -1,9 +1,9 @@
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { CONFIG } from './config';
 import type { GTFSScheduled } from 'interlocking/gtfs/scheduled';
 import type { VehiclePosition } from 'interlocking/gtfs/rt-types';
 import type { PageState } from './types/page-state';
-import { BasemapControl, initialMapStyle } from 'interlocking/map/basemap-control';
+import { BasemapControl, initialMapStyle, onBasemapChanged } from 'interlocking/map/basemap-control';
 import type { MapAppearance } from 'interlocking/map/basemap-control';
 import { AutoZoom } from 'interlocking/map/auto-zoom';
 import { MAP_MAX_ZOOM } from 'interlocking/map/basemap-styles';
@@ -162,7 +162,7 @@ export class MapController {
     // setStyle drops every source and layer we own, so each basemap change
     // has to re-add them. This is the single highest-risk path in the map:
     // without it, switching basemaps blanks all GTFS data.
-    this.map.on('basemap:changed', () => {
+    onBasemapChanged(this.map, () => {
       this.layers.rebuild();
       this.placeMarker.redraw();
     });

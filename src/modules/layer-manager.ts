@@ -27,7 +27,7 @@
    deduped focused expression, and `cef96c7`'s direction arrows on the single
    spotlighted route, which is what gives `interlocking`'s `map-icons.ts` a caller. */
 
-import type maplibregl from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import type {
   ExpressionSpecification,
   FilterSpecification,
