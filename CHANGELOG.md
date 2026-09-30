@@ -1,3 +1,9 @@
+## v0.18.0 (2026-09-30)
+
+### Feat
+
+- **search**: place search in the map search box
+
 ## v0.17.0 (2026-09-29)
 
 ### Feat
