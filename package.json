@@ -10,7 +10,8 @@
     "start": "vite",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "vendor:check": "tsx scripts/vendor-check.ts"
+    "vendor:check": "tsx scripts/vendor-check.ts",
+    "vuln": "sh scripts/vuln-gate.sh"
   },
   "keywords": [
     "gtfs",
