@@ -1,3 +1,9 @@
+## v0.18.1 (2026-09-30)
+
+### Fix
+
+- **map**: highlight the selected vehicle's route
+
 ## v0.18.0 (2026-09-30)
 
 ### Feat
