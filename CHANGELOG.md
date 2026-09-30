@@ -1,3 +1,13 @@
+## v0.19.0 (2026-10-01)
+
+### Feat
+
+- **map**: move to interlocking v4.0.0 and maplibre-gl 6
+
+### Fix
+
+- load the maplibre worker from a Vite-built URL
+
 ## v0.18.1 (2026-09-30)
 
 ### Fix
