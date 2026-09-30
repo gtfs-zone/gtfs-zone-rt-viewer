@@ -290,6 +290,8 @@ export class LayerManager {
     // setData rather than re-adding the source: re-adding on every 15s poll
     // flashes the markers and drops their feature state.
     this.pushData(VEHICLES_SOURCE, this.vehiclesData);
+    // The focused vehicle may have just appeared or changed trips.
+    if (this.focus?.kind === 'vehicle') this.applySpotlight(this.spotlightRouteIds());
     this.syncFeatureState();
   }
 
@@ -307,9 +309,23 @@ export class LayerManager {
       target?.kind === 'route' ? this.stopIdsForRoute(target.id) : [];
     const routeIds = target?.kind === 'route' ? [target.id] : null;
     this.applyStopDim();
-    this.applySpotlight(routeIds);
+    this.applySpotlight(this.spotlightRouteIds());
     this.applyVehicleDim(routeIds);
     this.syncFeatureState();
+  }
+
+  /** Routes to spotlight: the focused route, or the focused vehicle's route. */
+  private spotlightRouteIds(): string[] | null {
+    const target = this.focus;
+    if (target?.kind === 'route') return [target.id];
+    if (target?.kind === 'vehicle') {
+      const feature = this.vehiclesData.features.find(
+        f => f.properties?.vehicle_id === target.id,
+      );
+      const routeId = feature?.properties?.route_id;
+      return routeId ? [String(routeId)] : null;
+    }
+    return null;
   }
 
   /**
@@ -597,7 +613,7 @@ export class LayerManager {
     // Neither paint overrides nor feature state survive a style swap.
     const routeIds = this.focus?.kind === 'route' ? [this.focus.id] : null;
     this.applyStopDim();
-    this.applySpotlight(routeIds);
+    this.applySpotlight(this.spotlightRouteIds());
     this.applyVehicleDim(routeIds);
     this.syncFeatureState();
   }
