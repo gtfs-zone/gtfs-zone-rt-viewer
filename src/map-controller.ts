@@ -8,6 +8,8 @@ import type { MapAppearance } from 'interlocking/map/basemap-control';
 import { AutoZoom } from 'interlocking/map/auto-zoom';
 import { MAP_MAX_ZOOM } from 'interlocking/map/basemap-styles';
 import { fitPadding } from 'interlocking/map/fit-padding';
+import { SearchPlaceMarker } from 'interlocking/map/place-search';
+import type { PlacePayload } from 'interlocking/map/place-search';
 import { LayerManager } from './modules/layer-manager';
 import type { MapDataIssues } from './modules/layer-manager';
 
@@ -64,6 +66,8 @@ function restoreView(): MapView {
 export class MapController {
   private map!: maplibregl.Map;
   private layers!: LayerManager;
+  /** Rings the place picked from search until the next map click. */
+  private placeMarker!: SearchPlaceMarker;
   private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
   private viewSaveTimeout: ReturnType<typeof setTimeout> | null = null;
   /** Height of the mobile bottom sheet, kept out of the camera's way. */
@@ -138,6 +142,8 @@ export class MapController {
       }
     };
     this.layers.onEmptySelect = () => this.onEmptySelect?.();
+    this.placeMarker = new SearchPlaceMarker(this.map);
+    this.map.on('click', () => this.placeMarker.clear());
 
     new BasemapControl(this.map, {
       initial: appearance,
@@ -156,7 +162,10 @@ export class MapController {
     // setStyle drops every source and layer we own, so each basemap change
     // has to re-add them. This is the single highest-risk path in the map:
     // without it, switching basemaps blanks all GTFS data.
-    this.map.on('basemap:changed', () => this.layers.rebuild());
+    this.map.on('basemap:changed', () => {
+      this.layers.rebuild();
+      this.placeMarker.redraw();
+    });
 
     this.map.on('moveend', () => this.queueViewSave());
 
@@ -269,6 +278,16 @@ export class MapController {
   }
 
   // ── Focus ──────────────────────────────────────────────────────────────────
+
+  /** Move to a place picked from search and ring it. */
+  focusPlace(place: PlacePayload): void {
+    this.whenLoaded(() => this.placeMarker.focus(place, this.padding()));
+  }
+
+  /** Biases the place search towards what is on screen. */
+  getCenter(): { lng: number; lat: number } {
+    return this.map.getCenter();
+  }
 
   /**
    * Highlight the focused object and move the camera to it. Called for every

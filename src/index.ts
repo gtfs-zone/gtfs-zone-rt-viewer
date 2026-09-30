@@ -36,6 +36,8 @@ import { PanelRenderer } from './modules/panel-renderer';
 import { pageTitle } from 'interlocking/ui/breadcrumb-trail';
 import { alertLabel } from './modules/breadcrumbs';
 import { SearchController } from 'interlocking/ui/search-controller';
+import { searchPlaces } from 'interlocking/map/place-search';
+import type { PlacePayload } from 'interlocking/map/place-search';
 import { buildSearchEntries } from './modules/search-entries';
 import type { ModalState, PageState } from './types/page-state';
 
@@ -182,10 +184,15 @@ modalRouter.register('alerts', () => alertsModal.show());
 modalRouter.register('help', modal => showHelpModal(modal.page));
 
 // ─── Map search ───────────────────────────────────────────────────────────────
-// Selecting a result is the same event as clicking the object on the map.
-const searchController = new SearchController<PageState>({
+// Selecting a feed object is the same event as clicking it on the map; a place
+// only moves the map.
+const searchController = new SearchController<PageState | PlacePayload>({
   getEntries: () => buildSearchEntries(session),
-  onSelect: state => appState.setFocus(state),
+  getRemoteEntries: (query, signal) => searchPlaces(query, mapCtrl.getCenter(), signal),
+  onSelect: payload => {
+    if ('kind' in payload) mapCtrl.focusPlace(payload);
+    else appState.setFocus(payload);
+  },
 });
 searchController.initialize();
 

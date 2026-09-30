@@ -1,7 +1,7 @@
 import type { PageState } from '../types/page-state';
 import type { BreadcrumbItem } from 'interlocking/ui/breadcrumb-trail';
 import { stopTypeLabel } from 'interlocking/ui/breadcrumb-trail';
-import { knownExamples } from 'interlocking/gtfs/examples';
+import { feedByUrl } from 'interlocking/gtfs/feed-catalog';
 import type { FeedSelection } from 'interlocking/gtfs/feed-selection';
 import { describeSelection } from 'interlocking/gtfs/feed-selection';
 import type { FeedSession } from './feed-session';
@@ -23,16 +23,11 @@ function truncate(text: string, max = 40): string {
   return text.length > max ? `${text.slice(0, max - 3)}...` : text;
 }
 
-/** The curated name for a selection whose scheduled URL we ship an entry for. */
-function exampleName(selection: FeedSelection | null): string | null {
+/** The feed catalog's name for a selection's scheduled URL, once the catalog has loaded. */
+function catalogName(selection: FeedSelection | null): string | null {
   const scheduled = selection?.scheduled;
   if (scheduled?.kind !== 'url') return null;
-  const match = knownExamples().find(
-    example =>
-      example.selection.scheduled?.kind === 'url' &&
-      example.selection.scheduled.url === scheduled.url,
-  );
-  return match?.name ?? null;
+  return feedByUrl(scheduled.url)?.name ?? null;
 }
 
 /**
@@ -52,8 +47,8 @@ function feedName(session: FeedSession): string | null {
   if (named.length === 1) return named[0].name.trim();
   if (named.length > 1) return `${named[0].name.trim()} +${named.length - 1} more`;
 
-  const example = exampleName(session.selection);
-  if (example) return example;
+  const cataloged = catalogName(session.selection);
+  if (cataloged) return cataloged;
 
   const described = session.selection ? describeSelection(session.selection) : null;
   return described && described !== 'feeds' ? described : null;
