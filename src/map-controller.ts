@@ -1,4 +1,5 @@
 import * as maplibregl from 'maplibre-gl';
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { CONFIG } from './config';
 import type { GTFSScheduled } from 'interlocking/gtfs/scheduled';
 import type { VehiclePosition } from 'interlocking/gtfs/rt-types';
@@ -114,6 +115,9 @@ export class MapController {
     const view = restoreView();
     const appearance = readStored<MapAppearance>(CONFIG.MAP_APPEARANCE_KEY) ?? {};
 
+    // maplibre resolves its worker relative to its own module URL, which
+    // breaks once Vite bundles or pre-bundles it; point it at a Vite-built copy.
+    maplibregl.setWorkerUrl(maplibreWorkerUrl);
     this.map = new maplibregl.Map({
       container,
       style: initialMapStyle(appearance),
