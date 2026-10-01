@@ -14,8 +14,6 @@ pnpm typecheck
 pnpm build
 pnpm vendor:check # diff vendored files against their source repo, per VENDORED.md
 pnpm vuln         # osv-scanner vulnerability gate
-
-git config core.hooksPath .githooks   # once per clone; runs vendor:check pre-commit
 ```
 
 Shared modules come from
