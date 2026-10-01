@@ -222,7 +222,7 @@ export function renderVehiclePage(
 
   // Every vehicle sharing this feed's `vehicle.id`. More than one is a GTFS-RT
   // spec violation — VehicleDescriptor.id "should be unique per vehicle" — that
-  // test-track reports rather than hides (Plan 06 Root cause D).
+  // gtfs-zone-rt-viewer reports rather than hides (Plan 06 Root cause D).
   const sharing = vehicle.vehicleId
     ? [...ctx.session.vehicles.values()].filter(v => v.vehicleId === vehicle.vehicleId)
     : [vehicle];

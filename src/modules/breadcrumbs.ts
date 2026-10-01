@@ -10,7 +10,7 @@ import { vehicleDisplayName } from 'gtfs-zone-web-common/gtfs/entity-render';
 /**
  * Synchronous breadcrumb building and focus validation against the loaded feed.
  *
- * coloring-book resolves breadcrumbs through an async, database-backed lookup
+ * gtfs-zone-editor resolves breadcrumbs through an async, database-backed lookup
  * interface. Our whole model is in memory, so both of these are plain reads.
  */
 

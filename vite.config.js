@@ -39,9 +39,9 @@ export default defineConfig({
     }
   },
   server: {
-    // The local cafe-car is fetched directly rather than through a dev proxy
+    // The local gtfs-zone-rt-api is fetched directly rather than through a dev proxy
     // (see RT_BASE in src/modules/feed-url-resolve.ts), so this origin has to be
-    // one music-student's CORS_ALLOWED_ORIGINS names. It allows 8080-8089, which
+    // one gtfs-zone-dev-stack's CORS_ALLOWED_ORIGINS names. It allows 8080-8089, which
     // covers the range vite falls through to when a port is taken.
     port: 8080,
     open: true,

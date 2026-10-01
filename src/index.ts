@@ -227,7 +227,7 @@ function showFeedControls(): void {
   // The editor link only works from a URL-backed scheduled feed — file uploads
   // have no URL to hand off — so it stays hidden otherwise. A
   // `…/outer.zip#inner.zip` URL is handed over whole and will fail there:
-  // coloring-book does not understand the fragment. Left deliberately, because
+  // gtfs-zone-editor does not understand the fragment. Left deliberately, because
   // an editor link that visibly fails is clearer than one that silently opens
   // the wrong dataset.
   const scheduledSrc = session.selection?.scheduled;

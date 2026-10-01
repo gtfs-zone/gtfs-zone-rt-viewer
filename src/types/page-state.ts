@@ -28,7 +28,7 @@
      opener's argument itself now. */
 
 /**
- * Union of every page test-track can display. Each variant carries the minimal
+ * Union of every page gtfs-zone-rt-viewer can display. Each variant carries the minimal
  * set of object keys needed to identify and restore the page.
  *
  * Route, stop, vehicle and alert ids are each unique within a feed, so no

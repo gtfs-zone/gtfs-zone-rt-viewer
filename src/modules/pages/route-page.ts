@@ -307,7 +307,7 @@ function renderStrip(
       });
     });
 
-    // Every strip element is a stop ref here: test-track ingests no flex tables.
+    // Every strip element is a stop ref here: gtfs-zone-rt-viewer ingests no flex tables.
     const stopId = stop.ref.id;
     const name = feed?.stops.get(stopId)?.name || stopId;
     // The strip shows stations; the realtime feed talks about platforms. Ask

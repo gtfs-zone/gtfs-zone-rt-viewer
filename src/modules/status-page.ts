@@ -283,7 +283,7 @@ function renderScheduledSection(session: FeedSession): string {
  * `current_stop_sequence` is optional in GTFS-RT, and `stop_id` is an equally
  * legitimate way to say the same thing — plenty of feeds use only the latter.
  * That is worth stating but is not a defect, so it renders neutral. The border
- * turns to a warning only when test-track had to infer a position from
+ * turns to a warning only when gtfs-zone-rt-viewer had to infer a position from
  * predictions, or could not place a vehicle at all: those are the cases where
  * what is on screen is not simply what the feed said.
  *

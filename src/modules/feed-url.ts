@@ -11,7 +11,7 @@
  * one therefore means something else.
  *
  * A missing `cors` means *unknown*, and both halves default to the proxy. Links
- * are written by other apps too — yard-master's "Open in visualizer" names four
+ * are written by other apps too — gtfs-zone-rt-manager's "Open in visualizer" names four
  * URLs and no proxy setting — and the hosts feeds actually come from mostly send
  * no CORS headers, so "off" is the wrong guess far more often than "on". The
  * proxy costs a hop where it was not needed; guessing "off" costs the whole

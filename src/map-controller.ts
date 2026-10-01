@@ -260,7 +260,7 @@ export class MapController {
    * Instant, with no duration: on the boot path a deep link's focus ease runs
    * right after this and would visibly interrupt an animated fit.
    *
-   * Ungated by auto-zoom, matching coloring-book's feed-load exemption: a
+   * Ungated by auto-zoom, matching gtfs-zone-editor's feed-load exemption: a
    * freshly loaded feed has to frame itself or the map opens on nothing.
    */
   private fitFeed(): void {

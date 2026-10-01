@@ -14,7 +14,7 @@ import { REALTIME_ENDPOINTS, describeHttpError, describeNetworkError } from 'gtf
  * and decoding only assigns own properties for fields that were on the wire. So
  * `msg.currentStopSequence ?? undefined` can never yield `undefined`, and an
  * absent field is indistinguishable from a reported zero unless the own-property
- * is checked. Getting this wrong makes test-track assert things the feed never
+ * is checked. Getting this wrong makes gtfs-zone-rt-viewer assert things the feed never
  * said — a stop_sequence of 0, a bearing of due north, an IN_TRANSIT_TO status.
  */
 function present<T>(msg: object, field: string, value: T | null | undefined): T | undefined {
@@ -31,7 +31,7 @@ export interface RawFeedHeader {
 /**
  * Which of the four key-derivation rules a vehicles feed forced (Plan 06 Root
  * cause D). `unique` is the no-op path a well-formed feed takes; anything else
- * means the feed's `vehicle.id` was not unique per vehicle and test-track had to
+ * means the feed's `vehicle.id` was not unique per vehicle and gtfs-zone-rt-viewer had to
  * derive a safe instance key to address entities by.
  */
 export type VehicleIdStrategy = 'unique' | 'trip' | 'entity' | 'index';
@@ -247,7 +247,7 @@ export class GTFSRealtime extends EventTarget {
       ep.vehiclesDuplicateIds = duplicates;
 
       const positions: VehiclePosition[] = rows.map(({ entity, v }, i) => ({
-        // `key` is test-track's own instance handle; `vehicleId` is the feed's
+        // `key` is gtfs-zone-rt-viewer's own instance handle; `vehicleId` is the feed's
         // own `vehicle.id`, verbatim (empty stays empty). See Plan 06 Root cause D.
         key: keys[i],
         vehicleId: v.vehicle?.id ?? '',
