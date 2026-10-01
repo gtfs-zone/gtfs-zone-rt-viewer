@@ -63,8 +63,6 @@ type WithModal<T> = T extends unknown ? T & { modal?: ModalState } : never;
 
 export type PageState = WithModal<PageLocation>;
 
-export type PageStateType = PageLocation['type'];
-
 /** Type guard for a valid ModalState. */
 export function isModalState(value: unknown): value is ModalState {
   if (!value || typeof value !== 'object') return false;

@@ -10,7 +10,7 @@ reads the realtime feeds rt-api serves: `https://rt.gtfs.zone` in production,
 ```bash
 pnpm install
 pnpm dev          # vite on :8080
-pnpm typecheck
+pnpm check        # typecheck, knip, vendor:check
 pnpm build
 pnpm vendor:check # diff vendored files against their source repo, per VENDORED.md
 pnpm vuln         # osv-scanner vulnerability gate

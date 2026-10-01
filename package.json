@@ -10,7 +10,8 @@
     "start": "vite",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "check": "pnpm run typecheck && pnpm run vendor:check",
+    "check": "pnpm run typecheck && pnpm run knip && pnpm run vendor:check",
+    "knip": "knip",
     "vendor:check": "tsx scripts/vendor-check.ts",
     "vuln": "sh scripts/vuln-gate.sh",
     "commit": "cz commit"
@@ -25,10 +26,10 @@
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
     "@types/geojson": "^7946.0.16",
-    "@types/jszip": "^3.4.1",
     "@types/node": "^24.19.0",
     "@types/papaparse": "^5.5.2",
     "autoprefixer": "^10.6.1",
+    "knip": "^6.39.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
