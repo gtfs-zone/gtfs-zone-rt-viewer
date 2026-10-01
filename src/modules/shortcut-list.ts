@@ -23,7 +23,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
     {
       keys: 'ctrl+o',
       description: 'Open the load feed dialog',
-      handler: e => {
+      handler: (e) => {
         e?.preventDefault();
         return host.openLoadModal();
       },
@@ -33,7 +33,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
     {
       keys: '/',
       description: 'Focus map search',
-      handler: e => {
+      handler: (e) => {
         e?.preventDefault();
         focusMapSearch();
       },
@@ -41,7 +41,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
     {
       keys: 'ctrl+k',
       description: 'Focus map search',
-      handler: e => {
+      handler: (e) => {
         e?.preventDefault();
         focusMapSearch();
       },
@@ -53,7 +53,9 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
       description: 'Clear the search',
       allowInInputFields: true,
       handler: () => {
-        (document.getElementById('map-search') as HTMLInputElement | null)?.blur();
+        (
+          document.getElementById('map-search') as HTMLInputElement | null
+        )?.blur();
         host.clearSearch();
       },
     },
@@ -61,7 +63,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
     {
       keys: 'shift+?',
       description: 'Show the guide',
-      handler: e => {
+      handler: (e) => {
         e?.preventDefault();
         host.openGuide();
       },
@@ -70,7 +72,9 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
 }
 
 function focusMapSearch(): void {
-  const mapSearch = document.getElementById('map-search') as HTMLInputElement | null;
+  const mapSearch = document.getElementById(
+    'map-search'
+  ) as HTMLInputElement | null;
   mapSearch?.focus();
   mapSearch?.select();
 }

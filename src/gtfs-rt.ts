@@ -1,9 +1,17 @@
 import { transit_realtime } from 'gtfs-realtime-bindings';
 import { CONFIG } from './config';
-import type { AlertRecord, TripUpdate, VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
+import type {
+  AlertRecord,
+  TripUpdate,
+  VehiclePosition,
+} from 'gtfs-zone-web-common/gtfs/rt-types';
 import { presentNumber } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { RealtimeEndpointName } from 'gtfs-zone-web-common/gtfs/feed-selection';
-import { REALTIME_ENDPOINTS, describeHttpError, describeNetworkError } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import {
+  REALTIME_ENDPOINTS,
+  describeHttpError,
+  describeNetworkError,
+} from 'gtfs-zone-web-common/gtfs/feed-selection';
 
 /**
  * Whether the producer actually sent a field, as opposed to protobufjs handing
@@ -17,8 +25,14 @@ import { REALTIME_ENDPOINTS, describeHttpError, describeNetworkError } from 'gtf
  * is checked. Getting this wrong makes gtfs-zone-rt-viewer assert things the feed never
  * said — a stop_sequence of 0, a bearing of due north, an IN_TRANSIT_TO status.
  */
-function present<T>(msg: object, field: string, value: T | null | undefined): T | undefined {
-  return Object.prototype.hasOwnProperty.call(msg, field) ? (value ?? undefined) : undefined;
+function present<T>(
+  msg: object,
+  field: string,
+  value: T | null | undefined
+): T | undefined {
+  return Object.prototype.hasOwnProperty.call(msg, field)
+    ? (value ?? undefined)
+    : undefined;
 }
 
 /** Verbatim FeedHeader fields, for the status page's raw dump. */
@@ -118,7 +132,7 @@ export class GTFSRealtime extends EventTarget {
 
   constructor(
     urls: Partial<Record<RealtimeEndpointName, string>>,
-    intervalMs: number = CONFIG.RT_INTERVAL_DEFAULT_MS,
+    intervalMs: number = CONFIG.RT_INTERVAL_DEFAULT_MS
   ) {
     super();
     this.status = {
@@ -137,7 +151,9 @@ export class GTFSRealtime extends EventTarget {
   }
 
   start(): void {
-    if (this.running) return;
+    if (this.running) {
+      return;
+    }
     this.running = true;
     void this.pollLoop();
   }
@@ -162,7 +178,9 @@ export class GTFSRealtime extends EventTarget {
 
     if (this.pendingWake !== null && this.lastPollAt !== null) {
       const wake = this.pendingWake;
-      if (this.timeoutId !== null) clearTimeout(this.timeoutId);
+      if (this.timeoutId !== null) {
+        clearTimeout(this.timeoutId);
+      }
       const remaining = Math.max(0, this.lastPollAt + intervalMs - Date.now());
       this.status.nextPollAt = Date.now() + remaining;
       this.timeoutId = setTimeout(wake, remaining);
@@ -173,12 +191,16 @@ export class GTFSRealtime extends EventTarget {
 
   private async pollLoop(): Promise<void> {
     while (this.running) {
-      await Promise.allSettled(REALTIME_ENDPOINTS.map(n => this.fetchEndpoint(n)));
-      if (!this.running) break;
+      await Promise.allSettled(
+        REALTIME_ENDPOINTS.map((n) => this.fetchEndpoint(n))
+      );
+      if (!this.running) {
+        break;
+      }
       this.lastPollAt = Date.now();
       this.status.nextPollAt = this.lastPollAt + this.status.intervalMs;
       this.emitStatusChange();
-      await new Promise<void>(resolve => {
+      await new Promise<void>((resolve) => {
         this.pendingWake = resolve;
         this.timeoutId = setTimeout(resolve, this.status.intervalMs);
       });
@@ -188,7 +210,9 @@ export class GTFSRealtime extends EventTarget {
 
   private async fetchEndpoint(name: RealtimeEndpointName): Promise<void> {
     const ep = this.status.endpoints[name];
-    if (!ep.url || ep.inFlight) return;
+    if (!ep.url || ep.inFlight) {
+      return;
+    }
 
     // Only a first fetch or a retry after an error is worth the loading bar;
     // steady-state polls would make it flash every interval.
@@ -196,7 +220,9 @@ export class GTFSRealtime extends EventTarget {
     ep.inFlight = true;
     this.emitStatusChange();
     this.dispatchEvent(
-      new CustomEvent<FetchStartDetail>('fetchstart', { detail: { name, prominent } }),
+      new CustomEvent<FetchStartDetail>('fetchstart', {
+        detail: { name, prominent },
+      })
     );
 
     try {
@@ -217,19 +243,28 @@ export class GTFSRealtime extends EventTarget {
       ep.neverFetched = false;
       ep.lastFetchedAt = Date.now();
       this.emitStatusChange();
-      this.dispatchEvent(new CustomEvent<RealtimeEndpointName>('fetchend', { detail: name }));
+      this.dispatchEvent(
+        new CustomEvent<RealtimeEndpointName>('fetchend', { detail: name })
+      );
     }
   }
 
-  private emitPayload(name: RealtimeEndpointName, feed: transit_realtime.FeedMessage): void {
+  private emitPayload(
+    name: RealtimeEndpointName,
+    feed: transit_realtime.FeedMessage
+  ): void {
     if (name === 'vehicles') {
       // Collect first: the key derivation needs every entity's vehicle.id up
       // front, since uniqueness is only knowable after seeing them all.
-      const rows: { entity: transit_realtime.IFeedEntity; v: transit_realtime.IVehiclePosition }[] =
-        [];
+      const rows: {
+        entity: transit_realtime.IFeedEntity;
+        v: transit_realtime.IVehiclePosition;
+      }[] = [];
       for (const entity of feed.entity) {
         const v = entity.vehicle;
-        if (!v?.position) continue;
+        if (!v?.position) {
+          continue;
+        }
         rows.push({ entity, v });
       }
 
@@ -239,7 +274,7 @@ export class GTFSRealtime extends EventTarget {
           tripId: v.trip?.tripId ?? '',
           startDate: v.trip?.startDate ?? '',
           entityId: entity.id,
-        })),
+        }))
       );
 
       const ep = this.status.endpoints.vehicles;
@@ -267,43 +302,63 @@ export class GTFSRealtime extends EventTarget {
         scheduleRelationship: v.trip
           ? present(v.trip, 'scheduleRelationship', v.trip.scheduleRelationship)
           : undefined,
-        currentStopSequence: present(v, 'currentStopSequence', v.currentStopSequence),
+        currentStopSequence: present(
+          v,
+          'currentStopSequence',
+          v.currentStopSequence
+        ),
         stopId: present(v, 'stopId', v.stopId),
         currentStatus: present(v, 'currentStatus', v.currentStatus),
         occupancyStatus: present(v, 'occupancyStatus', v.occupancyStatus),
         timestamp: presentNumber(v, 'timestamp'),
-        raw: transit_realtime.VehiclePosition.toObject(v as transit_realtime.VehiclePosition, {
-          longs: Number,
-          enums: String,
-          defaults: false,
-        }),
+        raw: transit_realtime.VehiclePosition.toObject(
+          v as transit_realtime.VehiclePosition,
+          {
+            longs: Number,
+            enums: String,
+            defaults: false,
+          }
+        ),
       }));
-      this.dispatchEvent(new CustomEvent<VehiclePosition[]>('vehicles', { detail: positions }));
+      this.dispatchEvent(
+        new CustomEvent<VehiclePosition[]>('vehicles', { detail: positions })
+      );
     } else if (name === 'tripUpdates') {
-      const updates = feed.entity.flatMap(e => (e.tripUpdate ? [e.tripUpdate] : []));
-      this.dispatchEvent(new CustomEvent<TripUpdate[]>('tripUpdates', { detail: updates }));
+      const updates = feed.entity.flatMap((e) =>
+        e.tripUpdate ? [e.tripUpdate] : []
+      );
+      this.dispatchEvent(
+        new CustomEvent<TripUpdate[]>('tripUpdates', { detail: updates })
+      );
     } else {
-      const alerts = feed.entity.flatMap(e =>
+      const alerts = feed.entity.flatMap((e) =>
         e.alert
           ? [
               {
                 id: e.id,
                 alert: e.alert,
-                raw: transit_realtime.Alert.toObject(e.alert as transit_realtime.Alert, {
-                  longs: Number,
-                  enums: String,
-                  defaults: false,
-                }),
+                raw: transit_realtime.Alert.toObject(
+                  e.alert as transit_realtime.Alert,
+                  {
+                    longs: Number,
+                    enums: String,
+                    defaults: false,
+                  }
+                ),
               },
             ]
-          : [],
+          : []
       );
-      this.dispatchEvent(new CustomEvent<AlertRecord[]>('alerts', { detail: alerts }));
+      this.dispatchEvent(
+        new CustomEvent<AlertRecord[]>('alerts', { detail: alerts })
+      );
     }
   }
 
   private emitStatusChange(): void {
-    this.dispatchEvent(new CustomEvent<FeedStatus>('statuschange', { detail: this.status }));
+    this.dispatchEvent(
+      new CustomEvent<FeedStatus>('statuschange', { detail: this.status })
+    );
   }
 }
 
@@ -313,7 +368,7 @@ async function decodeFeed(url: string): Promise<transit_realtime.FeedMessage> {
   try {
     res = await fetch(url);
   } catch (err) {
-    throw new Error(describeNetworkError(url, err));
+    throw new Error(describeNetworkError(url, err), { cause: err });
   }
   if (!res.ok) {
     // A proxy refusal explains itself in the body; read it before discarding.
@@ -325,16 +380,23 @@ async function decodeFeed(url: string): Promise<transit_realtime.FeedMessage> {
   try {
     return transit_realtime.FeedMessage.decode(new Uint8Array(buf));
   } catch (err) {
-    throw new Error(`Decode failed: ${err instanceof Error ? err.message : String(err)}`);
+    throw new Error(
+      `Decode failed: ${err instanceof Error ? err.message : String(err)}`,
+      { cause: err }
+    );
   }
 }
 
-function readHeader(header: transit_realtime.IFeedHeader | null | undefined): RawFeedHeader {
+function readHeader(
+  header: transit_realtime.IFeedHeader | null | undefined
+): RawFeedHeader {
   // `timestamp` arrives as a protobuf Long, not a JS number.
   const ts = header?.timestamp;
   return {
     gtfsRealtimeVersion: header?.gtfsRealtimeVersion ?? '',
-    incrementality: INCREMENTALITY_LABELS[header?.incrementality ?? 0] ?? String(header?.incrementality ?? ''),
+    incrementality:
+      INCREMENTALITY_LABELS[header?.incrementality ?? 0] ??
+      String(header?.incrementality ?? ''),
     timestamp: ts === null || ts === undefined ? null : Number(ts),
   };
 }
@@ -381,28 +443,41 @@ function deriveVehicleKeys(entities: VehicleIdInput[]): {
     }
   };
 
-  const keys = entities.map(e => e.vid);
-  const strategyNames: VehicleIdStrategy[] = ['unique', 'trip', 'entity', 'index'];
+  const keys = entities.map((e) => e.vid);
+  const strategyNames: VehicleIdStrategy[] = [
+    'unique',
+    'trip',
+    'entity',
+    'index',
+  ];
   let strategyLevel = 0;
 
   // A key is unresolved when it is empty (no usable id) or shared with another.
   const unresolved = (): number[] => {
     const count = new Map<string, number>();
-    for (const k of keys) count.set(k, (count.get(k) ?? 0) + 1);
+    for (const k of keys) {
+      count.set(k, (count.get(k) ?? 0) + 1);
+    }
     const out: number[] = [];
     for (let i = 0; i < keys.length; i++) {
-      if (keys[i] === '' || count.get(keys[i])! > 1) out.push(i);
+      if (keys[i] === '' || count.get(keys[i])! > 1) {
+        out.push(i);
+      }
     }
     return out;
   };
 
   for (let rule = 1; rule <= 3; rule++) {
     const bad = unresolved();
-    if (bad.length === 0) break;
+    if (bad.length === 0) {
+      break;
+    }
     const target = rule + 1; // escalate to 2 (trip), 3 (entity), or 4 (index)
     for (const i of bad) {
       keys[i] =
-        target <= 3 ? keyAt(entities[i], target) : `${keyAt(entities[i], 3)}#${i}`;
+        target <= 3
+          ? keyAt(entities[i], target)
+          : `${keyAt(entities[i], 3)}#${i}`;
     }
     strategyLevel = Math.max(strategyLevel, target - 1);
   }
@@ -411,11 +486,15 @@ function deriveVehicleKeys(entities: VehicleIdInput[]): {
   // non-empty vehicle.id values were reused across more than one vehicle.
   const vidCount = new Map<string, number>();
   for (const e of entities) {
-    if (e.vid) vidCount.set(e.vid, (vidCount.get(e.vid) ?? 0) + 1);
+    if (e.vid) {
+      vidCount.set(e.vid, (vidCount.get(e.vid) ?? 0) + 1);
+    }
   }
   const duplicates: DuplicateVehicleId[] = [];
   for (const [vehicleId, count] of vidCount) {
-    if (count > 1) duplicates.push({ vehicleId, count });
+    if (count > 1) {
+      duplicates.push({ vehicleId, count });
+    }
   }
   duplicates.sort((a, b) => b.count - a.count);
 

@@ -27,7 +27,12 @@
  * from the code that draws it.
  */
 
-import { eyebrow, lede, glyphList, type HelpPageEntry } from 'gtfs-zone-web-common/ui/help-modal';
+import {
+  eyebrow,
+  lede,
+  glyphList,
+  type HelpPageEntry,
+} from 'gtfs-zone-web-common/ui/help-modal';
 import {
   renderBlurb,
   renderVersionAndSource,
@@ -222,7 +227,10 @@ const mapKeyPage: HelpPage = {
     ].join('');
 
     const routesAndVehicles = [
-      row(swatchLine('#3b82f6'), "Route (the feed's color, or an assigned one)"),
+      row(
+        swatchLine('#3b82f6'),
+        "Route (the feed's color, or an assigned one)"
+      ),
       row(chevronLine('#3b82f6'), 'Direction of travel, on the selected route'),
       row(circle('#3b82f6', '#0f172a'), 'Vehicle'),
       row(triangle('#3b82f6'), 'Vehicle, with a known heading'),

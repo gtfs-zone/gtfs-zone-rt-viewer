@@ -39,7 +39,10 @@ import type { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
 import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
 import { routeSortKey } from 'gtfs-zone-web-common/gtfs/route-sort';
 import { casingColor } from 'gtfs-zone-web-common/gtfs/route-colors';
-import { clearThemeColorCache, resolveThemeColor } from 'gtfs-zone-web-common/util/theme-color';
+import {
+  clearThemeColorCache,
+  resolveThemeColor,
+} from 'gtfs-zone-web-common/util/theme-color';
 import { ensureMapIcons } from 'gtfs-zone-web-common/map/icons';
 import {
   NO_ROUTE_FILTER,
@@ -163,10 +166,18 @@ const FADE_BANDS: StopFadeBands = {
  * the stop when the map is zoomed out past where plain stops have faded. The
  * editor's `kept` state has no counterpart in a viewer.
  */
-const SPECIAL_STATES: readonly StopFeatureState[] = ['focused', 'hovered', 'onRoute'];
+const SPECIAL_STATES: readonly StopFeatureState[] = [
+  'focused',
+  'hovered',
+  'onRoute',
+];
 const SPECIAL_STOP = specialStop(SPECIAL_STATES);
 
-const FOCUSED: ExpressionSpecification = ['boolean', ['feature-state', 'focused'], false];
+const FOCUSED: ExpressionSpecification = [
+  'boolean',
+  ['feature-state', 'focused'],
+  false,
+];
 
 /**
  * Selection color, resolved from the active DaisyUI theme. Red is reserved for
@@ -199,7 +210,10 @@ type FocusTarget =
   | { kind: 'vehicle'; id: string }
   | null;
 
-const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+const EMPTY: GeoJSON.FeatureCollection = {
+  type: 'FeatureCollection',
+  features: [],
+};
 
 export class LayerManager {
   private map: MapLibreMap;
@@ -250,8 +264,14 @@ export class LayerManager {
     this.accent = accentColor();
     this.stopStyle = stopStyle(this.accent);
 
-    for (const id of [STOP_FOCUS_HALO_LAYER, STOP_FOCUS_RING_LAYER, VEHICLES_HALO_LAYER]) {
-      if (!this.map.getLayer(id)) continue;
+    for (const id of [
+      STOP_FOCUS_HALO_LAYER,
+      STOP_FOCUS_RING_LAYER,
+      VEHICLES_HALO_LAYER,
+    ]) {
+      if (!this.map.getLayer(id)) {
+        continue;
+      }
       this.map.setPaintProperty(id, 'circle-color', this.accent);
       this.map.setPaintProperty(id, 'circle-stroke-color', this.accent);
     }
@@ -259,7 +279,9 @@ export class LayerManager {
     // painted in it, everything else in the layer is accent-free.
     const fill = stopFillColor(this.accent, this.stopStyle.backgroundColor);
     for (const id of [STOPS_BACKGROUND_LAYER, STOP_FOCUS_TOP_LAYER]) {
-      if (!this.map.getLayer(id)) continue;
+      if (!this.map.getLayer(id)) {
+        continue;
+      }
       this.map.setPaintProperty(id, 'circle-color', fill);
     }
     // stops-background's opacity carries the route spotlight, which the
@@ -291,7 +313,9 @@ export class LayerManager {
     // flashes the markers and drops their feature state.
     this.pushData(VEHICLES_SOURCE, this.vehiclesData);
     // The focused vehicle may have just appeared or changed trips.
-    if (this.focus?.kind === 'vehicle') this.applySpotlight(this.spotlightRouteIds());
+    if (this.focus?.kind === 'vehicle') {
+      this.applySpotlight(this.spotlightRouteIds());
+    }
     this.syncFeatureState();
   }
 
@@ -302,7 +326,9 @@ export class LayerManager {
     // drawn station instead (Plan 06 Phase 7). The panel still shows the
     // platform page; only the map resolves upward.
     this.focus =
-      target?.kind === 'stop' ? { kind: 'stop', id: this.drawnAncestor(target.id) } : target;
+      target?.kind === 'stop'
+        ? { kind: 'stop', id: this.drawnAncestor(target.id) }
+        : target;
 
     // Route focus spotlights the route and its stops; anything else clears it.
     this.wantedRouteStopIds =
@@ -317,10 +343,12 @@ export class LayerManager {
   /** Routes to spotlight: the focused route, or the focused vehicle's route. */
   private spotlightRouteIds(): string[] | null {
     const target = this.focus;
-    if (target?.kind === 'route') return [target.id];
+    if (target?.kind === 'route') {
+      return [target.id];
+    }
     if (target?.kind === 'vehicle') {
       const feature = this.vehiclesData.features.find(
-        f => f.properties?.vehicle_id === target.id,
+        (f) => f.properties?.vehicle_id === target.id
       );
       const routeId = feature?.properties?.route_id;
       return routeId ? [String(routeId)] : null;
@@ -338,7 +366,9 @@ export class LayerManager {
    */
   setHoveredStop(stop_id: string | null): void {
     const resolved = stop_id === null ? null : this.drawnAncestor(stop_id);
-    if (this.hoveredStopId === resolved) return;
+    if (this.hoveredStopId === resolved) {
+      return;
+    }
     this.hoveredStopId = resolved;
     this.syncFeatureState();
   }
@@ -363,11 +393,16 @@ export class LayerManager {
     let settled = true;
 
     for (const source of SOURCE_IDS) {
-      if (!this.map.getSource(source)) continue;
+      if (!this.map.getSource(source)) {
+        continue;
+      }
       try {
         this.map.removeFeatureState({ source });
       } catch (err) {
-        console.debug(`[LayerManager] removeFeatureState failed for ${source}`, err);
+        console.debug(
+          `[LayerManager] removeFeatureState failed for ${source}`,
+          err
+        );
       }
     }
 
@@ -405,24 +440,37 @@ export class LayerManager {
   }
 
   private armRetry(): void {
-    if (this.retry) return;
+    if (this.retry) {
+      return;
+    }
     this.retry = () => this.syncFeatureState();
     this.map.on('sourcedata', this.retry);
   }
 
   private disarmRetry(): void {
-    if (!this.retry) return;
+    if (!this.retry) {
+      return;
+    }
     this.map.off('sourcedata', this.retry);
     this.retry = null;
   }
 
-  private setState(kind: 'stop' | 'route' | 'vehicle', id: string, state: object): void {
+  private setState(
+    kind: 'stop' | 'route' | 'vehicle',
+    id: string,
+    state: object
+  ): void {
     const source = sourceFor(kind);
-    if (!this.map.getSource(source)) return;
+    if (!this.map.getSource(source)) {
+      return;
+    }
     try {
       this.map.setFeatureState({ source, id }, state);
     } catch (err) {
-      console.debug(`[LayerManager] setFeatureState failed for ${kind} ${id}`, err);
+      console.debug(
+        `[LayerManager] setFeatureState failed for ${kind} ${id}`,
+        err
+      );
     }
   }
 
@@ -431,21 +479,30 @@ export class LayerManager {
    * themselves are applied by `syncFeatureState`; this is only the paint side.
    */
   private applyStopDim(): void {
-    const dim = this.wantedRouteStopIds.length > 0 ? CONFIG.SPOTLIGHT_STOP_DIM : null;
+    const dim =
+      this.wantedRouteStopIds.length > 0 ? CONFIG.SPOTLIGHT_STOP_DIM : null;
     if (this.map.getLayer(STOPS_BACKGROUND_LAYER)) {
       const fade = this.stopFade(dim);
       this.map.setPaintProperty(STOPS_BACKGROUND_LAYER, 'circle-opacity', fade);
-      this.map.setPaintProperty(STOPS_BACKGROUND_LAYER, 'circle-stroke-opacity', fade);
+      this.map.setPaintProperty(
+        STOPS_BACKGROUND_LAYER,
+        'circle-stroke-opacity',
+        fade
+      );
     }
     if (this.map.getLayer(STOPS_STATION_DOT_LAYER)) {
       this.map.setPaintProperty(
         STOPS_STATION_DOT_LAYER,
         'circle-opacity',
-        this.stationFade(dim),
+        this.stationFade(dim)
       );
     }
     if (this.map.getLayer(STOPS_CLICKAREA_LAYER)) {
-      this.map.setPaintProperty(STOPS_CLICKAREA_LAYER, 'circle-radius', this.clickAreaRadius());
+      this.map.setPaintProperty(
+        STOPS_CLICKAREA_LAYER,
+        'circle-radius',
+        this.clickAreaRadius()
+      );
     }
   }
 
@@ -455,7 +512,12 @@ export class LayerManager {
   }
 
   private stationFade(dim: number | null): ExpressionSpecification {
-    return stationFadeOpacity(SPECIAL_STOP, FADE_BANDS, this.stopFadeActive, dim);
+    return stationFadeOpacity(
+      SPECIAL_STOP,
+      FADE_BANDS,
+      this.stopFadeActive,
+      dim
+    );
   }
 
   private clickAreaRadius(): ExpressionSpecification {
@@ -463,7 +525,7 @@ export class LayerManager {
       SPECIAL_STOP,
       FADE_BANDS,
       this.stopFadeActive,
-      STOP_CLICK_RADIUS,
+      STOP_CLICK_RADIUS
     );
   }
 
@@ -473,7 +535,9 @@ export class LayerManager {
    */
   private refreshStopFade(stopCount: number): void {
     const active = stopCount >= CONFIG.STOP_FADE_MIN_STOPS;
-    if (active === this.stopFadeActive) return;
+    if (active === this.stopFadeActive) {
+      return;
+    }
     this.stopFadeActive = active;
     this.applyStopDim();
   }
@@ -495,32 +559,60 @@ export class LayerManager {
     // once — so the lift is a plain 1-or-0 rather than an offset off a base key.
     // `icon-allow-overlap` is true on the arrow, which is the case where a
     // *greater* symbol-sort-key draws on top, matching circle-sort-key.
-    const sortKey = (match ? ['case', match, 1, 0] : 0) as unknown as ExpressionSpecification;
+    const sortKey = (match
+      ? ['case', match, 1, 0]
+      : 0) as unknown as ExpressionSpecification;
 
     if (this.map.getLayer(VEHICLES_CASING_LAYER)) {
-      this.map.setPaintProperty(VEHICLES_CASING_LAYER, 'circle-opacity', opacity);
-      this.map.setLayoutProperty(VEHICLES_CASING_LAYER, 'circle-sort-key', sortKey);
+      this.map.setPaintProperty(
+        VEHICLES_CASING_LAYER,
+        'circle-opacity',
+        opacity
+      );
+      this.map.setLayoutProperty(
+        VEHICLES_CASING_LAYER,
+        'circle-sort-key',
+        sortKey
+      );
     }
     if (this.map.getLayer(VEHICLES_DOT_LAYER)) {
       this.map.setPaintProperty(VEHICLES_DOT_LAYER, 'circle-opacity', opacity);
-      this.map.setPaintProperty(VEHICLES_DOT_LAYER, 'circle-stroke-opacity', opacity);
-      this.map.setLayoutProperty(VEHICLES_DOT_LAYER, 'circle-sort-key', sortKey);
+      this.map.setPaintProperty(
+        VEHICLES_DOT_LAYER,
+        'circle-stroke-opacity',
+        opacity
+      );
+      this.map.setLayoutProperty(
+        VEHICLES_DOT_LAYER,
+        'circle-sort-key',
+        sortKey
+      );
     }
     if (this.map.getLayer(VEHICLES_ARROW_LAYER)) {
       // icon-opacity covers the SDF fill and its halo together, so the arrow
       // fades as one mark rather than leaving a floating dark outline.
       this.map.setPaintProperty(VEHICLES_ARROW_LAYER, 'icon-opacity', opacity);
-      this.map.setLayoutProperty(VEHICLES_ARROW_LAYER, 'symbol-sort-key', sortKey);
+      this.map.setLayoutProperty(
+        VEHICLES_ARROW_LAYER,
+        'symbol-sort-key',
+        sortKey
+      );
     }
     // Sorted with the drawn layers so a click on stacked vehicles resolves to
     // whichever one visually reads as on top.
     if (this.map.getLayer(VEHICLES_CLICKAREA_LAYER)) {
-      this.map.setLayoutProperty(VEHICLES_CLICKAREA_LAYER, 'circle-sort-key', sortKey);
+      this.map.setLayoutProperty(
+        VEHICLES_CLICKAREA_LAYER,
+        'circle-sort-key',
+        sortKey
+      );
     }
   }
 
   private applySpotlight(routeIds: string[] | null): void {
-    if (!this.map.getLayer(ROUTES_LINE_LAYER)) return;
+    if (!this.map.getLayer(ROUTES_LINE_LAYER)) {
+      return;
+    }
 
     const match = routeMatch(routeIds);
     const opacity = routeSpotlightOpacity(match, CONFIG.SPOTLIGHT_ROUTE_DIM);
@@ -530,17 +622,23 @@ export class LayerManager {
     this.map.setPaintProperty(
       ROUTES_LINE_LAYER,
       'line-width',
-      zoomWidth(ROUTE_WIDTH_STOPS, match, CONFIG.SPOTLIGHT_LINE_BUMP),
+      zoomWidth(ROUTE_WIDTH_STOPS, match, CONFIG.SPOTLIGHT_LINE_BUMP)
     );
     this.map.setPaintProperty(
       ROUTES_CASING_LAYER,
       'line-width',
-      zoomWidth(ROUTE_CASING_WIDTH_STOPS, match, CONFIG.SPOTLIGHT_CASING_BUMP),
+      zoomWidth(ROUTE_CASING_WIDTH_STOPS, match, CONFIG.SPOTLIGHT_CASING_BUMP)
     );
 
     const sortKey = routeSortKeyExpression(match, CONFIG.SPOTLIGHT_SORT_KEY);
-    for (const id of [ROUTES_CASING_LAYER, ROUTES_LINE_LAYER, ROUTES_CLICKAREA_LAYER]) {
-      if (this.map.getLayer(id)) this.map.setLayoutProperty(id, 'line-sort-key', sortKey);
+    for (const id of [
+      ROUTES_CASING_LAYER,
+      ROUTES_LINE_LAYER,
+      ROUTES_CLICKAREA_LAYER,
+    ]) {
+      if (this.map.getLayer(id)) {
+        this.map.setLayoutProperty(id, 'line-sort-key', sortKey);
+      }
     }
 
     // Direction arrows only when exactly one route is spotlighted: a stop click
@@ -550,8 +648,12 @@ export class LayerManager {
       this.map.setFilter(
         ROUTES_DIRECTION_LAYER,
         routeIds && routeIds.length === 1
-          ? (['==', ['get', 'route_id'], routeIds[0]] as unknown as FilterSpecification)
-          : (NO_ROUTE_FILTER as unknown as FilterSpecification),
+          ? ([
+              '==',
+              ['get', 'route_id'],
+              routeIds[0],
+            ] as unknown as FilterSpecification)
+          : (NO_ROUTE_FILTER as unknown as FilterSpecification)
       );
     }
   }
@@ -571,24 +673,30 @@ export class LayerManager {
   }
 
   vehiclePosition(vehicleId: string): [number, number] | null {
-    const v = this.latestVehicles.find(p => p.key === vehicleId);
+    const v = this.latestVehicles.find((p) => p.key === vehicleId);
     return v ? [v.lon, v.lat] : null;
   }
 
   /** `[[west, south], [east, north]]`, or null when the route has no geometry. */
   routeBounds(routeId: string): [[number, number], [number, number]] | null {
-    const feature = this.routesData.features.find(f => f.properties?.route_id === routeId);
-    if (!feature || feature.geometry.type !== 'MultiLineString') return null;
+    const feature = this.routesData.features.find(
+      (f) => f.properties?.route_id === routeId
+    );
+    if (!feature || feature.geometry.type !== 'MultiLineString') {
+      return null;
+    }
     return boundsOf(feature.geometry.coordinates.flat() as [number, number][]);
   }
 
   /** Bounds of every drawn stop and route line: the "fit the whole feed" box. */
   feedBounds(): [[number, number], [number, number]] | null {
     const coords = this.stopsData.features.map(
-      f => (f.geometry as GeoJSON.Point).coordinates as [number, number],
+      (f) => (f.geometry as GeoJSON.Point).coordinates as [number, number]
     );
     for (const feature of this.routesData.features) {
-      if (feature.geometry.type !== 'MultiLineString') continue;
+      if (feature.geometry.type !== 'MultiLineString') {
+        continue;
+      }
       for (const line of feature.geometry.coordinates) {
         coords.push(...(line as [number, number][]));
       }
@@ -620,16 +728,25 @@ export class LayerManager {
 
   clear(): void {
     for (const id of LAYER_ORDER) {
-      if (this.map.getLayer(id)) this.map.removeLayer(id);
+      if (this.map.getLayer(id)) {
+        this.map.removeLayer(id);
+      }
     }
     for (const id of SOURCE_IDS) {
-      if (this.map.getSource(id)) this.map.removeSource(id);
+      if (this.map.getSource(id)) {
+        this.map.removeSource(id);
+      }
     }
   }
 
-  private pushData(id: (typeof SOURCE_IDS)[number], data: GeoJSON.FeatureCollection): void {
+  private pushData(
+    id: (typeof SOURCE_IDS)[number],
+    data: GeoJSON.FeatureCollection
+  ): void {
     const source = this.map.getSource(id) as GeoJSONSource | undefined;
-    if (source) source.setData(data);
+    if (source) {
+      source.setData(data);
+    }
   }
 
   private addSources(): void {
@@ -667,7 +784,9 @@ export class LayerManager {
   }
 
   private addRouteLayers(): void {
-    if (this.map.getLayer(ROUTES_CASING_LAYER)) return;
+    if (this.map.getLayer(ROUTES_CASING_LAYER)) {
+      return;
+    }
 
     this.map.addLayer({
       id: ROUTES_CASING_LAYER,
@@ -711,7 +830,15 @@ export class LayerManager {
       filter: NO_ROUTE_FILTER as unknown as FilterSpecification,
       layout: {
         'symbol-placement': 'line',
-        'symbol-spacing': ['interpolate', ['linear'], ['zoom'], 12, 80, 16, 140],
+        'symbol-spacing': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          12,
+          80,
+          16,
+          140,
+        ],
         'icon-image': 'route-arrow',
         'icon-rotation-alignment': 'map',
         // An upright flip would reverse the arrow, the one thing this layer
@@ -741,7 +868,11 @@ export class LayerManager {
       id: ROUTES_CLICKAREA_LAYER,
       type: 'line',
       source: ROUTES_SOURCE,
-      paint: { 'line-color': 'transparent', 'line-width': 15, 'line-opacity': 0 },
+      paint: {
+        'line-color': 'transparent',
+        'line-width': 15,
+        'line-opacity': 0,
+      },
       // Sorted identically to the drawn layers so a click on overlapping routes
       // resolves to whichever one visually reads as on top.
       layout: {
@@ -760,7 +891,9 @@ export class LayerManager {
    * station keeps its center dot.
    */
   private addStopLayers(): void {
-    if (this.map.getLayer(STOPS_BACKGROUND_LAYER)) return;
+    if (this.map.getLayer(STOPS_BACKGROUND_LAYER)) {
+      return;
+    }
 
     this.map.addLayer({
       id: STOP_FOCUS_HALO_LAYER,
@@ -822,7 +955,9 @@ export class LayerManager {
   }
 
   private addVehicleLayers(): void {
-    if (this.map.getLayer(VEHICLES_DOT_LAYER)) return;
+    if (this.map.getLayer(VEHICLES_DOT_LAYER)) {
+      return;
+    }
 
     // Focus halo: a soft ring that only exists for the focused vehicle. The
     // arrow's size is a layout property and so cannot read feature-state; the
@@ -859,9 +994,23 @@ export class LayerManager {
       id: VEHICLES_CASING_LAYER,
       type: 'circle',
       source: VEHICLES_SOURCE,
-      filter: ['==', ['get', 'has_bearing'], false] as unknown as FilterSpecification,
+      filter: [
+        '==',
+        ['get', 'has_bearing'],
+        false,
+      ] as unknown as FilterSpecification,
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 7, 14, 9.5, 18, 13],
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          8,
+          7,
+          14,
+          9.5,
+          18,
+          13,
+        ],
         'circle-color': VEHICLE_CASING_COLOR,
       },
     });
@@ -873,9 +1022,23 @@ export class LayerManager {
       id: VEHICLES_DOT_LAYER,
       type: 'circle',
       source: VEHICLES_SOURCE,
-      filter: ['==', ['get', 'has_bearing'], false] as unknown as FilterSpecification,
+      filter: [
+        '==',
+        ['get', 'has_bearing'],
+        false,
+      ] as unknown as FilterSpecification,
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 5, 14, 7.5, 18, 11],
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          8,
+          5,
+          14,
+          7.5,
+          18,
+          11,
+        ],
         'circle-color': ['get', 'color'],
         'circle-stroke-color': '#ffffff',
         'circle-stroke-width': ['case', FOCUSED, 3, 1.5],
@@ -886,10 +1049,24 @@ export class LayerManager {
       id: VEHICLES_ARROW_LAYER,
       type: 'symbol',
       source: VEHICLES_SOURCE,
-      filter: ['==', ['get', 'has_bearing'], true] as unknown as FilterSpecification,
+      filter: [
+        '==',
+        ['get', 'has_bearing'],
+        true,
+      ] as unknown as FilterSpecification,
       layout: {
         'icon-image': 'vehicle-arrow',
-        'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.6, 14, 0.85, 18, 1.15],
+        'icon-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          8,
+          0.6,
+          14,
+          0.85,
+          18,
+          1.15,
+        ],
         'icon-rotate': ['get', 'bearing'],
         'icon-rotation-alignment': 'map',
         'icon-allow-overlap': true,
@@ -911,7 +1088,17 @@ export class LayerManager {
       type: 'circle',
       source: VEHICLES_SOURCE,
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 12, 14, 15, 18, 20],
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          8,
+          12,
+          14,
+          15,
+          18,
+          20,
+        ],
         'circle-color': 'transparent',
         'circle-opacity': 0,
       },
@@ -927,7 +1114,9 @@ export class LayerManager {
    * white-on-dark chevron laid along a line, not a tintable vehicle marker.
    */
   private addArrowImage(): void {
-    if (this.map.hasImage('vehicle-arrow')) return;
+    if (this.map.hasImage('vehicle-arrow')) {
+      return;
+    }
 
     const size = 48;
     const canvas = document.createElement('canvas');
@@ -943,7 +1132,9 @@ export class LayerManager {
     ctx.lineTo(10, size - 8);
     ctx.closePath();
     ctx.fill();
-    this.map.addImage('vehicle-arrow', ctx.getImageData(0, 0, size, size), { sdf: true });
+    this.map.addImage('vehicle-arrow', ctx.getImageData(0, 0, size, size), {
+      sdf: true,
+    });
   }
 
   // ── Interaction ────────────────────────────────────────────────────────────
@@ -953,24 +1144,35 @@ export class LayerManager {
    * vehicle parked on its own stop) would otherwise fire two selections.
    */
   attachInteraction(): void {
-    this.map.on('click', e => {
+    this.map.on('click', (e) => {
       const hit = this.queryTop(e.point);
-      if (hit) this.onSelect?.(hit);
-      else this.onEmptySelect?.();
+      if (hit) {
+        this.onSelect?.(hit);
+      } else {
+        this.onEmptySelect?.();
+      }
     });
 
-    this.map.on('mousemove', e => {
-      this.map.getCanvas().style.cursor = this.queryTop(e.point) ? 'pointer' : '';
+    this.map.on('mousemove', (e) => {
+      this.map.getCanvas().style.cursor = this.queryTop(e.point)
+        ? 'pointer'
+        : '';
     });
   }
 
   private queryTop(point: maplibregl.Point): Exclude<FocusTarget, null> | null {
-    const available = HIT_LAYERS.filter(id => this.map.getLayer(id));
-    if (available.length === 0) return null;
+    const available = HIT_LAYERS.filter((id) => this.map.getLayer(id));
+    if (available.length === 0) {
+      return null;
+    }
 
     for (const layer of available) {
-      const [feature] = this.map.queryRenderedFeatures(point, { layers: [layer] });
-      if (!feature) continue;
+      const [feature] = this.map.queryRenderedFeatures(point, {
+        layers: [layer],
+      });
+      if (!feature) {
+        continue;
+      }
       const props = feature.properties ?? {};
       if (layer === VEHICLES_CLICKAREA_LAYER && props.vehicle_id) {
         return { kind: 'vehicle', id: String(props.vehicle_id) };
@@ -1038,7 +1240,9 @@ export class LayerManager {
 
       for (const trip of trips) {
         if (trip.shape_id) {
-          if (seen.has(`shape:${trip.shape_id}`)) continue;
+          if (seen.has(`shape:${trip.shape_id}`)) {
+            continue;
+          }
           const coords = feed.shapes.get(trip.shape_id);
           if (coords && coords.length >= 2) {
             seen.add(`shape:${trip.shape_id}`);
@@ -1050,20 +1254,33 @@ export class LayerManager {
         // Straight-line fallback: stop_times for this trip are already sorted
         // by stop_sequence, so the order here is the service order.
         const stopIds = (feed.stopTimesByTrip.get(trip.trip_id) ?? [])
-          .map(st => st.stop_id)
-          .filter(id => {
+          .map((st) => st.stop_id)
+          .filter((id) => {
             const stop = feed.stops.get(id);
-            return stop && Number.isFinite(stop.lat) && Number.isFinite(stop.lon);
+            return (
+              stop && Number.isFinite(stop.lat) && Number.isFinite(stop.lon)
+            );
           });
-        if (stopIds.length < 2) continue;
+        if (stopIds.length < 2) {
+          continue;
+        }
 
         const key = `stops:${stopIds.join('|')}`;
-        if (seen.has(key)) continue;
+        if (seen.has(key)) {
+          continue;
+        }
         seen.add(key);
-        lines.push(stopIds.map(id => [feed.stops.get(id)!.lon, feed.stops.get(id)!.lat]));
+        lines.push(
+          stopIds.map((id) => [
+            feed.stops.get(id)!.lon,
+            feed.stops.get(id)!.lat,
+          ])
+        );
       }
 
-      if (lines.length === 0) continue;
+      if (lines.length === 0) {
+        continue;
+      }
 
       features.push({
         type: 'Feature',
@@ -1081,18 +1298,27 @@ export class LayerManager {
     return { type: 'FeatureCollection', features };
   }
 
-  private buildVehicles(positions: VehiclePosition[]): GeoJSON.FeatureCollection {
+  private buildVehicles(
+    positions: VehiclePosition[]
+  ): GeoJSON.FeatureCollection {
     const feed = this.feed;
     let unmatched = 0;
     const seenKeys = new Set<string>();
     let duplicateKeys = 0;
 
-    const features = positions.map(v => {
-      const routeId = v.routeId || (v.tripId ? feed?.trips.get(v.tripId)?.route_id : undefined);
+    const features = positions.map((v) => {
+      const routeId =
+        v.routeId ||
+        (v.tripId ? feed?.trips.get(v.tripId)?.route_id : undefined);
       const route = routeId ? feed?.routes.get(routeId) : undefined;
-      if (!route) unmatched++;
-      if (seenKeys.has(v.key)) duplicateKeys++;
-      else seenKeys.add(v.key);
+      if (!route) {
+        unmatched++;
+      }
+      if (seenKeys.has(v.key)) {
+        duplicateKeys++;
+      } else {
+        seenKeys.add(v.key);
+      }
 
       return {
         type: 'Feature' as const,
@@ -1121,7 +1347,9 @@ export class LayerManager {
    */
   private stopIdsForRoute(routeId: string): string[] {
     const feed = this.feed;
-    if (!feed) return [];
+    if (!feed) {
+      return [];
+    }
     const ids = new Set<string>();
     for (const trip of feed.tripsByRoute.get(routeId) ?? []) {
       for (const st of feed.stopTimesByTrip.get(trip.trip_id) ?? []) {
@@ -1139,11 +1367,17 @@ export class LayerManager {
    */
   private drawnAncestor(stopId: string): string {
     const feed = this.feed;
-    if (!feed) return stopId;
+    if (!feed) {
+      return stopId;
+    }
     const stop = feed.stops.get(stopId);
-    if (!stop) return stopId;
+    if (!stop) {
+      return stopId;
+    }
     // Drawn: a station, or a stop with no parent (TOP_LEVEL_STOPS_FILTER).
-    if (stop.location_type === 1 || !stop.parent_station) return stopId;
+    if (stop.location_type === 1 || !stop.parent_station) {
+      return stopId;
+    }
     const root = feed.stationRoot(stopId);
     return feed.stops.has(root) ? root : stopId;
   }
@@ -1151,21 +1385,35 @@ export class LayerManager {
 
 /** The source a focus kind's features live in. */
 function sourceFor(kind: 'stop' | 'route' | 'vehicle'): string {
-  if (kind === 'route') return ROUTES_SOURCE;
+  if (kind === 'route') {
+    return ROUTES_SOURCE;
+  }
   return kind === 'stop' ? STOPS_SOURCE : VEHICLES_SOURCE;
 }
 
-function boundsOf(coords: [number, number][]): [[number, number], [number, number]] | null {
-  if (coords.length === 0) return null;
+function boundsOf(
+  coords: [number, number][]
+): [[number, number], [number, number]] | null {
+  if (coords.length === 0) {
+    return null;
+  }
   let west = Infinity;
   let south = Infinity;
   let east = -Infinity;
   let north = -Infinity;
   for (const [lon, lat] of coords) {
-    if (lon < west) west = lon;
-    if (lon > east) east = lon;
-    if (lat < south) south = lat;
-    if (lat > north) north = lat;
+    if (lon < west) {
+      west = lon;
+    }
+    if (lon > east) {
+      east = lon;
+    }
+    if (lat < south) {
+      south = lat;
+    }
+    if (lat > north) {
+      north = lat;
+    }
   }
   return [
     [west, south],

@@ -1,18 +1,24 @@
-import { defineConfig } from 'vite'
-import { resolve } from 'path'
-import { readFileSync } from 'fs'
-import { execSync } from 'child_process'
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+import { readFileSync } from 'fs';
+import { execSync } from 'child_process';
 
-let version
+let version;
 try {
   // Exactly on a tag: use the clean tag name (e.g. "0.3.1").
-  version = execSync('git describe --tags --exact-match').toString().trim().replace(/^v/, '')
+  version = execSync('git describe --tags --exact-match')
+    .toString()
+    .trim()
+    .replace(/^v/, '');
 } catch {
   try {
     // Between tags: tag + commit count + hash (e.g. "0.3.1-2-gabc1234").
-    version = execSync('git describe --tags --long --always').toString().trim().replace(/^v/, '')
+    version = execSync('git describe --tags --long --always')
+      .toString()
+      .trim()
+      .replace(/^v/, '');
   } catch {
-    version = '0.0.0-development'
+    version = '0.0.0-development';
   }
 }
 
@@ -20,14 +26,17 @@ try {
 // shows when no feed is loaded is also in the static HTML.
 const inlineIntro = {
   name: 'inline-intro',
-  transformIndexHtml: html =>
-    html.replace('<!-- @intro -->', readFileSync(resolve(__dirname, 'src/intro.html'), 'utf-8'))
-}
+  transformIndexHtml: (html) =>
+    html.replace(
+      '<!-- @intro -->',
+      readFileSync(resolve(__dirname, 'src/intro.html'), 'utf-8')
+    ),
+};
 
 export default defineConfig({
   plugins: [inlineIntro],
   define: {
-    __APP_VERSION__: JSON.stringify(version)
+    __APP_VERSION__: JSON.stringify(version),
   },
   root: 'src',
   publicDir: '../public',
@@ -35,8 +44,8 @@ export default defineConfig({
     outDir: '../dist',
     emptyOutDir: true,
     rollupOptions: {
-      input: resolve(__dirname, 'src/index.html')
-    }
+      input: resolve(__dirname, 'src/index.html'),
+    },
   },
   server: {
     // The local gtfs-zone-rt-api is fetched directly rather than through a dev proxy
@@ -45,19 +54,22 @@ export default defineConfig({
     // covers the range vite falls through to when a port is taken.
     port: 8080,
     open: true,
-    host: true
+    host: true,
   },
   css: {
-    postcss: './postcss.config.js'
+    postcss: './postcss.config.js',
   },
   resolve: {
     alias: {
-      'gtfs-zone-web-common': resolve(__dirname, 'node_modules/gtfs-zone-web-common/src')
-    }
+      'gtfs-zone-web-common': resolve(
+        __dirname,
+        'node_modules/gtfs-zone-web-common/src'
+      ),
+    },
   },
   optimizeDeps: {
     include: ['maplibre-gl', 'jszip', 'papaparse'],
     // gtfs-zone-web-common ships raw .ts; let vite transform it as source
-    exclude: ['gtfs-zone-web-common']
-  }
-})
+    exclude: ['gtfs-zone-web-common'],
+  },
+});

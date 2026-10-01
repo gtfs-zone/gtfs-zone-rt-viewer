@@ -40,16 +40,20 @@ export class PanelRenderer {
   /** Invalidated on every payload event; rebuilt lazily on the next render. */
   private index: RtIndex | null = null;
 
-  constructor(host: HTMLElement, session: FeedSession, hooks: PanelRendererHooks) {
+  constructor(
+    host: HTMLElement,
+    session: FeedSession,
+    hooks: PanelRendererHooks
+  ) {
     this.host = host;
     this.session = session;
     this.hooks = hooks;
     this.panel = new PanelHost<PageState>(host, {
       navigate: hooks.navigate,
       href: hooks.href,
-      renderPage: state => this.renderPage(state),
-      tick: el => {
-        el.querySelectorAll<HTMLElement>('[data-since]').forEach(since => {
+      renderPage: (state) => this.renderPage(state),
+      tick: (el) => {
+        el.querySelectorAll<HTMLElement>('[data-since]').forEach((since) => {
           since.textContent = formatRelative(Number(since.dataset.since));
         });
       },
@@ -67,8 +71,8 @@ export class PanelRenderer {
     this.panel.initialize();
     // pointerover/out bubble, unlike pointerenter/leave, so they can be
     // delegated to the panel host and survive every re-render.
-    this.host.addEventListener('pointerover', e => this.onPointerOver(e));
-    this.host.addEventListener('pointerout', e => this.onPointerOut(e));
+    this.host.addEventListener('pointerover', (e) => this.onPointerOver(e));
+    this.host.addEventListener('pointerout', (e) => this.onPointerOut(e));
   }
 
   destroy(): void {
@@ -92,31 +96,41 @@ export class PanelRenderer {
    * so the `pointerout` that would normally clear it never arrives.
    */
   private clearHoveredStop(): void {
-    if (this.hoveredStopId === null) return;
+    if (this.hoveredStopId === null) {
+      return;
+    }
     this.hoveredStopId = null;
     this.hooks.hoverStop(null);
   }
 
   /** The stop_id of the strip row an event happened inside, if any. */
   private rowStopId(e: Event): string | null {
-    const row = (e.target as HTMLElement | null)?.closest<HTMLElement>('.strip-stop-row');
+    const row = (e.target as HTMLElement | null)?.closest<HTMLElement>(
+      '.strip-stop-row'
+    );
     return row?.dataset.stopId ?? null;
   }
 
   private onPointerOver(e: Event): void {
     const stopId = this.rowStopId(e);
-    if (!stopId || stopId === this.hoveredStopId) return;
+    if (!stopId || stopId === this.hoveredStopId) {
+      return;
+    }
     this.hoveredStopId = stopId;
     this.hooks.hoverStop(stopId);
   }
 
   private onPointerOut(e: Event): void {
     const stopId = this.rowStopId(e);
-    if (!stopId || stopId !== this.hoveredStopId) return;
+    if (!stopId || stopId !== this.hoveredStopId) {
+      return;
+    }
     // Moving between two children of the same row fires an out/over pair for
     // that row; only a pointer that actually left every row clears the light.
     const next = (e as PointerEvent).relatedTarget;
-    if (next instanceof Element && next.closest('.strip-stop-row')) return;
+    if (next instanceof Element && next.closest('.strip-stop-row')) {
+      return;
+    }
     this.hoveredStopId = null;
     this.hooks.hoverStop(null);
   }

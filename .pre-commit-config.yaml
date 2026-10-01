@@ -9,6 +9,18 @@ repos:
 
   - repo: local
     hooks:
+      - id: eslint
+        name: eslint
+        entry: pnpm exec eslint --fix
+        language: system
+        files: ^(src|scripts)/.*\.ts$
+        stages: [pre-commit]
+      - id: prettier
+        name: prettier
+        entry: pnpm exec prettier --write
+        language: system
+        files: ^(src|scripts)/.*\.(ts|css)$
+        stages: [pre-commit]
       - id: check
         name: check
         entry: pnpm check

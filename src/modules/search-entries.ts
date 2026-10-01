@@ -24,7 +24,9 @@ function haystack(...parts: (string | undefined)[]): string {
   return parts.filter(Boolean).join(' ');
 }
 
-export function buildSearchEntries(session: FeedSession): SearchEntry<PageState>[] {
+export function buildSearchEntries(
+  session: FeedSession
+): SearchEntry<PageState>[] {
   const feed = session.scheduledFeed;
   const entries: SearchEntry<PageState>[] = [];
 
@@ -34,7 +36,12 @@ export function buildSearchEntries(session: FeedSession): SearchEntry<PageState>
       icon: stopMarker(stop.location_type),
       primary: stop.name || stop.id,
       secondary: stop.raw['stop_code'] || stop.id,
-      haystack: haystack(stop.name, stop.id, stop.raw['stop_code'], stop.raw['stop_desc']),
+      haystack: haystack(
+        stop.name,
+        stop.id,
+        stop.raw['stop_code'],
+        stop.raw['stop_desc']
+      ),
       // Stations outrank routes, which outrank plain stops/vehicles.
       priority: Number(stop.location_type) === 1 ? 0 : 2,
     });
@@ -46,16 +53,28 @@ export function buildSearchEntries(session: FeedSession): SearchEntry<PageState>
       payload: { type: 'route', route_id: route.id },
       icon: routeMarker(route.color),
       primary,
-      secondary: route.long_name && route.long_name !== primary ? route.long_name : route.id,
-      haystack: haystack(route.short_name, route.long_name, route.id, route.raw['route_desc']),
+      secondary:
+        route.long_name && route.long_name !== primary
+          ? route.long_name
+          : route.id,
+      haystack: haystack(
+        route.short_name,
+        route.long_name,
+        route.id,
+        route.raw['route_desc']
+      ),
       priority: 1,
     });
   }
 
   for (const vehicle of session.vehicles.values()) {
     // Same color the map paints it: the vehicle's route, or the unmatched grey.
-    const routeId = vehicle.routeId || (vehicle.tripId ? feed?.trips.get(vehicle.tripId)?.route_id : undefined);
-    const color = (routeId ? feed?.routes.get(routeId)?.color : undefined) ?? CONFIG.VEHICLE_UNMATCHED_COLOR;
+    const routeId =
+      vehicle.routeId ||
+      (vehicle.tripId ? feed?.trips.get(vehicle.tripId)?.route_id : undefined);
+    const color =
+      (routeId ? feed?.routes.get(routeId)?.color : undefined) ??
+      CONFIG.VEHICLE_UNMATCHED_COLOR;
     entries.push({
       payload: { type: 'vehicle', vehicle_id: vehicle.key },
       icon: dotMarker(color),
@@ -66,7 +85,7 @@ export function buildSearchEntries(session: FeedSession): SearchEntry<PageState>
         vehicle.vehicleId,
         vehicle.label,
         vehicle.tripId,
-        routeId,
+        routeId
       ),
       priority: 2,
     });

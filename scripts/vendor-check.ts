@@ -58,21 +58,35 @@ function repoPath(sourceRepo: string): string {
 function parseVendoredTable(markdown: string): Entry[] {
   const entries: Entry[] = [];
   for (const line of markdown.split('\n')) {
-    if (!line.trim().startsWith('|')) continue;
+    if (!line.trim().startsWith('|')) {
+      continue;
+    }
     const cells = line
       .split('|')
       .slice(1, -1)
       .map((c) => c.trim().replace(/^`|`$/g, ''));
-    if (cells.length < 5) continue;
+    if (cells.length < 5) {
+      continue;
+    }
     const [localPath, sourceRepo, sourcePath, sha, status] = cells;
-    if (localPath === 'Local path' || /^-+$/.test(localPath)) continue;
+    if (localPath === 'Local path' || /^-+$/.test(localPath)) {
+      continue;
+    }
     // An `origin` row has nothing upstream, so its source cells are dashes.
     // Every other row is dropped unless it resolves to a real commit.
     if (status === 'origin') {
-      entries.push({ localPath, sourceRepo: '', sourcePath: '', sha: '', status });
+      entries.push({
+        localPath,
+        sourceRepo: '',
+        sourcePath: '',
+        sha: '',
+        status,
+      });
       continue;
     }
-    if (!sourceRepo || !sourcePath || !/^[0-9a-f]{7,40}$/.test(sha)) continue;
+    if (!sourceRepo || !sourcePath || !/^[0-9a-f]{7,40}$/.test(sha)) {
+      continue;
+    }
     entries.push({ localPath, sourceRepo, sourcePath, sha, status });
   }
   return entries;
@@ -91,7 +105,11 @@ function stripBanner(text: string): string {
  * Commits on `path` after `sha`, newest first. Empty when the entry is current,
  * null when `sha` does not resolve in `repo`.
  */
-function commitsSince(repo: string, sha: string, path: string): string[] | null {
+function commitsSince(
+  repo: string,
+  sha: string,
+  path: string
+): string[] | null {
   try {
     const log = execFileSync(
       'git',
@@ -104,7 +122,11 @@ function commitsSince(repo: string, sha: string, path: string): string[] | null 
   }
 }
 
-function readFromSource(repo: string, sha: string, path: string): string | null {
+function readFromSource(
+  repo: string,
+  sha: string,
+  path: string
+): string | null {
   try {
     return execFileSync('git', ['-C', repo, 'show', `${sha}:${path}`], {
       encoding: 'utf8',
@@ -151,7 +173,9 @@ for (const entry of entries) {
     skipped++;
     if (!reportedMissing.has(entry.sourceRepo)) {
       reportedMissing.add(entry.sourceRepo);
-      console.log(`skipped  rows from ${entry.sourceRepo} - ${repo} not present`);
+      console.log(
+        `skipped  rows from ${entry.sourceRepo} - ${repo} not present`
+      );
     }
     continue;
   }
@@ -160,7 +184,9 @@ for (const entry of entries) {
   // told about upstream work, even though its body is expected to differ.
   const behind = commitsSince(repo, entry.sha, entry.sourcePath);
   if (behind === null) {
-    console.error(`UNREADABLE  ${entry.sourceRepo}@${entry.sha} - commit not found in ${repo}`);
+    console.error(
+      `UNREADABLE  ${entry.sourceRepo}@${entry.sha} - commit not found in ${repo}`
+    );
     unreadable++;
     continue;
   }
@@ -176,12 +202,16 @@ for (const entry of entries) {
     }
   }
 
-  if (entry.status !== 'verbatim') continue;
+  if (entry.status !== 'verbatim') {
+    continue;
+  }
   checked++;
 
   const localFile = resolve(repoRoot, entry.localPath);
   if (!existsSync(localFile)) {
-    console.error(`MISSING  ${entry.localPath} - listed in VENDORED.md but not on disk`);
+    console.error(
+      `MISSING  ${entry.localPath} - listed in VENDORED.md but not on disk`
+    );
     drift++;
     continue;
   }
@@ -207,7 +237,9 @@ for (const entry of entries) {
 }
 
 if (entries.length === 0) {
-  console.error('VENDORED.md lists no entries - the table is empty or malformed.');
+  console.error(
+    'VENDORED.md lists no entries - the table is empty or malformed.'
+  );
   process.exit(1);
 }
 
@@ -219,7 +251,9 @@ if (skipped > 0 && skipped + unchecked === entries.length) {
 }
 
 if (unreadable > 0) {
-  console.error(`\n${unreadable} entries name a SHA their source repo does not have.`);
+  console.error(
+    `\n${unreadable} entries name a SHA their source repo does not have.`
+  );
 }
 if (drift > 0) {
   console.error(`\n${drift} of ${checked} verbatim entries drifted.`);

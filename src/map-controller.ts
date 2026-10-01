@@ -4,7 +4,11 @@ import { CONFIG } from './config';
 import type { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
 import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { PageState } from './types/page-state';
-import { BasemapControl, initialMapStyle, onBasemapChanged } from 'gtfs-zone-web-common/map/basemap-control';
+import {
+  BasemapControl,
+  initialMapStyle,
+  onBasemapChanged,
+} from 'gtfs-zone-web-common/map/basemap-control';
 import type { MapAppearance } from 'gtfs-zone-web-common/map/basemap-control';
 import { AutoZoom } from 'gtfs-zone-web-common/map/auto-zoom';
 import { MAP_MAX_ZOOM } from 'gtfs-zone-web-common/map/basemap-styles';
@@ -14,7 +18,6 @@ import type { PlacePayload } from 'gtfs-zone-web-common/map/place-search';
 import { LayerManager } from './modules/layer-manager';
 import type { MapDataIssues } from './modules/layer-manager';
 
-
 interface MapView {
   center: [number, number];
   zoom: number;
@@ -22,7 +25,12 @@ interface MapView {
   pitch: number;
 }
 
-const DEFAULT_VIEW: MapView = { center: [0, 30], zoom: 2, bearing: 0, pitch: 0 };
+const DEFAULT_VIEW: MapView = {
+  center: [0, 30],
+  zoom: 2,
+  bearing: 0,
+  pitch: 0,
+};
 
 /**
  * Map view and appearance live in localStorage rather than the URL: they are
@@ -113,7 +121,8 @@ export class MapController {
 
   initialize(container: string): void {
     const view = restoreView();
-    const appearance = readStored<MapAppearance>(CONFIG.MAP_APPEARANCE_KEY) ?? {};
+    const appearance =
+      readStored<MapAppearance>(CONFIG.MAP_APPEARANCE_KEY) ?? {};
 
     // maplibre resolves its worker relative to its own module URL, which
     // breaks once Vite bundles or pre-bundles it; point it at a Vite-built copy.
@@ -132,7 +141,7 @@ export class MapController {
     this.map.addControl(new maplibregl.NavigationControl(), 'bottom-left');
 
     this.layers = new LayerManager(this.map);
-    this.layers.onSelect = target => {
+    this.layers.onSelect = (target) => {
       switch (target.kind) {
         case 'stop':
           this.onSelect?.({ type: 'stop', stop_id: target.id });
@@ -151,7 +160,8 @@ export class MapController {
 
     new BasemapControl(this.map, {
       initial: appearance,
-      onAppearanceChange: next => writeStored(CONFIG.MAP_APPEARANCE_KEY, next),
+      onAppearanceChange: (next) =>
+        writeStored(CONFIG.MAP_APPEARANCE_KEY, next),
     });
 
     this.map.once('load', () => {
@@ -160,7 +170,9 @@ export class MapController {
       this.ready = true;
       const queued = this.pending;
       this.pending = [];
-      for (const fn of queued) fn();
+      for (const fn of queued) {
+        fn();
+      }
     });
 
     // setStyle drops every source and layer we own, so each basemap change
@@ -177,9 +189,16 @@ export class MapController {
     // current focus. Our own programmatic easeTo/fitBounds carry no
     // `originalEvent`, which is exactly what distinguishes them from a real
     // drag/scroll/rotate/pitch — so the follow ease itself never unlocks.
-    for (const type of ['dragstart', 'zoomstart', 'rotatestart', 'pitchstart'] as const) {
-      this.map.on(type, e => {
-        if ((e as { originalEvent?: unknown }).originalEvent) this.following = null;
+    for (const type of [
+      'dragstart',
+      'zoomstart',
+      'rotatestart',
+      'pitchstart',
+    ] as const) {
+      this.map.on(type, (e) => {
+        if ((e as { originalEvent?: unknown }).originalEvent) {
+          this.following = null;
+        }
       });
     }
   }
@@ -198,7 +217,9 @@ export class MapController {
   }
 
   private queueViewSave(): void {
-    if (this.viewSaveTimeout) clearTimeout(this.viewSaveTimeout);
+    if (this.viewSaveTimeout) {
+      clearTimeout(this.viewSaveTimeout);
+    }
     this.viewSaveTimeout = setTimeout(() => {
       const center = this.map.getCenter();
       writeStored(CONFIG.MAP_VIEW_KEY, {
@@ -212,8 +233,11 @@ export class MapController {
   }
 
   private whenLoaded(fn: () => void): void {
-    if (this.ready) fn();
-    else this.pending.push(fn);
+    if (this.ready) {
+      fn();
+    } else {
+      this.pending.push(fn);
+    }
   }
 
   loadScheduledFeed(feed: GTFSScheduled): void {
@@ -235,7 +259,7 @@ export class MapController {
       // lastSeen fallback. Ungated by auto-zoom: pressing Follow is a request
       // for camera movement, not a navigation.
       if (this.following) {
-        const v = positions.find(p => p.key === this.following);
+        const v = positions.find((p) => p.key === this.following);
         if (v) {
           this.map.easeTo({
             center: [v.lon, v.lat],
@@ -265,7 +289,9 @@ export class MapController {
    */
   private fitFeed(): void {
     const bounds = this.layers.feedBounds();
-    if (!bounds) return;
+    if (!bounds) {
+      return;
+    }
     this.map.fitBounds(bounds, { padding: this.padding() });
   }
 
@@ -322,7 +348,9 @@ export class MapController {
 
   private applyFocus(state: PageState): void {
     // Any focus that is not this same vehicle leaves follow mode.
-    if (state.type !== 'vehicle') this.following = null;
+    if (state.type !== 'vehicle') {
+      this.following = null;
+    }
 
     switch (state.type) {
       case 'home': {
@@ -333,11 +361,15 @@ export class MapController {
         if (bounds) {
           // AutoZoom takes a real LngLatBounds; the layer manager hands back
           // the corner tuple.
-          this.autoZoom.fitBounds(this.map, new maplibregl.LngLatBounds(bounds), {
-            padding: this.padding(),
-            duration: CONFIG.FOCUS_BOUNDS_DURATION,
-            essential: true,
-          });
+          this.autoZoom.fitBounds(
+            this.map,
+            new maplibregl.LngLatBounds(bounds),
+            {
+              padding: this.padding(),
+              duration: CONFIG.FOCUS_BOUNDS_DURATION,
+              essential: true,
+            }
+          );
         }
         return;
       }
@@ -353,12 +385,16 @@ export class MapController {
         if (bounds) {
           // AutoZoom takes a real LngLatBounds; the layer manager hands back
           // the corner tuple.
-          this.autoZoom.fitBounds(this.map, new maplibregl.LngLatBounds(bounds), {
-            padding: this.padding(),
-            maxZoom: 15,
-            duration: CONFIG.FOCUS_BOUNDS_DURATION,
-            essential: true,
-          });
+          this.autoZoom.fitBounds(
+            this.map,
+            new maplibregl.LngLatBounds(bounds),
+            {
+              padding: this.padding(),
+              maxZoom: 15,
+              duration: CONFIG.FOCUS_BOUNDS_DURATION,
+              essential: true,
+            }
+          );
         }
         return;
       }
@@ -385,7 +421,9 @@ export class MapController {
    * camera where it was and made a panel click feel like it did nothing.
    */
   private easeToPoint(point: [number, number] | null): void {
-    if (!point) return;
+    if (!point) {
+      return;
+    }
     this.autoZoom.easeTo(this.map, {
       center: point,
       zoom: Math.max(this.map.getZoom(), CONFIG.STOP_FOCUS_ZOOM),
@@ -407,9 +445,13 @@ export class MapController {
    * zoom so the viewport doesn't jump when the canvas changes size.
    */
   forceMapResize(): void {
-    if (!this.map) return;
+    if (!this.map) {
+      return;
+    }
 
-    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
 
     this.resizeTimeout = setTimeout(() => {
       const center = this.map.getCenter();

@@ -32,21 +32,29 @@ export interface LastFeedRecord {
 
 /** The stored record, or null when there is none, it is unreadable, or stale. */
 export function readLastFeed(): LastFeedRecord | null {
-  let raw: string | null = null;
+  let raw: string | null;
   try {
     raw = localStorage.getItem(KEY);
   } catch {
     return null;
   }
-  if (!raw) return null;
+  if (!raw) {
+    return null;
+  }
 
   try {
     const parsed = JSON.parse(raw) as Partial<LastFeedRecord>;
-    if (parsed?.v !== VERSION) return null;
+    if (parsed?.v !== VERSION) {
+      return null;
+    }
     const { selection, summary } = parsed;
-    if (!selection || !summary) return null;
+    if (!selection || !summary) {
+      return null;
+    }
     // A file source cannot survive JSON, so a record holding one is corrupt.
-    if (!isReproducible(selection)) return null;
+    if (!isReproducible(selection)) {
+      return null;
+    }
     return { v: VERSION, selection, summary, savedAt: parsed.savedAt ?? 0 };
   } catch {
     return null;
@@ -54,12 +62,20 @@ export function readLastFeed(): LastFeedRecord | null {
 }
 
 /** Store a selection and its counts. A non-reproducible selection is dropped. */
-export function writeLastFeed(selection: FeedSelection, summary: LastFeedSummary): void {
+export function writeLastFeed(
+  selection: FeedSelection,
+  summary: LastFeedSummary
+): void {
   if (!isReproducible(selection)) {
     clearLastFeed();
     return;
   }
-  const record: LastFeedRecord = { v: VERSION, selection, summary, savedAt: Date.now() };
+  const record: LastFeedRecord = {
+    v: VERSION,
+    selection,
+    summary,
+    savedAt: Date.now(),
+  };
   try {
     localStorage.setItem(KEY, JSON.stringify(record));
   } catch {

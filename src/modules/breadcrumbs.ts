@@ -26,7 +26,9 @@ function truncate(text: string, max = 40): string {
 /** The feed catalog's name for a selection's scheduled URL, once the catalog has loaded. */
 function catalogName(selection: FeedSelection | null): string | null {
   const scheduled = selection?.scheduled;
-  if (scheduled?.kind !== 'url') return null;
+  if (scheduled?.kind !== 'url') {
+    return null;
+  }
   return feedByUrl(scheduled.url)?.name ?? null;
 }
 
@@ -41,16 +43,26 @@ function feedName(session: FeedSession): string | null {
   const feed = session.scheduledFeed;
 
   const publisher = feed?.feedInfo[0]?.publisher_name.trim();
-  if (publisher) return publisher;
+  if (publisher) {
+    return publisher;
+  }
 
-  const named = (feed?.agencies ?? []).filter(agency => agency.name.trim());
-  if (named.length === 1) return named[0].name.trim();
-  if (named.length > 1) return `${named[0].name.trim()} +${named.length - 1} more`;
+  const named = (feed?.agencies ?? []).filter((agency) => agency.name.trim());
+  if (named.length === 1) {
+    return named[0].name.trim();
+  }
+  if (named.length > 1) {
+    return `${named[0].name.trim()} +${named.length - 1} more`;
+  }
 
   const cataloged = catalogName(session.selection);
-  if (cataloged) return cataloged;
+  if (cataloged) {
+    return cataloged;
+  }
 
-  const described = session.selection ? describeSelection(session.selection) : null;
+  const described = session.selection
+    ? describeSelection(session.selection)
+    : null;
   return described && described !== 'feeds' ? described : null;
 }
 
@@ -69,7 +81,9 @@ function home(session: FeedSession): BreadcrumbItem<PageState> {
 /** Human label for a route: short name, long name, or the bare id. */
 export function routeLabel(session: FeedSession, routeId: string): string {
   const route = session.scheduledFeed?.routes.get(routeId);
-  if (!route) return routeId;
+  if (!route) {
+    return routeId;
+  }
   return route.short_name || route.long_name || route.id;
 }
 
@@ -84,7 +98,9 @@ function stopEyebrow(session: FeedSession, stopId: string): string {
 
 export function vehicleLabel(session: FeedSession, vehicleId: string): string {
   const vehicle = session.vehicles.get(vehicleId);
-  return vehicle ? vehicleDisplayName(session.scheduledFeed, vehicle) : vehicleId;
+  return vehicle
+    ? vehicleDisplayName(session.scheduledFeed, vehicle)
+    : vehicleId;
 }
 
 export function alertLabel(session: FeedSession, alertId: string): string {
@@ -103,7 +119,9 @@ export function alertLabel(session: FeedSession, alertId: string): string {
  */
 function stopAncestors(session: FeedSession, stopId: string): string[] {
   const feed = session.scheduledFeed;
-  if (!feed) return [];
+  if (!feed) {
+    return [];
+  }
 
   const chain: string[] = [];
   const seen = new Set<string>([stopId]);
@@ -120,9 +138,14 @@ function stopAncestors(session: FeedSession, stopId: string): string[] {
  * The route a vehicle is on: its trip's route when the trip resolves against
  * the schedule, otherwise whatever `route_id` the feed asserted.
  */
-function vehicleRouteId(session: FeedSession, vehicleId: string): string | null {
+function vehicleRouteId(
+  session: FeedSession,
+  vehicleId: string
+): string | null {
   const vehicle = session.vehicles.get(vehicleId);
-  if (!vehicle) return null;
+  if (!vehicle) {
+    return null;
+  }
   const fromTrip = vehicle.tripId
     ? session.scheduledFeed?.trips.get(vehicle.tripId)?.route_id
     : undefined;
@@ -130,22 +153,33 @@ function vehicleRouteId(session: FeedSession, vehicleId: string): string | null 
 }
 
 type AlertParent =
-  | { type: 'route'; route_id: string }
-  | { type: 'stop'; stop_id: string };
+  { type: 'route'; route_id: string } | { type: 'stop'; stop_id: string };
 
 /** The first entity an alert names that we have a page for. */
-function alertParent(session: FeedSession, alertId: string): AlertParent | null {
+function alertParent(
+  session: FeedSession,
+  alertId: string
+): AlertParent | null {
   const informed = session.alerts.get(alertId)?.alert.informedEntity;
-  if (!informed) return null;
+  if (!informed) {
+    return null;
+  }
 
   for (const entity of informed) {
-    if (entity.routeId) return { type: 'route', route_id: entity.routeId };
-    if (entity.stopId) return { type: 'stop', stop_id: entity.stopId };
+    if (entity.routeId) {
+      return { type: 'route', route_id: entity.routeId };
+    }
+    if (entity.stopId) {
+      return { type: 'stop', stop_id: entity.stopId };
+    }
   }
   return null;
 }
 
-export function buildBreadcrumbs(session: FeedSession, state: PageState): BreadcrumbItem<PageState>[] {
+export function buildBreadcrumbs(
+  session: FeedSession,
+  state: PageState
+): BreadcrumbItem<PageState>[] {
   switch (state.type) {
     case 'home':
       return [];
@@ -163,7 +197,7 @@ export function buildBreadcrumbs(session: FeedSession, state: PageState): Breadc
     case 'stop':
       return [
         home(session),
-        ...stopAncestors(session, state.stop_id).map(id => ({
+        ...stopAncestors(session, state.stop_id).map((id) => ({
           typeLabel: stopEyebrow(session, id),
           label: truncate(stopLabel(session, id)),
           pageState: { type: 'stop' as const, stop_id: id },
@@ -204,11 +238,13 @@ export function buildBreadcrumbs(session: FeedSession, state: PageState): Breadc
           ? [
               {
                 typeLabel:
-                  parent.type === 'route' ? 'Route' : stopEyebrow(session, parent.stop_id),
+                  parent.type === 'route'
+                    ? 'Route'
+                    : stopEyebrow(session, parent.stop_id),
                 label: truncate(
                   parent.type === 'route'
                     ? routeLabel(session, parent.route_id)
-                    : stopLabel(session, parent.stop_id),
+                    : stopLabel(session, parent.stop_id)
                 ),
                 pageState: parent,
               },

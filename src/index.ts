@@ -10,9 +10,20 @@ import { MapController } from './map-controller';
 import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
 import type { AlertRecord } from 'gtfs-zone-web-common/gtfs/rt-types';
-import { setHelpPages, showHelpModal, showHelpPageOnce } from 'gtfs-zone-web-common/ui/help-modal';
-import { HELP_GROUP_ORDER, HELP_PAGES, setHelpRuntimeData } from './modules/help-pages';
-import { KeyboardShortcuts, describeShortcuts } from 'gtfs-zone-web-common/ui/keyboard-shortcuts';
+import {
+  setHelpPages,
+  showHelpModal,
+  showHelpPageOnce,
+} from 'gtfs-zone-web-common/ui/help-modal';
+import {
+  HELP_GROUP_ORDER,
+  HELP_PAGES,
+  setHelpRuntimeData,
+} from './modules/help-pages';
+import {
+  KeyboardShortcuts,
+  describeShortcuts,
+} from 'gtfs-zone-web-common/ui/keyboard-shortcuts';
 import { viewerShortcuts } from './modules/shortcut-list';
 import { createModalRouter } from 'gtfs-zone-web-common/ui/modal-router';
 import { AlertsModal } from './modules/alerts-modal';
@@ -21,15 +32,25 @@ import type { LinkedOffer } from 'gtfs-zone-web-common/ui/load-modal';
 import { showLoadModal } from 'gtfs-zone-web-common/ui/load-modal';
 import { notify } from 'gtfs-zone-web-common/ui/notification-system';
 import { LoadCancelledError } from 'gtfs-zone-web-common/gtfs/feed-download';
-import { PanelResizer, restorePanelWidth } from 'gtfs-zone-web-common/ui/panel-resizer';
+import {
+  PanelResizer,
+  restorePanelWidth,
+} from 'gtfs-zone-web-common/ui/panel-resizer';
 import { BottomSheetController } from 'gtfs-zone-web-common/ui/bottom-sheet';
 import { ThemeController } from 'gtfs-zone-web-common/ui/theme-controller';
 import { DOCK_ICONS, NAVBAR_ACTIONS } from './modules/navbar-action-list';
-import { renderDockIcons, renderNavbarActions } from 'gtfs-zone-web-common/ui/navbar-actions';
+import {
+  renderDockIcons,
+  renderNavbarActions,
+} from 'gtfs-zone-web-common/ui/navbar-actions';
 import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { describeSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { FeedSession } from './modules/feed-session';
-import { clearLastFeed, readLastFeed, writeLastFeed } from './modules/last-feed';
+import {
+  clearLastFeed,
+  readLastFeed,
+  writeLastFeed,
+} from './modules/last-feed';
 import { StatusPage } from './modules/status-page';
 import { AppState } from './modules/app-state';
 import { PanelRenderer } from './modules/panel-renderer';
@@ -86,17 +107,25 @@ const rightPanel = document.getElementById('right-panel')!;
 // Alerts and Help open their own modals and leave the sheet where it is.
 const bottomSheet = new BottomSheetController(rightPanel, [
   { id: 'dock-browse' },
-  { id: 'dock-alerts', snap: null, onSelect: () => appState.openModal({ type: 'alerts' }) },
-  { id: 'dock-help', snap: null, onSelect: () => appState.openModal({ type: 'help' }) },
+  {
+    id: 'dock-alerts',
+    snap: null,
+    onSelect: () => appState.openModal({ type: 'alerts' }),
+  },
+  {
+    id: 'dock-help',
+    snap: null,
+    onSelect: () => appState.openModal({ type: 'help' }),
+  },
 ]);
 // On mobile the sheet sits over the map, so the camera has to hold the focused
 // feature above it rather than centring it under the sheet.
-bottomSheet.onSnapChange(covered => mapCtrl.setBottomPadding(covered));
+bottomSheet.onSnapChange((covered) => mapCtrl.setBottomPadding(covered));
 
 // ─── Feed session ─────────────────────────────────────────────────────────────
 const session = new FeedSession();
 
-session.addEventListener('scheduleloaded', e => {
+session.addEventListener('scheduleloaded', (e) => {
   const scheduled = (e as CustomEvent<GTFSScheduled>).detail;
   // `loadScheduledFeed` replaces the previous feed's data in place — no explicit
   // clear, which would only cost an extra empty repaint.
@@ -117,12 +146,12 @@ session.addEventListener('scheduleloaded', e => {
   // feed's markers would otherwise linger on the map.
   mapCtrl.clearVehicles();
 });
-session.addEventListener('vehicles', e => {
+session.addEventListener('vehicles', (e) => {
   mapCtrl.showVehicles((e as CustomEvent<VehiclePosition[]>).detail);
 });
 // Trip updates are collected by the state store in a later plan; the panel
 // has no consumer for them yet.
-session.addEventListener('alerts', e => {
+session.addEventListener('alerts', (e) => {
   alertsModal.setRecords((e as CustomEvent<AlertRecord[]>).detail);
 });
 
@@ -130,9 +159,9 @@ session.addEventListener('alerts', e => {
 const panelContent = document.getElementById('panel-content')!;
 const statusPage = new StatusPage(panelContent, session);
 const panelRenderer = new PanelRenderer(panelContent, session, {
-  navigate: state => appState.setFocus(state),
-  href: state => appState.hrefFor(state),
-  hoverStop: stopId => mapCtrl.hoverStop(stopId),
+  navigate: (state) => appState.setFocus(state),
+  href: (state) => appState.hrefFor(state),
+  hoverStop: (stopId) => mapCtrl.hoverStop(stopId),
 });
 panelRenderer.initialize();
 
@@ -147,12 +176,14 @@ function setDocumentTitle(state: PageState): void {
     return;
   }
   document.title =
-    state.type === 'home' ? DEFAULT_TITLE : pageTitle(appState.breadcrumbs, 'viz.rt.gtfs.zone');
+    state.type === 'home'
+      ? DEFAULT_TITLE
+      : pageTitle(appState.breadcrumbs, 'viz.rt.gtfs.zone');
 }
 
 const appState = new AppState(session, {
-  onStateChange: state => modalRouter.sync(state),
-  onFocusChange: state => {
+  onStateChange: (state) => modalRouter.sync(state),
+  onFocusChange: (state) => {
     setDocumentTitle(state);
     const atHome = state.type === 'home';
     // The status page is the panel's home content; anything else takes it over.
@@ -176,22 +207,26 @@ const appState = new AppState(session, {
 // and closes them: every other path — a button, the dock, a shortcut, Escape,
 // the back button — goes through a page state rather than calling `showModal`.
 const alertsModal = new AlertsModal({
-  href: state => appState.hrefFor(state),
-  navigate: state => appState.setFocus(state),
+  href: (state) => appState.hrefFor(state),
+  navigate: (state) => appState.setFocus(state),
 });
 const modalRouter = createModalRouter<ModalState>(appState.pages);
 modalRouter.register('alerts', () => alertsModal.show());
-modalRouter.register('help', modal => showHelpModal(modal.page));
+modalRouter.register('help', (modal) => showHelpModal(modal.page));
 
 // ─── Map search ───────────────────────────────────────────────────────────────
 // Selecting a feed object is the same event as clicking it on the map; a place
 // only moves the map.
 const searchController = new SearchController<PageState | PlacePayload>({
   getEntries: () => buildSearchEntries(session),
-  getRemoteEntries: (query, signal) => searchPlaces(query, mapCtrl.getCenter(), signal),
-  onSelect: payload => {
-    if ('kind' in payload) mapCtrl.focusPlace(payload);
-    else appState.setFocus(payload);
+  getRemoteEntries: (query, signal) =>
+    searchPlaces(query, mapCtrl.getCenter(), signal),
+  onSelect: (payload) => {
+    if ('kind' in payload) {
+      mapCtrl.focusPlace(payload);
+    } else {
+      appState.setFocus(payload);
+    }
   },
 });
 searchController.initialize();
@@ -200,19 +235,23 @@ statusPage.setShareUrlProvider(() => appState.shareableUrl());
 statusPage.setOpenLoadHandler(() => void openLoadModal());
 statusPage.setMapIssuesProvider(() => mapCtrl.issues);
 statusPage.setFeedGapsProvider(() => panelRenderer.rtIndex.gaps);
-statusPage.setScheduleRelationshipsProvider(() => panelRenderer.rtIndex.relationships);
+statusPage.setScheduleRelationshipsProvider(
+  () => panelRenderer.rtIndex.relationships
+);
 statusPage.initialize();
 
 // Clicking a stop, route, or vehicle on the map focuses it in the panel; the
 // reverse direction runs through onFocusChange above.
-mapCtrl.onSelect = state => appState.setFocus(state);
+mapCtrl.onSelect = (state) => appState.setFocus(state);
 // A click that hits no feature returns to home, clearing the spotlight, hiding
 // the panel, and closing the bottom sheet — all wired through onFocusChange.
 mapCtrl.onEmptySelect = () => appState.clearFocus();
 
 // The reload button and the refresh-rate picker only mean anything once there
 // is a feed to act on.
-const reloadBtn = document.getElementById('reload-feed-btn') as HTMLButtonElement;
+const reloadBtn = document.getElementById(
+  'reload-feed-btn'
+) as HTMLButtonElement;
 const intervalDropdown = document.getElementById('rt-interval-dropdown')!;
 const editBtn = document.getElementById('edit-feed-btn') as HTMLAnchorElement;
 // Hiding the tooltip wrapper rather than the control keeps an empty tooltip out
@@ -251,7 +290,8 @@ function linkedOffer(selection: FeedSelection): LinkedOffer {
     alertsUrl: rt?.alertsUrl,
     // Only worth offering when there is a proxy left to turn on.
     canRetryWithCors:
-      (scheduled?.kind === 'url' && !scheduled.useCors) || Boolean(rt && !rt.useCors),
+      (scheduled?.kind === 'url' && !scheduled.useCors) ||
+      Boolean(rt && !rt.useCors),
   };
 }
 
@@ -294,7 +334,9 @@ async function boot(): Promise<void> {
   for (;;) {
     const last = readLastFeed();
     console.log(
-      last ? '[boot] modal opened, stored feed available' : '[boot] modal opened, nothing stored',
+      last
+        ? '[boot] modal opened, stored feed available'
+        : '[boot] modal opened, nothing stored'
     );
     const result = await showLoadModal(seed, {
       notice: notice ?? undefined,
@@ -308,7 +350,6 @@ async function boot(): Promise<void> {
           }
         : undefined,
     });
-    notice = null;
     linkedWith = undefined;
     seed = null;
 
@@ -321,13 +362,17 @@ async function boot(): Promise<void> {
       return;
     }
     // `continue` is only reachable when the card was rendered, so `last` is set.
-    if (!last) return;
+    if (!last) {
+      return;
+    }
     const failure = await loadFeed(last.selection);
     if (!failure) {
       showFeedControls();
       return;
     }
-    if (retried) return;
+    if (retried) {
+      return;
+    }
     // The stored feed is what failed, so it is forgotten before the reopen —
     // otherwise its card is offered again and the loop is the only thing
     // stopping it.
@@ -367,8 +412,10 @@ const shortcuts = viewerShortcuts({
   clearSearch: () => searchController.clearSearch(),
 });
 new KeyboardShortcuts(shortcuts).initialize();
-setHelpRuntimeData({ version: __APP_VERSION__, shortcuts: describeShortcuts(shortcuts) });
-
+setHelpRuntimeData({
+  version: __APP_VERSION__,
+  shortcuts: describeShortcuts(shortcuts),
+});
 
 // ─── Load ─────────────────────────────────────────────────────────────────────
 /**
@@ -396,9 +443,15 @@ async function loadFeed(selection: FeedSelection): Promise<string | null> {
 }
 
 /** True when the feed is now loaded; false for a cancelled or failed load. */
-async function handleLoadResult(selection: FeedSelection | null): Promise<boolean> {
-  if (!selection) return false;
-  if (await loadFeed(selection)) return false;
+async function handleLoadResult(
+  selection: FeedSelection | null
+): Promise<boolean> {
+  if (!selection) {
+    return false;
+  }
+  if (await loadFeed(selection)) {
+    return false;
+  }
   showFeedControls();
   return true;
 }
@@ -414,17 +467,23 @@ async function openLoadModal(): Promise<void> {
   // The modal can also return `{ kind: 'continue' }`, but only when it is given
   // a `continueWith` card, which this call site does not.
   const result = await showLoadModal(session.selection);
-  await handleLoadResult(result?.kind === 'selection' ? result.selection : null);
+  await handleLoadResult(
+    result?.kind === 'selection' ? result.selection : null
+  );
 }
 
-document.getElementById('load-btn')!.addEventListener('click', () => void openLoadModal());
+document
+  .getElementById('load-btn')!
+  .addEventListener('click', () => void openLoadModal());
 
 // ─── Reload feed button ───────────────────────────────────────────────────────
 // A full reload — the schedule is re-downloaded and the poller replaced —
 // so it is disabled while one is in flight rather than stacking two loads.
 reloadBtn.addEventListener('click', async () => {
   (document.activeElement as HTMLElement | null)?.blur();
-  if (!session.selection) return;
+  if (!session.selection) {
+    return;
+  }
   const label = describeSelection(session.selection);
   reloadBtn.disabled = true;
   try {
@@ -436,7 +495,9 @@ reloadBtn.addEventListener('click', async () => {
       return;
     }
     console.error('Reload failed:', err);
-    notify.error(`Failed to reload ${label}: ${err instanceof Error ? err.message : String(err)}`);
+    notify.error(
+      `Failed to reload ${label}: ${err instanceof Error ? err.message : String(err)}`
+    );
   } finally {
     reloadBtn.disabled = false;
   }
@@ -450,13 +511,18 @@ function renderIntervalMenu(): void {
   const current = session.pollIntervalMs;
   intervalLabel.textContent = `${current / 1000}s`;
   intervalMenu.innerHTML = CONFIG.RT_INTERVAL_OPTIONS_MS.map(
-    ms => `<li><a data-rt-interval="${ms}" class="${ms === current ? 'menu-active' : ''}">${ms / 1000}s</a></li>`,
+    (ms) =>
+      `<li><a data-rt-interval="${ms}" class="${ms === current ? 'menu-active' : ''}">${ms / 1000}s</a></li>`
   ).join('');
 }
 
-intervalMenu.addEventListener('click', e => {
-  const item = (e.target as HTMLElement).closest<HTMLElement>('[data-rt-interval]');
-  if (!item) return;
+intervalMenu.addEventListener('click', (e) => {
+  const item = (e.target as HTMLElement).closest<HTMLElement>(
+    '[data-rt-interval]'
+  );
+  if (!item) {
+    return;
+  }
   (document.activeElement as HTMLElement | null)?.blur();
   session.setPollIntervalMs(Number(item.dataset.rtInterval));
   renderIntervalMenu();

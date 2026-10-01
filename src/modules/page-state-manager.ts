@@ -24,7 +24,9 @@ import { MODAL_TYPES, isPageState } from '../types/page-state';
  */
 function parseModalParams(params: URLSearchParams): ModalState | null {
   const type = params.get('modal');
-  if (type === null) return null;
+  if (type === null) {
+    return null;
+  }
   if (!MODAL_TYPES.includes(type as ModalType)) {
     console.warn(`[PageStateManager] unknown modal in hash: ${type}`);
     return null;
@@ -77,16 +79,26 @@ const pageStateCodec: PageStateCodec<PageState> = {
     const withModal = (state: PageState): PageState =>
       modal ? { ...state, modal } : state;
 
-    if (params.has('stop')) return withModal({ type: 'stop', stop_id: params.get('stop')! });
-    if (params.has('vehicle'))
+    if (params.has('stop')) {
+      return withModal({ type: 'stop', stop_id: params.get('stop')! });
+    }
+    if (params.has('vehicle')) {
       return withModal({ type: 'vehicle', vehicle_id: params.get('vehicle')! });
-    if (params.has('alert')) return withModal({ type: 'alert', alert_id: params.get('alert')! });
-    if (params.has('route')) return withModal({ type: 'route', route_id: params.get('route')! });
+    }
+    if (params.has('alert')) {
+      return withModal({ type: 'alert', alert_id: params.get('alert')! });
+    }
+    if (params.has('route')) {
+      return withModal({ type: 'route', route_id: params.get('route')! });
+    }
     return withModal({ type: 'home' });
   },
 };
 
-export type AppPageStateManager = PageStateManager<PageState, BreadcrumbItem<PageState>>;
+export type AppPageStateManager = PageStateManager<
+  PageState,
+  BreadcrumbItem<PageState>
+>;
 
 /** The one manager AppState owns, synced to the hash. */
 export function createPageStateManager(): AppPageStateManager {

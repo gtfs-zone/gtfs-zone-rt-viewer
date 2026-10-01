@@ -27,7 +27,12 @@ mountAppShell({
   panelPlaceholder: 'No feed loaded',
   dock: [
     { id: 'dock-browse', label: 'Browse', active: true },
-    { id: 'dock-alerts', label: 'Alerts', ariaLabel: 'Service alerts', badge: true },
+    {
+      id: 'dock-alerts',
+      label: 'Alerts',
+      ariaLabel: 'Service alerts',
+      badge: true,
+    },
     { id: 'dock-help', label: 'Help' },
   ],
 });
@@ -35,4 +40,6 @@ mountAppShell({
 // The static intro is the panel's content until the status page renders its own
 // empty state, and the only content when the map or the app fails to start.
 const intro = document.getElementById('app-intro');
-if (intro) document.getElementById('panel-content')?.replaceChildren(intro);
+if (intro) {
+  document.getElementById('panel-content')?.replaceChildren(intro);
+}

@@ -15,7 +15,10 @@ import { homeWithModal } from 'gtfs-zone-web-common/ui/page-state-manager';
 import type { PageState } from '../types/page-state';
 import { buildBreadcrumbs, validateState } from './breadcrumbs';
 import type { FeedSession } from './feed-session';
-import { describeMissing, isComplete } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import {
+  describeMissing,
+  isComplete,
+} from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { paramsToSelection, selectionToParams } from './feed-url';
 import { notify } from 'gtfs-zone-web-common/ui/notification-system';
 import { createPageStateManager } from './page-state-manager';
@@ -33,15 +36,20 @@ export interface BootRequest {
 
 export type AppStateHooks = FocusHooks<PageState>;
 
-export class AppState extends FocusController<PageState, BreadcrumbItem<PageState>> {
+export class AppState extends FocusController<
+  PageState,
+  BreadcrumbItem<PageState>
+> {
   private session: FeedSession;
 
   constructor(session: FeedSession, hooks: AppStateHooks) {
     super(createPageStateManager(), hooks);
     this.session = session;
 
-    this.pages.setBreadcrumbBuilder(state => buildBreadcrumbs(session, state));
-    this.pages.setStateValidator(state => validateState(session, state));
+    this.pages.setBreadcrumbBuilder((state) =>
+      buildBreadcrumbs(session, state)
+    );
+    this.pages.setStateValidator((state) => validateState(session, state));
 
     // The selection is half of the hash, so any change to it — a modal load, an
     // inline URL edit on the status page — has to be reflected there too.
@@ -108,7 +116,9 @@ export class AppState extends FocusController<PageState, BreadcrumbItem<PageStat
    */
   private applyPendingFocus(pending: PageState): void {
     if (pending.type !== 'home' && !validateState(this.session, pending)) {
-      notify.warning(`Nothing in this feed matches the linked ${pending.type}.`);
+      notify.warning(
+        `Nothing in this feed matches the linked ${pending.type}.`
+      );
       // The modal outlives the page it was linked over: it names no object.
       this.adopt(homeWithModal(pending));
     } else {

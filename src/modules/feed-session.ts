@@ -2,12 +2,23 @@ import { CONFIG } from '../config';
 import { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
 import { GTFSRealtime } from '../gtfs-rt';
 import type { FeedStatus, FetchStartDetail } from '../gtfs-rt';
-import type { AlertRecord, TripUpdate } from 'gtfs-zone-web-common/gtfs/rt-types';
+import type {
+  AlertRecord,
+  TripUpdate,
+} from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
 import { adoptFeedTimezone } from 'gtfs-zone-web-common/gtfs/feed-time';
 import { feedProgressIndicator } from 'gtfs-zone-web-common/ui/progress-indicator';
-import { downloadPercent, formatBytes, LoadCancelledError } from 'gtfs-zone-web-common/gtfs/feed-download';
-import type { FeedSelection, RealtimeEndpointName, ScheduledSource } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import {
+  downloadPercent,
+  formatBytes,
+  LoadCancelledError,
+} from 'gtfs-zone-web-common/gtfs/feed-download';
+import type {
+  FeedSelection,
+  RealtimeEndpointName,
+  ScheduledSource,
+} from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   REALTIME_ENDPOINT_LABELS,
   isComplete,
@@ -88,7 +99,9 @@ export class FeedSession extends EventTarget {
 
   /** Re-run the current selection from scratch: schedule download plus a fresh poller. */
   async reload(): Promise<void> {
-    if (!this.selection) return;
+    if (!this.selection) {
+      return;
+    }
     await this.load(this.selection);
   }
 
@@ -122,19 +135,22 @@ export class FeedSession extends EventTarget {
           downloadPercent(loaded, total) ?? 0,
           total
             ? `Downloading ${label} — ${formatBytes(loaded)} of ${formatBytes(total)}`
-            : `Downloading ${label} — ${formatBytes(loaded)}`,
+            : `Downloading ${label} — ${formatBytes(loaded)}`
         );
       },
       onParse: (fileName: string, done: number, total: number) => {
         if (!parsing) {
           parsing = true;
           feedProgressIndicator.finishLoading('scheduled-download');
-          feedProgressIndicator.startLoading('scheduled-parse', `Parsing ${label}…`);
+          feedProgressIndicator.startLoading(
+            'scheduled-parse',
+            `Parsing ${label}…`
+          );
         }
         feedProgressIndicator.updateProgress(
           'scheduled-parse',
           Math.round((done / total) * 100),
-          `Parsing ${label} — ${fileName}`,
+          `Parsing ${label} — ${fileName}`
         );
       },
     };
@@ -144,7 +160,7 @@ export class FeedSession extends EventTarget {
     feedProgressIndicator.startLoading(
       'scheduled-download',
       `Downloading ${label}…`,
-      controller ? { onCancel: () => controller.abort() } : {},
+      controller ? { onCancel: () => controller.abort() } : {}
     );
     try {
       if (source.kind === 'file') {
@@ -160,7 +176,9 @@ export class FeedSession extends EventTarget {
       adoptFeedTimezone(feed);
       this.scheduleError = null;
       this.scheduleLoadedAt = Date.now();
-      this.dispatchEvent(new CustomEvent<GTFSScheduled>('scheduleloaded', { detail: feed }));
+      this.dispatchEvent(
+        new CustomEvent<GTFSScheduled>('scheduleloaded', { detail: feed })
+      );
     } catch (err) {
       // A cancel is not a feed error: the previously loaded feed stays live.
       if (!(err instanceof LoadCancelledError)) {
@@ -187,43 +205,49 @@ export class FeedSession extends EventTarget {
     );
     this.poller = poller;
 
-    poller.addEventListener('fetchstart', e => {
+    poller.addEventListener('fetchstart', (e) => {
       const { name, prominent } = (e as CustomEvent<FetchStartDetail>).detail;
       if (prominent) {
         feedProgressIndicator.startLoading(
           `rt-${name}`,
-          `Fetching ${REALTIME_ENDPOINT_LABELS[name]}…`,
+          `Fetching ${REALTIME_ENDPOINT_LABELS[name]}…`
         );
       }
     });
-    poller.addEventListener('fetchend', e => {
-      feedProgressIndicator.finishLoading(`rt-${(e as CustomEvent<RealtimeEndpointName>).detail}`);
+    poller.addEventListener('fetchend', (e) => {
+      feedProgressIndicator.finishLoading(
+        `rt-${(e as CustomEvent<RealtimeEndpointName>).detail}`
+      );
     });
     poller.addEventListener('statuschange', () => this.emitChange());
 
-    poller.addEventListener('vehicles', e => {
+    poller.addEventListener('vehicles', (e) => {
       const detail = (e as CustomEvent<VehiclePosition[]>).detail;
       this.rtCounts.vehicles = detail.length;
-      this.vehicles = new Map(detail.map(v => [v.key, v]));
+      this.vehicles = new Map(detail.map((v) => [v.key, v]));
       // Keys are derived to be unique, so the map must not lose anything. A
       // mismatch means the derivation collapsed two vehicles onto one key.
       if (import.meta.env.DEV && this.vehicles.size !== detail.length) {
         console.warn(
-          `[FeedSession] vehicle key collision: ${detail.length} payload vehicles, ${this.vehicles.size} distinct keys`,
+          `[FeedSession] vehicle key collision: ${detail.length} payload vehicles, ${this.vehicles.size} distinct keys`
         );
       }
-      this.dispatchEvent(new CustomEvent<VehiclePosition[]>('vehicles', { detail }));
+      this.dispatchEvent(
+        new CustomEvent<VehiclePosition[]>('vehicles', { detail })
+      );
     });
-    poller.addEventListener('tripUpdates', e => {
+    poller.addEventListener('tripUpdates', (e) => {
       const detail = (e as CustomEvent<TripUpdate[]>).detail;
       this.rtCounts.tripUpdates = detail.length;
       this.tripUpdates = detail;
-      this.dispatchEvent(new CustomEvent<TripUpdate[]>('tripUpdates', { detail }));
+      this.dispatchEvent(
+        new CustomEvent<TripUpdate[]>('tripUpdates', { detail })
+      );
     });
-    poller.addEventListener('alerts', e => {
+    poller.addEventListener('alerts', (e) => {
       const detail = (e as CustomEvent<AlertRecord[]>).detail;
       this.rtCounts.alerts = detail.length;
-      this.alerts = new Map(detail.map(a => [a.id, a]));
+      this.alerts = new Map(detail.map((a) => [a.id, a]));
       this.dispatchEvent(new CustomEvent<AlertRecord[]>('alerts', { detail }));
     });
 

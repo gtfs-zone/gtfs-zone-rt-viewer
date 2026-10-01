@@ -94,5 +94,7 @@ export const CONFIG = {
   // (home-docker `local.cors_proxy_dev_origins`), covering localhost:8080-8091.
   // Lives here rather than in `gtfs-zone-web-common`'s `feed-url-resolve.ts`
   // because gtfs-zone-editor has no local feed server and wants prod always.
-  RT_BASE: import.meta.env.DEV ? 'http://localhost:8000' : 'https://rt.gtfs.zone',
+  RT_BASE: import.meta.env.DEV
+    ? 'http://localhost:8000'
+    : 'https://rt.gtfs.zone',
 } as const;

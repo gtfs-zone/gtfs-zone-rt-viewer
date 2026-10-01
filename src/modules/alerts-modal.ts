@@ -14,7 +14,12 @@
 
 import type { AlertRecord } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { PageState } from '../types/page-state';
-import { ALERT_LEVEL_LABELS, alertLevel, isActiveNow, preferredText } from 'gtfs-zone-web-common/gtfs/alerts';
+import {
+  ALERT_LEVEL_LABELS,
+  alertLevel,
+  isActiveNow,
+  preferredText,
+} from 'gtfs-zone-web-common/gtfs/alerts';
 import { showModal } from 'gtfs-zone-web-common/ui/modal-utils';
 import { escapeHtml } from 'gtfs-zone-web-common/util/escape-html';
 
@@ -40,7 +45,9 @@ export class AlertsModal {
   setRecords(records: AlertRecord[]): void {
     this.records = records;
     this.renderBadges();
-    if (this.list) this.list.innerHTML = this.renderList();
+    if (this.list) {
+      this.list.innerHTML = this.renderList();
+    }
   }
 
   /** Resolves when the modal closes, however it was closed. */
@@ -53,7 +60,7 @@ export class AlertsModal {
       boxClassName: 'max-w-2xl',
       onMount: () => {
         this.list = document.getElementById(LIST_ID);
-        this.list?.addEventListener('click', e => this.handleRowClick(e));
+        this.list?.addEventListener('click', (e) => this.handleRowClick(e));
       },
     });
     this.list = null;
@@ -65,11 +72,17 @@ export class AlertsModal {
    * alert was reached from a row, the back button or a pasted link.
    */
   private handleRowClick(e: MouseEvent): void {
-    const row = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-alert-id]');
-    if (!row) return;
+    const row = (e.target as HTMLElement | null)?.closest<HTMLElement>(
+      '[data-alert-id]'
+    );
+    if (!row) {
+      return;
+    }
     // Modified clicks and middle-clicks are the browser's to handle: the row is
     // a real link, so they open the alert in a new tab or window.
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) {
+      return;
+    }
     e.preventDefault();
     this.hooks.navigate({ type: 'alert', alert_id: row.dataset.alertId! });
   }
@@ -80,11 +93,13 @@ export class AlertsModal {
    * happening makes the badge useless; the total is stated next to it instead.
    */
   private renderBadges(): void {
-    const active = this.records.filter(r => isActiveNow(r.alert)).length;
+    const active = this.records.filter((r) => isActiveNow(r.alert)).length;
     // The navbar and the mobile dock each carry one.
     for (const id of ['alerts-badge', 'dock-alerts-badge']) {
       const badge = document.getElementById(id);
-      if (!badge) continue;
+      if (!badge) {
+        continue;
+      }
       badge.textContent = active === 0 ? '' : String(active);
       badge.classList.toggle('hidden', active === 0);
     }
@@ -95,15 +110,19 @@ export class AlertsModal {
       return '<p class="text-sm opacity-40 text-center py-8">No service alerts.</p>';
     }
     // Active first — the rest are scheduled or expired and can wait.
-    const active = this.records.filter(r => isActiveNow(r.alert));
-    const ordered = [...active, ...this.records.filter(r => !isActiveNow(r.alert))];
+    const active = this.records.filter((r) => isActiveNow(r.alert));
+    const ordered = [
+      ...active,
+      ...this.records.filter((r) => !isActiveNow(r.alert)),
+    ];
     return `
       <p class="text-xs opacity-60">${active.length} active of ${this.records.length} in the feed.</p>
-      ${ordered.map(record => this.renderRow(record)).join('')}`;
+      ${ordered.map((record) => this.renderRow(record)).join('')}`;
   }
 
   private renderRow(record: AlertRecord): string {
-    const header = preferredText(record.alert.headerText) || `Alert ${record.id}`;
+    const header =
+      preferredText(record.alert.headerText) || `Alert ${record.id}`;
     const desc = preferredText(record.alert.descriptionText);
     const state: PageState = { type: 'alert', alert_id: record.id };
     return `<a

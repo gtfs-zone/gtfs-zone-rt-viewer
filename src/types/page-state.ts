@@ -54,9 +54,7 @@ export type ModalType = (typeof MODAL_TYPES)[number];
  * A modal is orthogonal to the page beneath it: closing one returns to that
  * page rather than to a separate page state.
  */
-export type ModalState =
-  | { type: 'alerts' }
-  | { type: 'help'; page?: string };
+export type ModalState = { type: 'alerts' } | { type: 'help'; page?: string };
 
 /** Distributed so that narrowing on `type` still works through the modal field. */
 type WithModal<T> = T extends unknown ? T & { modal?: ModalState } : never;
@@ -65,27 +63,39 @@ export type PageState = WithModal<PageLocation>;
 
 /** Type guard for a valid ModalState. */
 export function isModalState(value: unknown): value is ModalState {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
 
   const modal = value as { type?: unknown; page?: unknown };
-  if (!MODAL_TYPES.includes(modal.type as ModalType)) return false;
+  if (!MODAL_TYPES.includes(modal.type as ModalType)) {
+    return false;
+  }
 
   if (modal.type === 'help') {
-    if (modal.page !== undefined && typeof modal.page !== 'string') return false;
-    return Object.keys(modal).every(k => k === 'type' || k === 'page');
+    if (modal.page !== undefined && typeof modal.page !== 'string') {
+      return false;
+    }
+    return Object.keys(modal).every((k) => k === 'type' || k === 'page');
   }
   return Object.keys(modal).length === 1;
 }
 
 /** Type guard for a valid PageState. */
 export function isPageState(value: unknown): value is PageState {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
 
   // The modal dimension is validated on its own; the checks below count the
   // keys of the page underneath it.
   const { modal, ...state } = value as { modal?: unknown; type?: string };
-  if (modal !== undefined && !isModalState(modal)) return false;
-  if (typeof state.type !== 'string') return false;
+  if (modal !== undefined && !isModalState(modal)) {
+    return false;
+  }
+  if (typeof state.type !== 'string') {
+    return false;
+  }
 
   switch (state.type) {
     case 'home':
@@ -103,7 +113,9 @@ export function isPageState(value: unknown): value is PageState {
 
     case 'vehicle': {
       const s = state as { vehicle_id?: string };
-      return Object.keys(state).length === 2 && typeof s.vehicle_id === 'string';
+      return (
+        Object.keys(state).length === 2 && typeof s.vehicle_id === 'string'
+      );
     }
 
     case 'alert': {

@@ -1,16 +1,25 @@
 import type { EndpointStatus } from '../gtfs-rt';
 import type { FeedSession } from './feed-session';
 import type { MapDataIssues } from './layer-manager';
-import type { FeedGaps, ScheduleRelationshipCounts } from 'gtfs-zone-web-common/gtfs/rt-index';
+import type {
+  FeedGaps,
+  ScheduleRelationshipCounts,
+} from 'gtfs-zone-web-common/gtfs/rt-index';
 import type { RealtimeEndpointName } from 'gtfs-zone-web-common/gtfs/feed-selection';
-import { REALTIME_ENDPOINTS, REALTIME_ENDPOINT_LABELS } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import {
+  REALTIME_ENDPOINTS,
+  REALTIME_ENDPOINT_LABELS,
+} from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   TRIP_SCHEDULE_RELATIONSHIP_LABELS,
   STOP_TIME_SCHEDULE_RELATIONSHIP_LABELS,
 } from 'gtfs-zone-web-common/gtfs/entity-render';
 import { localClock } from 'gtfs-zone-web-common/gtfs/feed-time';
 import { isReproducible } from './feed-url';
-import { isLocalUrl, resolveRealtimeUrl } from 'gtfs-zone-web-common/gtfs/feed-url-resolve';
+import {
+  isLocalUrl,
+  resolveRealtimeUrl,
+} from 'gtfs-zone-web-common/gtfs/feed-url-resolve';
 import { CONFIG } from '../config';
 import { notify } from 'gtfs-zone-web-common/ui/notification-system';
 import { renderIssueCard } from 'gtfs-zone-web-common/ui/issue-card';
@@ -42,15 +51,21 @@ function escHtml(s: string): string {
  * used on the object pages.
  */
 function formatClock(ms: number | null): string {
-  if (!ms) return '—';
+  if (!ms) {
+    return '—';
+  }
   return localClock(ms);
 }
 
 /** "12s ago" / "3m ago" — rendered by the shared ticker, not per-row timers. */
 function formatRelative(ms: number): string {
   const secs = Math.max(0, Math.round((Date.now() - ms) / 1000));
-  if (secs < 60) return `${secs}s ago`;
-  if (secs < 3600) return `${Math.floor(secs / 60)}m ${secs % 60}s ago`;
+  if (secs < 60) {
+    return `${secs}s ago`;
+  }
+  if (secs < 3600) {
+    return `${Math.floor(secs / 60)}m ${secs % 60}s ago`;
+  }
   return `${Math.floor(secs / 3600)}h ${Math.floor((secs % 3600) / 60)}m ago`;
 }
 
@@ -66,7 +81,9 @@ function formatCountdown(target: number): string {
  * is the question this panel exists to answer.
  */
 function renderUrl(url: string, useCors: boolean, isRealtime: boolean): string {
-  if (!url) return '<p class="text-xs opacity-40">not set</p>';
+  if (!url) {
+    return '<p class="text-xs opacity-40">not set</p>';
+  }
 
   const resolved = isRealtime ? resolveRealtimeUrl(url, CONFIG.RT_BASE) : url;
   // A local URL ignores the proxy setting (see `maybeProxy`); say so, but only
@@ -122,7 +139,7 @@ function renderEndpoint(
   ep: EndpointStatus,
   rawUrl: string,
   useCors: boolean,
-  nextPollAt: number | null,
+  nextPollAt: number | null
 ): string {
   const label = REALTIME_ENDPOINT_LABELS[ep.name];
 
@@ -190,16 +207,20 @@ const VEHICLE_ID_STRATEGY_NOTE: Record<string, string> = {
  * A well-formed feed takes the `unique` no-op path and this renders nothing.
  */
 function renderVehicleIdReport(ep: EndpointStatus): string {
-  if (ep.name !== 'vehicles') return '';
+  if (ep.name !== 'vehicles') {
+    return '';
+  }
   const strategy = ep.vehicleIdStrategy;
-  if (!strategy || strategy === 'unique') return '';
+  if (!strategy || strategy === 'unique') {
+    return '';
+  }
 
   const dups = ep.vehiclesDuplicateIds;
   const list = dups.length
     ? `<ul class="mt-1 space-y-0.5">${dups
         .map(
-          d =>
-            `<li><span class="font-mono break-all">${escHtml(d.vehicleId || '(empty)')}</span> — ${d.count} vehicles</li>`,
+          (d) =>
+            `<li><span class="font-mono break-all">${escHtml(d.vehicleId || '(empty)')}</span> — ${d.count} vehicles</li>`
         )
         .join('')}</ul>`
     : '';
@@ -234,7 +255,9 @@ function renderHeaderDump(ep: EndpointStatus): string {
 
 function renderEndpoints(session: FeedSession): string {
   const status = session.status;
-  if (!status) return '';
+  if (!status) {
+    return '';
+  }
   const rt = session.selection?.realtime;
   const rawUrls: Record<RealtimeEndpointName, string> = {
     vehicles: rt?.vehiclesUrl ?? '',
@@ -244,15 +267,22 @@ function renderEndpoints(session: FeedSession): string {
   return `
     <section class="space-y-2">
       <h3 class="font-semibold text-sm">Realtime endpoints</h3>
-      ${REALTIME_ENDPOINTS.map(n =>
-        renderEndpoint(status.endpoints[n], rawUrls[n], rt?.useCors ?? false, status.nextPollAt),
+      ${REALTIME_ENDPOINTS.map((n) =>
+        renderEndpoint(
+          status.endpoints[n],
+          rawUrls[n],
+          rt?.useCors ?? false,
+          status.nextPollAt
+        )
       ).join('')}
     </section>`;
 }
 
 function renderScheduledSection(session: FeedSession): string {
   const src = session.selection?.scheduled;
-  if (!src) return '';
+  if (!src) {
+    return '';
+  }
 
   const source =
     src.kind === 'file'
@@ -290,8 +320,13 @@ function renderScheduledSection(session: FeedSession): string {
  * A feed that reports the sequence renders nothing.
  */
 function renderFeedGaps(gaps: FeedGaps | null): string {
-  if (!gaps || gaps.missingStopSequence === 0) return '';
-  const unplaced = gaps.missingStopSequence - gaps.resolvedFromStopId - gaps.stopSequenceDerived;
+  if (!gaps || gaps.missingStopSequence === 0) {
+    return '';
+  }
+  const unplaced =
+    gaps.missingStopSequence -
+    gaps.resolvedFromStopId -
+    gaps.stopSequenceDerived;
   const inferred = gaps.stopSequenceDerived > 0 || unplaced > 0;
 
   const notes = [
@@ -299,17 +334,17 @@ function renderFeedGaps(gaps: FeedGaps | null): string {
   ];
   if (gaps.resolvedFromStopId > 0) {
     notes.push(
-      `${gaps.resolvedFromStopId} named the stop with <span class="font-mono">stop_id</span> instead, which the spec equally allows; their positions come from that.`,
+      `${gaps.resolvedFromStopId} named the stop with <span class="font-mono">stop_id</span> instead, which the spec equally allows; their positions come from that.`
     );
   }
   if (gaps.stopSequenceDerived > 0) {
     notes.push(
-      `${gaps.stopSequenceDerived} named no stop at all, so the soonest still-future <span class="font-mono">stop_time_update</span> on the same trip was used; those are marked "derived" wherever they appear.`,
+      `${gaps.stopSequenceDerived} named no stop at all, so the soonest still-future <span class="font-mono">stop_time_update</span> on the same trip was used; those are marked "derived" wherever they appear.`
     );
   }
   if (unplaced > 0) {
     notes.push(
-      `${unplaced} could not be placed by any of these and stay in the route strip's unplaced list.`,
+      `${unplaced} could not be placed by any of these and stay in the route strip's unplaced list.`
     );
   }
 
@@ -338,8 +373,12 @@ function renderFeedGaps(gaps: FeedGaps | null): string {
  * Self-hides when every count is SCHEDULED or absent, the same rule
  * `renderIssueCard` uses.
  */
-function renderScheduleRelationships(counts: ScheduleRelationshipCounts | null): string {
-  if (!counts) return '';
+function renderScheduleRelationships(
+  counts: ScheduleRelationshipCounts | null
+): string {
+  if (!counts) {
+    return '';
+  }
 
   const line = (label: string, n: number): string => `
     <div class="flex justify-between gap-2 text-xs">
@@ -349,21 +388,39 @@ function renderScheduleRelationships(counts: ScheduleRelationshipCounts | null):
 
   const rows: string[] = [];
   for (const [relationship, n] of counts.vehicleTrips) {
-    if (relationship === 0) continue;
-    const label = TRIP_SCHEDULE_RELATIONSHIP_LABELS[relationship] ?? String(relationship);
-    rows.push(line(`${n} vehicle${n === 1 ? '' : 's'} reporting trip ${label}`, n));
+    if (relationship === 0) {
+      continue;
+    }
+    const label =
+      TRIP_SCHEDULE_RELATIONSHIP_LABELS[relationship] ?? String(relationship);
+    rows.push(
+      line(`${n} vehicle${n === 1 ? '' : 's'} reporting trip ${label}`, n)
+    );
   }
   for (const [relationship, n] of counts.updateTrips) {
-    if (relationship === 0) continue;
-    const label = TRIP_SCHEDULE_RELATIONSHIP_LABELS[relationship] ?? String(relationship);
-    rows.push(line(`${n} trip update${n === 1 ? '' : 's'} reporting trip ${label}`, n));
+    if (relationship === 0) {
+      continue;
+    }
+    const label =
+      TRIP_SCHEDULE_RELATIONSHIP_LABELS[relationship] ?? String(relationship);
+    rows.push(
+      line(`${n} trip update${n === 1 ? '' : 's'} reporting trip ${label}`, n)
+    );
   }
   for (const [relationship, n] of counts.stopTimes) {
-    if (relationship === 0) continue;
-    const label = STOP_TIME_SCHEDULE_RELATIONSHIP_LABELS[relationship] ?? String(relationship);
-    rows.push(line(`${n} stop time${n === 1 ? '' : 's'} reporting ${label}`, n));
+    if (relationship === 0) {
+      continue;
+    }
+    const label =
+      STOP_TIME_SCHEDULE_RELATIONSHIP_LABELS[relationship] ??
+      String(relationship);
+    rows.push(
+      line(`${n} stop time${n === 1 ? '' : 's'} reporting ${label}`, n)
+    );
   }
-  if (rows.length === 0) return '';
+  if (rows.length === 0) {
+    return '';
+  }
 
   return `
     <section class="space-y-2">
@@ -381,7 +438,9 @@ function renderScheduleRelationships(counts: ScheduleRelationshipCounts | null):
  * a feed bug, not a rendering one.
  */
 function renderMapIssues(issues: MapDataIssues | null): string {
-  if (!issues) return '';
+  if (!issues) {
+    return '';
+  }
   return renderIssueCard('Map data issues', [
     {
       label: 'Stops dropped (no stop_id)',
@@ -413,7 +472,9 @@ function renderMapIssues(issues: MapDataIssues | null): string {
  */
 function renderStationIssues(session: FeedSession): string {
   const issues = session.scheduledFeed?.stationIssues;
-  if (!issues) return '';
+  if (!issues) {
+    return '';
+  }
   return renderIssueCard('Station hierarchy issues', [
     {
       label: 'parent_station points at a missing stop',
@@ -449,7 +510,9 @@ function renderStationIssues(session: FeedSession): string {
  */
 function renderPaddedColumns(session: FeedSession): string {
   const padded = session.scheduledFeed?.paddedColumns;
-  if (!padded || padded.length === 0) return '';
+  if (!padded || padded.length === 0) {
+    return '';
+  }
 
   return `
     <section class="space-y-2">
@@ -468,7 +531,7 @@ function renderPaddedColumns(session: FeedSession): string {
               they were trimmed. Untrimmed, no realtime
               <span class="font-mono">${escHtml(column)}</span> would match this feed.
             </p>
-          </div>`,
+          </div>`
           )
           .join('')}
       </div>
@@ -478,12 +541,16 @@ function renderPaddedColumns(session: FeedSession): string {
 /** feed_info.txt and agency.txt, verbatim. */
 function renderRawTables(session: FeedSession): string {
   const feed = session.scheduledFeed;
-  if (!feed) return '';
+  if (!feed) {
+    return '';
+  }
   const tables = [
-    ...feed.feedInfo.map(info => ['feed_info.txt', info.raw] as const),
-    ...feed.agencies.map(agency => ['agency.txt', agency.raw] as const),
+    ...feed.feedInfo.map((info) => ['feed_info.txt', info.raw] as const),
+    ...feed.agencies.map((agency) => ['agency.txt', agency.raw] as const),
   ];
-  if (tables.length === 0) return '';
+  if (tables.length === 0) {
+    return '';
+  }
 
   return `
     <section class="space-y-2">
@@ -500,12 +567,12 @@ function renderRawTables(session: FeedSession): string {
               ${Object.entries(row)
                 .map(
                   ([k, v]) =>
-                    `<tr><td class="opacity-60 align-top">${escHtml(k)}</td><td class="break-all">${escHtml(v ?? '')}</td></tr>`,
+                    `<tr><td class="opacity-60 align-top">${escHtml(k)}</td><td class="break-all">${escHtml(v ?? '')}</td></tr>`
                 )
                 .join('')}
             </tbody>
           </table>
-        </details>`,
+        </details>`
         )
         .join('')}
     </section>`;
@@ -516,7 +583,9 @@ function renderRawTables(session: FeedSession): string {
  * so copying is the primary path rather than an afterthought.
  */
 function renderShare(session: FeedSession): string {
-  if (!session.selection) return '';
+  if (!session.selection) {
+    return '';
+  }
   const reproducible = isReproducible(session.selection);
   return `
     <section class="space-y-2">
@@ -569,7 +638,8 @@ export class StatusPage {
   private openLoad: (() => void) | null = null;
   private mapIssues: (() => MapDataIssues) | null = null;
   private feedGaps: (() => FeedGaps) | null = null;
-  private scheduleRelationships: (() => ScheduleRelationshipCounts) | null = null;
+  private scheduleRelationships: (() => ScheduleRelationshipCounts) | null =
+    null;
 
   /** Supplied by AppState, which is the only thing that knows the full hash. */
   setShareUrlProvider(fn: () => string): void {
@@ -599,7 +669,9 @@ export class StatusPage {
   /** Called by AppState when focus moves to or away from home. */
   setActive(active: boolean): void {
     this.active = active;
-    if (active) this.render();
+    if (active) {
+      this.render();
+    }
   }
 
   initialize(): void {
@@ -611,13 +683,17 @@ export class StatusPage {
   }
 
   destroy(): void {
-    if (this.tickerId !== null) clearInterval(this.tickerId);
+    if (this.tickerId !== null) {
+      clearInterval(this.tickerId);
+    }
     this.tickerId = null;
   }
 
   /** Coalesce the burst of statuschange events a single poll produces. */
   private queueRender(): void {
-    if (this.renderQueued) return;
+    if (this.renderQueued) {
+      return;
+    }
     this.renderQueued = true;
     queueMicrotask(() => {
       this.renderQueued = false;
@@ -626,17 +702,21 @@ export class StatusPage {
   }
 
   private tick(): void {
-    if (!this.active) return;
-    this.host.querySelectorAll<HTMLElement>('[data-since]').forEach(el => {
+    if (!this.active) {
+      return;
+    }
+    this.host.querySelectorAll<HTMLElement>('[data-since]').forEach((el) => {
       el.textContent = formatRelative(Number(el.dataset.since));
     });
-    this.host.querySelectorAll<HTMLElement>('[data-until]').forEach(el => {
+    this.host.querySelectorAll<HTMLElement>('[data-until]').forEach((el) => {
       el.textContent = formatCountdown(Number(el.dataset.until));
     });
   }
 
   private render(): void {
-    if (!this.active) return;
+    if (!this.active) {
+      return;
+    }
 
     if (!this.session.selection) {
       this.host.innerHTML = renderEmpty();
@@ -664,9 +744,12 @@ export class StatusPage {
   }
 
   private wire(): void {
-    const copyBtn = this.host.querySelector<HTMLButtonElement>('#status-copy-link');
+    const copyBtn =
+      this.host.querySelector<HTMLButtonElement>('#status-copy-link');
     copyBtn?.addEventListener('click', () => {
-      if (!this.shareUrl) return;
+      if (!this.shareUrl) {
+        return;
+      }
       void navigator.clipboard
         .writeText(this.shareUrl())
         .then(() => notify.success('Link copied'))

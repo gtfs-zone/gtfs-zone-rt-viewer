@@ -29,10 +29,21 @@
  * half a session.
  */
 
-import type { FeedSelection, RealtimeSource, ScheduledSource } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import type {
+  FeedSelection,
+  RealtimeSource,
+  ScheduledSource,
+} from 'gtfs-zone-web-common/gtfs/feed-selection';
 
 // `static` stays in the list so a legacy-only hash still counts as naming a feed.
-const PARAM_KEYS = ['scheduled', 'static', 'rt_vp', 'rt_tu', 'rt_al', 'cors'] as const;
+const PARAM_KEYS = [
+  'scheduled',
+  'static',
+  'rt_vp',
+  'rt_tu',
+  'rt_al',
+  'cors',
+] as const;
 
 /** True when a link can restore this selection in full. */
 export function isReproducible(sel: FeedSelection | null): boolean {
@@ -40,22 +51,34 @@ export function isReproducible(sel: FeedSelection | null): boolean {
 }
 
 /** The hash params describing a selection. Empty when there is nothing to say. */
-export function selectionToParams(sel: FeedSelection | null): Record<string, string> {
+export function selectionToParams(
+  sel: FeedSelection | null
+): Record<string, string> {
   const params: Record<string, string> = {};
-  if (!sel) return params;
+  if (!sel) {
+    return params;
+  }
 
   const corsFlags: string[] = [];
 
   if (sel.scheduled?.kind === 'url' && sel.scheduled.url) {
     params.scheduled = sel.scheduled.url;
-    if (sel.scheduled.useCors) corsFlags.push('s');
+    if (sel.scheduled.useCors) {
+      corsFlags.push('s');
+    }
   }
 
   const rt = sel.realtime;
   if (rt) {
-    if (rt.vehiclesUrl) params.rt_vp = rt.vehiclesUrl;
-    if (rt.tripUpdatesUrl) params.rt_tu = rt.tripUpdatesUrl;
-    if (rt.alertsUrl) params.rt_al = rt.alertsUrl;
+    if (rt.vehiclesUrl) {
+      params.rt_vp = rt.vehiclesUrl;
+    }
+    if (rt.tripUpdatesUrl) {
+      params.rt_tu = rt.tripUpdatesUrl;
+    }
+    if (rt.alertsUrl) {
+      params.rt_al = rt.alertsUrl;
+    }
     if (rt.useCors && (rt.vehiclesUrl || rt.tripUpdatesUrl || rt.alertsUrl)) {
       corsFlags.push('r');
     }
@@ -77,12 +100,14 @@ export function selectionToParams(sel: FeedSelection | null): Record<string, str
  */
 export function paramsToSelection(hash: string): FeedSelection | null {
   const params = new URLSearchParams(hash);
-  if (!PARAM_KEYS.some(k => params.has(k))) return null;
+  if (!PARAM_KEYS.some((k) => params.has(k))) {
+    return null;
+  }
 
   // Absent means unknown, so both halves proxy; `none` is the explicit "off".
   const corsParam = params.get('cors');
   const cors = new Set(
-    corsParam === null ? ['s', 'r'] : corsParam.split(',').filter(Boolean),
+    corsParam === null ? ['s', 'r'] : corsParam.split(',').filter(Boolean)
   );
 
   const scheduledUrl = params.get('scheduled') ?? params.get('static');
@@ -110,7 +135,9 @@ export function paramsToSelection(hash: string): FeedSelection | null {
         }
       : null;
 
-  if (!scheduledSource && !realtime) return null;
+  if (!scheduledSource && !realtime) {
+    return null;
+  }
   return { scheduled: scheduledSource, realtime };
 }
 

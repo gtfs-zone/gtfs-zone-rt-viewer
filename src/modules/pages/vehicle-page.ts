@@ -49,14 +49,19 @@ const ADDED_LIKE_RELATIONSHIPS = new Set([1, 2, 4, 5]);
  * instead. The "not reported" half never goes away; this region reports the
  * wire.
  */
-function renderStopSequenceValue(rt: RtIndex, vehicle: VehiclePosition): string {
+function renderStopSequenceValue(
+  rt: RtIndex,
+  vehicle: VehiclePosition
+): string {
   if (vehicle.currentStopSequence !== undefined) {
     return `<span class="tabular-nums">${vehicle.currentStopSequence}</span>`;
   }
 
   const absent = '<span class="opacity-40">not reported</span>';
   const current = rt.stopSequenceFor(vehicle);
-  if (!current) return absent;
+  if (!current) {
+    return absent;
+  }
 
   const note =
     current.source === 'stop_id'
@@ -73,34 +78,51 @@ function renderStopSequenceValue(rt: RtIndex, vehicle: VehiclePosition): string 
 function renderAddedTripRoute(
   ctx: RenderContext,
   feed: GTFSScheduled | null | undefined,
-  vehicle: VehiclePosition,
+  vehicle: VehiclePosition
 ): string {
   const rel = vehicle.scheduleRelationship;
   if (rel === undefined || !ADDED_LIKE_RELATIONSHIPS.has(rel)) {
-    return prop('Route', '<span class="opacity-50">trip not in the schedule</span>');
+    return prop(
+      'Route',
+      '<span class="opacity-50">trip not in the schedule</span>'
+    );
   }
   const route = vehicle.routeId ? feed?.routes.get(vehicle.routeId) : undefined;
   const routeHtml = !vehicle.routeId
     ? '<span class="opacity-50">no route_id reported</span>'
     : route
-      ? entityLink(ctx, { type: 'route', route_id: route.id }, route.short_name || route.long_name || route.id)
+      ? entityLink(
+          ctx,
+          { type: 'route', route_id: route.id },
+          route.short_name || route.long_name || route.id
+        )
       : `<span class="font-mono">${escHtml(vehicle.routeId)}</span>`;
   return prop('Route', `${routeHtml} ${tripRelationshipMark(rel)}`);
 }
 
-function renderTripSection(ctx: RenderContext, rt: RtIndex, vehicle: VehiclePosition): string {
+function renderTripSection(
+  ctx: RenderContext,
+  rt: RtIndex,
+  vehicle: VehiclePosition
+): string {
   const feed = ctx.session.scheduledFeed;
   const trip = vehicle.tripId ? feed?.trips.get(vehicle.tripId) : undefined;
   if (!vehicle.tripId) {
-    return section('Trip', '<p class="text-xs opacity-60">No trip_id reported.</p>');
+    return section(
+      'Trip',
+      '<p class="text-xs opacity-60">No trip_id reported.</p>'
+    );
   }
 
   const times = trip ? (feed?.stopTimesByTrip.get(trip.trip_id) ?? []) : [];
   const current = rt.stopSequenceFor(vehicle);
   const currentIndex = current
-    ? times.findIndex(t => t.stop_sequence === current.sequence)
+    ? times.findIndex((t) => t.stop_sequence === current.sequence)
     : -1;
-  const currentStop = currentIndex >= 0 ? feed?.stops.get(times[currentIndex].stop_id) : undefined;
+  const currentStop =
+    currentIndex >= 0
+      ? feed?.stops.get(times[currentIndex].stop_id)
+      : undefined;
   const statusWord =
     vehicle.currentStatus === undefined
       ? 'at'
@@ -114,15 +136,18 @@ function renderTripSection(ctx: RenderContext, rt: RtIndex, vehicle: VehiclePosi
         entityLink(
           ctx,
           { type: 'route', route_id: trip.route_id },
-          feed?.routes.get(trip.route_id)?.short_name || trip.route_id,
-        ),
+          feed?.routes.get(trip.route_id)?.short_name || trip.route_id
+        )
       )
     : renderAddedTripRoute(ctx, feed, vehicle);
 
   return section(
     'Trip',
     propList([
-      prop('trip_id', `<span class="font-mono">${escHtml(vehicle.tripId)}</span>`),
+      prop(
+        'trip_id',
+        `<span class="font-mono">${escHtml(vehicle.tripId)}</span>`
+      ),
       routeProp,
       prop(
         'schedule_relationship',
@@ -130,37 +155,48 @@ function renderTripSection(ctx: RenderContext, rt: RtIndex, vehicle: VehiclePosi
           ? '<span class="opacity-40">not reported</span>'
           : escHtml(
               TRIP_SCHEDULE_RELATIONSHIP_LABELS[vehicle.scheduleRelationship] ??
-                String(vehicle.scheduleRelationship),
-            ),
+                String(vehicle.scheduleRelationship)
+            )
       ),
       trip?.headsign ? prop('Headsign', escHtml(trip.headsign)) : '',
       currentStop
         ? prop(
             `Currently ${escHtml(statusWord)}`,
-            `${entityLink(ctx, { type: 'stop', stop_id: currentStop.id }, currentStop.name || currentStop.id)}${mark}`,
+            `${entityLink(ctx, { type: 'stop', stop_id: currentStop.id }, currentStop.name || currentStop.id)}${mark}`
           )
         : '',
       currentIndex >= 0
         ? prop(
             'Progress',
-            `<span class="tabular-nums">${currentIndex + 1} of ${times.length} stops</span>${mark}`,
+            `<span class="tabular-nums">${currentIndex + 1} of ${times.length} stops</span>${mark}`
           )
         : '',
       vehicle.startDate || vehicle.startTime
-        ? prop('Trip start', escHtml(`${vehicle.startDate ?? ''} ${vehicle.startTime ?? ''}`.trim()))
+        ? prop(
+            'Trip start',
+            escHtml(
+              `${vehicle.startDate ?? ''} ${vehicle.startTime ?? ''}`.trim()
+            )
+          )
         : '',
-    ]),
+    ])
   );
 }
 
 /** Every stop-time prediction for this vehicle's trip, in sequence order. */
-function renderPredictions(ctx: RenderContext, rt: RtIndex, vehicle: VehiclePosition): string {
-  if (!vehicle.tripId) return '';
+function renderPredictions(
+  ctx: RenderContext,
+  rt: RtIndex,
+  vehicle: VehiclePosition
+): string {
+  if (!vehicle.tripId) {
+    return '';
+  }
   const predictions = rt.predictionsByTrip.get(vehicle.tripId);
   if (!predictions?.length) {
     return section(
       'Predictions',
-      '<p class="text-xs opacity-60">No trip update in the feed matches this trip.</p>',
+      '<p class="text-xs opacity-60">No trip update in the feed matches this trip.</p>'
     );
   }
   const feed = ctx.session.scheduledFeed;
@@ -181,37 +217,44 @@ function renderPredictions(ctx: RenderContext, rt: RtIndex, vehicle: VehiclePosi
         ${predictionHeaders()}
       </tr></thead>
       <tbody>${predictions
-        .map(p => {
+        .map((p) => {
           const stop = feed?.stops.get(p.stop_id);
-          const isCurrent = current !== undefined && p.stop_sequence === current.sequence;
+          const isCurrent =
+            current !== undefined && p.stop_sequence === current.sequence;
           const skipped = p.scheduleRelationship === 1;
           return `<tr class="${isCurrent ? 'bg-base-200' : ''}">
             <td class="text-right tabular-nums opacity-60 align-top">${escHtml(String(p.stop_sequence ?? '—'))}</td>
             <td class="max-w-0 truncate align-top${skipped ? ' opacity-50 line-through' : ''}">${
               stop
-                ? entityLink(ctx, { type: 'stop', stop_id: stop.id }, stop.name || stop.id)
+                ? entityLink(
+                    ctx,
+                    { type: 'stop', stop_id: stop.id },
+                    stop.name || stop.id
+                  )
                 : escHtml(p.stop_id)
             }</td>
             ${predictionCells(p)}
           </tr>`;
         })
         .join('')}</tbody>
-    </table>`,
+    </table>`
   );
 }
 
 export function renderVehiclePage(
   ctx: RenderContext,
   rt: RtIndex,
-  state: Extract<PageState, { type: 'vehicle' }>,
+  state: Extract<PageState, { type: 'vehicle' }>
 ): string {
   const live = ctx.session.vehicles.get(state.vehicle_id);
-  if (live) lastSeen.set(state.vehicle_id, { vehicle: live, at: Date.now() });
+  if (live) {
+    lastSeen.set(state.vehicle_id, { vehicle: live, at: Date.now() });
+  }
 
   const remembered = lastSeen.get(state.vehicle_id);
   if (!live && !remembered) {
     return `<p class="text-sm opacity-60">Vehicle ${escHtml(
-      state.vehicle_id,
+      state.vehicle_id
     )} is not in the current realtime feed.</p>`;
   }
 
@@ -224,7 +267,9 @@ export function renderVehiclePage(
   // spec violation — VehicleDescriptor.id "should be unique per vehicle" — that
   // gtfs-zone-rt-viewer reports rather than hides (Plan 06 Root cause D).
   const sharing = vehicle.vehicleId
-    ? [...ctx.session.vehicles.values()].filter(v => v.vehicleId === vehicle.vehicleId)
+    ? [...ctx.session.vehicles.values()].filter(
+        (v) => v.vehicleId === vehicle.vehicleId
+      )
     : [vehicle];
   const sharedIdBanner =
     sharing.length > 1
@@ -251,7 +296,7 @@ export function renderVehiclePage(
     ? ''
     : `<div class="rounded-lg border border-warning/50 bg-warning/10 p-3 text-xs">
          No longer in the feed as of ${escHtml(
-           localClock(remembered!.at),
+           localClock(remembered!.at)
          )}. Everything below is the last poll that contained it.
        </div>`;
 
@@ -264,30 +309,36 @@ export function renderVehiclePage(
         // The feed's own name for it, falling back to the entity that carried
         // it — the Identity props below keep the two apart.
         vehicle.vehicleId || vehicle.entityId,
-        `${route ? routeBadge(ctx, route) : ''} ${tripRelationshipMark(vehicle.scheduleRelationship)}`.trim(),
+        `${route ? routeBadge(ctx, route) : ''} ${tripRelationshipMark(vehicle.scheduleRelationship)}`.trim()
       )}
 
       ${section(
         'Live',
         propList([
-          prop('Position', escHtml(`${vehicle.lat.toFixed(5)}, ${vehicle.lon.toFixed(5)}`)),
+          prop(
+            'Position',
+            escHtml(`${vehicle.lat.toFixed(5)}, ${vehicle.lon.toFixed(5)}`)
+          ),
           prop(
             'Bearing',
             vehicle.bearing === undefined
               ? '<span class="opacity-40">not reported</span>'
-              : `${escHtml(vehicle.bearing.toFixed(0))}°`,
+              : `${escHtml(vehicle.bearing.toFixed(0))}°`
           ),
           prop(
             'Speed',
             vehicle.speed === undefined
               ? '<span class="opacity-40">not reported</span>'
-              : `${escHtml(vehicle.speed.toFixed(1))} m/s`,
+              : `${escHtml(vehicle.speed.toFixed(1))} m/s`
           ),
           prop(
             'Status',
             vehicle.currentStatus === undefined
               ? '<span class="opacity-40">not reported</span>'
-              : escHtml(VEHICLE_STATUS_LABELS[vehicle.currentStatus] ?? String(vehicle.currentStatus)),
+              : escHtml(
+                  VEHICLE_STATUS_LABELS[vehicle.currentStatus] ??
+                    String(vehicle.currentStatus)
+                )
           ),
           // This region reports the wire, so an omitted field still reads as
           // omitted; the derived value is stated next to it, not in place of it.
@@ -296,17 +347,23 @@ export function renderVehiclePage(
             'Occupancy',
             vehicle.occupancyStatus === undefined
               ? '<span class="opacity-40">not reported</span>'
-              : escHtml(OCCUPANCY_LABELS[vehicle.occupancyStatus] ?? String(vehicle.occupancyStatus)),
+              : escHtml(
+                  OCCUPANCY_LABELS[vehicle.occupancyStatus] ??
+                    String(vehicle.occupancyStatus)
+                )
           ),
           prop('Timestamp', timestampWithAge(vehicle.timestamp)),
           prop(
             'vehicle.id',
             vehicle.vehicleId
               ? `<span class="font-mono">${escHtml(vehicle.vehicleId)}</span>`
-              : '<span class="opacity-40">empty in the feed</span>',
+              : '<span class="opacity-40">empty in the feed</span>'
           ),
-          prop('Feed entity id', `<span class="font-mono">${escHtml(vehicle.entityId)}</span>`),
-        ]),
+          prop(
+            'Feed entity id',
+            `<span class="font-mono">${escHtml(vehicle.entityId)}</span>`
+          ),
+        ])
       )}
 
       ${renderTripSection(ctx, rt, vehicle)}
@@ -314,9 +371,13 @@ export function renderVehiclePage(
       ${renderAlertList(
         ctx,
         vehicle.tripId
-          ? alertsForTrip(ctx.session, vehicle.tripId, trip?.route_id ?? vehicle.routeId)
+          ? alertsForTrip(
+              ctx.session,
+              vehicle.tripId,
+              trip?.route_id ?? vehicle.routeId
+            )
           : [],
-        'Alerts',
+        'Alerts'
       )}
 
       ${renderRawJson('VehiclePosition (decoded)', vehicle.raw)}

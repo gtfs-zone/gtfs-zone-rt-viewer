@@ -2,7 +2,10 @@
  * The alert page, plus the compact alert list every other page embeds.
  */
 
-import type { AlertRecord, ServiceAlert } from 'gtfs-zone-web-common/gtfs/rt-types';
+import type {
+  AlertRecord,
+  ServiceAlert,
+} from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { PageState } from '../../types/page-state';
 import {
   ALERT_LEVEL_LABELS,
@@ -45,34 +48,42 @@ function statusBadge(record: AlertRecord): string {
 export function renderAlertList(
   ctx: RenderContext,
   records: AlertRecord[],
-  title: string,
+  title: string
 ): string {
-  if (records.length === 0) return '';
+  if (records.length === 0) {
+    return '';
+  }
   return section(
     title,
     `<ul class="space-y-1">${records
-      .map(record => {
-        const header = preferredText(record.alert.headerText) || `Alert ${record.id}`;
+      .map((record) => {
+        const header =
+          preferredText(record.alert.headerText) || `Alert ${record.id}`;
         return `<li class="flex items-start gap-2">
           ${statusBadge(record)}
           <span class="text-xs flex-1 min-w-0">${entityLink(
             ctx,
             { type: 'alert', alert_id: record.id },
-            header,
+            header
           )}</span>
           <span class="text-xs opacity-50 shrink-0">${escHtml(
-            ALERT_LEVEL_LABELS[alertLevel(record)],
+            ALERT_LEVEL_LABELS[alertLevel(record)]
           )}</span>
         </li>`;
       })
-      .join('')}</ul>`,
+      .join('')}</ul>`
   );
 }
 
 /** The languages the feed supplied beyond the one we chose to display. */
-function renderOtherTranslations(label: string, ts: ServiceAlert['headerText']): string {
-  const others = translations(ts).filter(t => t.text !== preferredText(ts));
-  if (others.length === 0) return '';
+function renderOtherTranslations(
+  label: string,
+  ts: ServiceAlert['headerText']
+): string {
+  const others = translations(ts).filter((t) => t.text !== preferredText(ts));
+  if (others.length === 0) {
+    return '';
+  }
   return `
     <details class="text-xs" data-detail="tr:${escHtml(label)}">
       <summary class="cursor-pointer opacity-60">${others.length} other translation${
@@ -80,19 +91,24 @@ function renderOtherTranslations(label: string, ts: ServiceAlert['headerText']):
       }</summary>
       <dl class="mt-1 space-y-1">${others
         .map(
-          t => `<div>
+          (t) => `<div>
             <dt class="opacity-50 font-mono">${escHtml(t.language || '(no language)')}</dt>
             <dd class="whitespace-pre-wrap">${escHtml(t.text)}</dd>
-          </div>`,
+          </div>`
         )
         .join('')}</dl>
     </details>`;
 }
 
 /** Every language the feed supplied, not just the one we chose to display. */
-function renderTranslations(label: string, ts: ServiceAlert['headerText']): string {
+function renderTranslations(
+  label: string,
+  ts: ServiceAlert['headerText']
+): string {
   const list = translations(ts);
-  if (list.length === 0) return '';
+  if (list.length === 0) {
+    return '';
+  }
   return `
     <div class="space-y-1">
       <p class="text-xs opacity-60">${escHtml(label)}</p>
@@ -107,11 +123,15 @@ function renderTranslations(label: string, ts: ServiceAlert['headerText']): stri
  */
 function activeWindow(alert: ServiceAlert): string {
   const periods = activePeriods(alert);
-  if (periods.length === 0) return 'always active';
+  if (periods.length === 0) {
+    return 'always active';
+  }
 
   const now = Date.now() / 1000;
-  const current = periods.find(p => (p.start ?? -Infinity) <= now && (p.end ?? Infinity) >= now);
-  const upcoming = periods.find(p => p.start !== undefined && p.start > now);
+  const current = periods.find(
+    (p) => (p.start ?? -Infinity) <= now && (p.end ?? Infinity) >= now
+  );
+  const upcoming = periods.find((p) => p.start !== undefined && p.start > now);
 
   let phrase: string;
   if (current) {
@@ -123,7 +143,10 @@ function activeWindow(alert: ServiceAlert): string {
     phrase = `starts ${formatAbsolute(upcoming.start!)}`;
   } else {
     const last = periods[periods.length - 1];
-    phrase = last.end === undefined ? 'not active' : `ended ${formatAbsolute(last.end)}`;
+    phrase =
+      last.end === undefined
+        ? 'not active'
+        : `ended ${formatAbsolute(last.end)}`;
   }
 
   return periods.length > 1 ? `${phrase}, ${periods.length} periods` : phrase;
@@ -141,14 +164,19 @@ function renderActivePeriods(alert: ServiceAlert): string {
   }
   const now = Date.now() / 1000;
   return `<ul class="text-xs space-y-1">${periods
-    .map(p => {
+    .map((p) => {
       const start = p.start === undefined ? 'always' : formatAbsolute(p.start);
       const end = p.end === undefined ? 'open-ended' : formatAbsolute(p.end);
       let note: string;
-      if (p.start !== undefined && p.start > now) note = `starts in ${formatDuration(p.start - now)}`;
-      else if (p.end !== undefined && p.end < now) note = `ended ${formatDuration(now - p.end)} ago`;
-      else if (p.end !== undefined) note = `active, ends in ${formatDuration(p.end - now)}`;
-      else note = 'active';
+      if (p.start !== undefined && p.start > now) {
+        note = `starts in ${formatDuration(p.start - now)}`;
+      } else if (p.end !== undefined && p.end < now) {
+        note = `ended ${formatDuration(now - p.end)} ago`;
+      } else if (p.end !== undefined) {
+        note = `active, ends in ${formatDuration(p.end - now)}`;
+      } else {
+        note = 'active';
+      }
       return `<li class="flex justify-between gap-2">
         <span>${escHtml(start)} -&gt; ${escHtml(end)}</span>
         <span class="opacity-60 shrink-0">${escHtml(note)}</span>
@@ -162,26 +190,40 @@ function renderInformedEntity(ctx: RenderContext, e: EntitySelector): string {
   const feed = ctx.session.scheduledFeed;
   const links: string[] = [];
 
-  if (e.agencyId) links.push(`<span class="opacity-60">agency</span> ${escHtml(e.agencyId)}`);
+  if (e.agencyId) {
+    links.push(`<span class="opacity-60">agency</span> ${escHtml(e.agencyId)}`);
+  }
   if (e.routeType !== null && e.routeType !== undefined) {
-    links.push(`<span class="opacity-60">route_type</span> ${escHtml(String(e.routeType))}`);
+    links.push(
+      `<span class="opacity-60">route_type</span> ${escHtml(String(e.routeType))}`
+    );
   }
   if (e.routeId) {
     const route = feed?.routes.get(e.routeId);
     links.push(
       `<span class="opacity-60">route</span> ${
         route
-          ? entityLink(ctx, { type: 'route', route_id: route.id }, route.short_name || route.long_name || route.id)
+          ? entityLink(
+              ctx,
+              { type: 'route', route_id: route.id },
+              route.short_name || route.long_name || route.id
+            )
           : escHtml(e.routeId)
-      }`,
+      }`
     );
   }
   if (e.stopId) {
     const stop = feed?.stops.get(e.stopId);
     links.push(
       `<span class="opacity-60">stop</span> ${
-        stop ? entityLink(ctx, { type: 'stop', stop_id: stop.id }, stop.name || stop.id) : escHtml(e.stopId)
-      }`,
+        stop
+          ? entityLink(
+              ctx,
+              { type: 'stop', stop_id: stop.id },
+              stop.name || stop.id
+            )
+          : escHtml(e.stopId)
+      }`
     );
   }
   if (e.trip?.tripId) {
@@ -192,27 +234,31 @@ function renderInformedEntity(ctx: RenderContext, e: EntitySelector): string {
           ? ` <span class="opacity-60">on</span> ${entityLink(
               ctx,
               { type: 'route', route_id: trip.route_id },
-              trip.route_id,
+              trip.route_id
             )}`
           : ''
-      }`,
+      }`
     );
   }
   if (e.directionId !== null && e.directionId !== undefined) {
-    links.push(`<span class="opacity-60">direction</span> ${escHtml(String(e.directionId))}`);
+    links.push(
+      `<span class="opacity-60">direction</span> ${escHtml(String(e.directionId))}`
+    );
   }
 
   return `<li class="text-xs rounded border border-base-300 p-2 space-y-1">
     <span class="badge badge-ghost badge-xs">${escHtml(ALERT_LEVEL_LABELS[selectorLevel(e)])}</span>
     <div class="flex flex-wrap gap-x-3 gap-y-1">${
-      links.length ? links.join('') : '<span class="opacity-50">names nothing — applies to the whole feed</span>'
+      links.length
+        ? links.join('')
+        : '<span class="opacity-50">names nothing — applies to the whole feed</span>'
     }</div>
   </li>`;
 }
 
 export function renderAlertPage(
   ctx: RenderContext,
-  state: Extract<PageState, { type: 'alert' }>,
+  state: Extract<PageState, { type: 'alert' }>
 ): string {
   const record = ctx.session.alerts.get(state.alert_id);
   if (!record) {
@@ -240,15 +286,32 @@ export function renderAlertPage(
       ${section(
         'Properties',
         propList([
-          prop('Status', `${statusBadge(record)} ${escHtml(activeWindow(alert))}`),
+          prop(
+            'Status',
+            `${statusBadge(record)} ${escHtml(activeWindow(alert))}`
+          ),
           prop('Level', escHtml(ALERT_LEVEL_LABELS[alertLevel(record)])),
-          prop('Cause', escHtml(CAUSE_LABELS[alert.cause as number] ?? String(alert.cause ?? '—'))),
-          prop('Effect', escHtml(EFFECT_LABELS[alert.effect as number] ?? String(alert.effect ?? '—'))),
+          prop(
+            'Cause',
+            escHtml(
+              CAUSE_LABELS[alert.cause as number] ?? String(alert.cause ?? '—')
+            )
+          ),
+          prop(
+            'Effect',
+            escHtml(
+              EFFECT_LABELS[alert.effect as number] ??
+                String(alert.effect ?? '—')
+            )
+          ),
           prop(
             'Severity',
-            escHtml(SEVERITY_LABELS[alert.severityLevel as number] ?? String(alert.severityLevel ?? '—')),
+            escHtml(
+              SEVERITY_LABELS[alert.severityLevel as number] ??
+                String(alert.severityLevel ?? '—')
+            )
           ),
-        ]),
+        ])
       )}
 
       ${section('Active periods', renderActivePeriods(alert))}
@@ -256,10 +319,10 @@ export function renderAlertPage(
       ${section(
         'Informed entities',
         (alert.informedEntity ?? []).length
-          ? `<ul class="space-y-1">${alert.informedEntity!
-              .map(e => renderInformedEntity(ctx, e))
+          ? `<ul class="space-y-1">${alert
+              .informedEntity!.map((e) => renderInformedEntity(ctx, e))
               .join('')}</ul>`
-          : '<p class="text-xs opacity-60">No informed entities — the alert applies to the whole feed.</p>',
+          : '<p class="text-xs opacity-60">No informed entities — the alert applies to the whole feed.</p>'
       )}
 
       ${renderRawJson('Alert (decoded)', record.raw)}
