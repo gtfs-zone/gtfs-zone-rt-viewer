@@ -1,3 +1,9 @@
+## v0.19.3 (2026-10-01)
+
+### Fix
+
+- **vendor**: re-record the vendored SHAs after the history rewrite and re-vendor vendor-check
+
 ## v0.19.2 (2026-10-01)
 
 ### Fix
