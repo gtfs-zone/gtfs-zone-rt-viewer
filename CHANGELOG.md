@@ -1,3 +1,9 @@
+## v0.19.2 (2026-10-01)
+
+### Fix
+
+- link the About page to the renamed GitHub repo
+
 ## v0.19.1 (2026-10-01)
 
 ## v0.19.0 (2026-10-01)
