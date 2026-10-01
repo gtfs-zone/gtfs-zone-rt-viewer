@@ -27,11 +27,9 @@ What is still hand-copied from other repos is listed in `VENDORED.md`.
 ```bash
 cz bump        # on main; tags vX.Y.Z
 git push origin main --tags
-git push github main --tags
 ```
 
-CI builds on the tag, pushes the image by digest and records that digest in
-`deploy-gtfs-rt/sites/kustomization.yaml`; ArgoCD rolls it out.
+CI builds on the tag and publishes `dist/` to GitHub Pages.
 
 ## License
 
