@@ -10,8 +10,10 @@
     "start": "vite",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
+    "check": "pnpm run typecheck && pnpm run vendor:check",
     "vendor:check": "tsx scripts/vendor-check.ts",
-    "vuln": "sh scripts/vuln-gate.sh"
+    "vuln": "sh scripts/vuln-gate.sh",
+    "commit": "cz commit"
   },
   "keywords": [
     "gtfs",
