@@ -1,0 +1,45 @@
+publiccodeYmlVersion: "0.4"
+
+name: GTFS.zone RT Viewer
+url: "https://github.com/gtfs-zone/gtfs-zone-rt-viewer"
+landingURL: "https://viz.rt.gtfs.zone"
+
+platforms:
+  - web
+
+categories:
+  - data-visualization
+  - geographic-information-systems
+
+developmentStatus: beta
+
+softwareType: "standalone/web"
+
+description:
+  en:
+    shortDescription: >
+      A static frontend for visualizing GTFS Realtime feeds on a map.
+    longDescription: >
+      GTFS.zone RT Viewer loads a GTFS Schedule feed and the GTFS Realtime
+      feeds that go with it, and shows live vehicle positions and trip updates
+      on a map. It is a static single-page app with no backend of its own. In
+      production it reads the feeds gtfs-zone-rt-api serves at rt.gtfs.zone,
+      and it can read any other GTFS Realtime source.
+    features:
+      - Live vehicle positions on a map
+      - Trip updates against the scheduled timetable
+      - Reads any GTFS Schedule and GTFS Realtime feed
+
+legal:
+  license: AGPL-3.0-or-later
+
+maintenance:
+  type: community
+  contacts:
+    - name: Max Katz-Christy
+      email: maxkatzchristy@gmail.com
+
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - en
