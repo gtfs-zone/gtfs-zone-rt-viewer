@@ -1,18 +1,18 @@
-/* @vendored-from coloring-book:src/types/page-state.ts
+/* @vendored-from gtfs-zone-editor:src/types/page-state.ts
    @sha ce1bfa0
    @status modified
    @changes
-   - Page types reduced to test-track's four object pages plus home: dropped
+   - Page types reduced to gtfs-zone-rt-viewer's four object pages plus home: dropped
      `agency`, `service`, and `pathway`. Upstream's `timetable` page became a
      modal in `1c16f14` and was never here.
-   - Added `vehicle` and `alert`, which have no coloring-book equivalent.
+   - Added `vehicle` and `alert`, which have no gtfs-zone-editor equivalent.
    - `StateValidator` is synchronous, ours resolves against in-memory maps, not a
      database.
    - `BreadcrumbItem`, `NavigationEvent`, `PageStateManagerConfig`,
      `StateValidator`, `pageStatesEqual` and `sameLocation` are generic over the
      union and live in `gtfs-zone-web-common`'s `ui/page-state-manager.ts`.
    - Skipped `136329b`: the `zone` and `location_group` variants and their
-     `isPageState` cases are GTFS Flex pages test-track has no data for.
+     `isPageState` cases are GTFS Flex pages gtfs-zone-rt-viewer has no data for.
    - `1c16f14`'s modal dimension is taken as of Phase 12, with this repo's own
      `MODAL_TYPES`: `alerts` and `help`, the two modals worth linking to. Every
      name in upstream's list is an editor modal. Upstream's `TimetableModalState`

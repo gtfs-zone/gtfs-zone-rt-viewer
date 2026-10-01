@@ -1,4 +1,4 @@
-/* @vendored-from coloring-book:src/modules/help-pages.ts
+/* @vendored-from gtfs-zone-editor:src/modules/help-pages.ts
    @sha 59ed6d0
    @status modified
    @changes
@@ -7,14 +7,14 @@
      shortcutsPage]
    - welcomePage copy rewritten for viz.rt.gtfs.zone (live vehicle map, not
      the GTFS editor)
-   - ABOUT_APP replaced with test-track's existing AboutApp config, moved
+   - ABOUT_APP replaced with gtfs-zone-rt-viewer's existing AboutApp config, moved
      here from the old about-modal.ts
    - The Keyboard Shortcuts page is back as of Phase 12, once
      `keyboard-shortcuts.ts` was parameterized over an app-supplied command
      list: `buildShortcutsTable` and the `shortcuts` half of
      `setHelpRuntimeData` are upstream's, fed from this app's own list
    - mapKeyPage rewritten for this app's own symbology (routes, vehicles,
-     stops) instead of coloring-book's pathways/stops
+     stops) instead of gtfs-zone-editor's pathways/stops
    - mapKeyPage gained a direction-of-travel row in Phase 8, when the
      spotlighted route got its chevrons
    - `getHelpPage` is dropped: the viewer looks pages up in the registry it

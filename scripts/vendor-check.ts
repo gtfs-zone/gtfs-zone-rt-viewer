@@ -1,15 +1,15 @@
-/* @vendored-from yard-master:scripts/vendor-check.ts
+/* @vendored-from gtfs-zone-rt-manager:scripts/vendor-check.ts
    @sha 5dc61ef
    @status modified
    @changes
    - The doc comment names this repo and its source repos.
-   Tooling, not app code: the one place the coloring-book -> test-track ->
-   yard-master flow runs backwards, because yard-master wrote the five-column
+   Tooling, not app code: the one place the gtfs-zone-editor -> gtfs-zone-rt-viewer ->
+   gtfs-zone-rt-manager flow runs backwards, because gtfs-zone-rt-manager wrote the five-column
    checker first. */
 /**
  * Two passes over VENDORED.md. Every row names its own `Source repo` and is
- * resolved against that sibling checkout, which is coloring-book for every
- * row but this checker, vendored from yard-master:
+ * resolved against that sibling checkout, which is gtfs-zone-editor for every
+ * row but this checker, vendored from gtfs-zone-rt-manager:
  *
  * - drift: every `verbatim` entry must still match its source at the *recorded*
  *   SHA. A mismatch means someone edited the local copy.
@@ -20,11 +20,11 @@
  * Two statuses are exempt from both passes, and both are counted in the summary
  * so the tier stays visible rather than silently unchecked:
  *
- * - `adopted`: was vendored, is test-track's file now. The banner records
+ * - `adopted`: was vendored, is gtfs-zone-rt-viewer's file now. The banner records
  *   where it came from, but feature work has taken it over far enough that
  *   re-syncing has stopped being meaningful, so upstream commits on it are
  *   not news.
- * - `origin`: never vendored. test-track is the canonical source another repo
+ * - `origin`: never vendored. gtfs-zone-rt-viewer is the canonical source another repo
  *   vendors *from*, so the row carries no source repo, no source path and no
  *   SHA. It is listed only so the table is the whole map of what is shared.
  *

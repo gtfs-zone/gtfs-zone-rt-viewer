@@ -1,4 +1,4 @@
-/* @vendored-from coloring-book:src/modules/layer-manager.ts
+/* @vendored-from gtfs-zone-editor:src/modules/layer-manager.ts
    @sha 0d38e50
    @status adopted
    Promoted from `modified` in Phase 8. The shared half of this file is now
@@ -16,7 +16,7 @@
      file-highlight mode: no editor here.
    - `1dbef88` / `63af1c9` / `26b87e2` (flex zones and location groups),
      `c48eede` / `b5e30d1` / `8303357` / `dc1d421`'s transfer-edge half,
-     `1528c8d` / `5b61f37` (shapes and zones via geojson.io): test-track
+     `1528c8d` / `5b61f37` (shapes and zones via geojson.io): gtfs-zone-rt-viewer
      ingests none of that data.
    - `69dd3f6` / `34a2750` (timetable stop focus): no timetable here.
    - The camera-ease-to-new-stop half of `7e77889`: no flow here creates a stop.

@@ -1,11 +1,11 @@
-/* @vendored-from coloring-book:src/modules/page-state-manager.ts
+/* @vendored-from gtfs-zone-editor:src/modules/page-state-manager.ts
    @sha 1ce064d
    @status adopted
    @changes
    - The `PageStateManager` class is `gtfs-zone-web-common`'s `ui/page-state-manager.ts`
      now, generic over the page-state union. What is left here is this app's
      hash codec, which the shared class is constructed with.
-   - The codec covers test-track's five page variants; upstream's `agency` /
+   - The codec covers gtfs-zone-rt-viewer's five page variants; upstream's `agency` /
      `service` / `pathway` / `zone` / `location_group` branches are gone, and
      `timetable` was never here.
    - Upstream's `1c16f14` modal dimension: the `modal` / `modal_page` params,
