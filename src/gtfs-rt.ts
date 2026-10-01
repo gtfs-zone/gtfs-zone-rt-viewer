@@ -1,9 +1,9 @@
 import { transit_realtime } from 'gtfs-realtime-bindings';
 import { CONFIG } from './config';
-import type { AlertRecord, TripUpdate, VehiclePosition } from 'interlocking/gtfs/rt-types';
-import { presentNumber } from 'interlocking/gtfs/rt-types';
-import type { RealtimeEndpointName } from 'interlocking/gtfs/feed-selection';
-import { REALTIME_ENDPOINTS, describeHttpError, describeNetworkError } from 'interlocking/gtfs/feed-selection';
+import type { AlertRecord, TripUpdate, VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
+import { presentNumber } from 'gtfs-zone-web-common/gtfs/rt-types';
+import type { RealtimeEndpointName } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import { REALTIME_ENDPOINTS, describeHttpError, describeNetworkError } from 'gtfs-zone-web-common/gtfs/feed-selection';
 
 /**
  * Whether the producer actually sent a field, as opposed to protobufjs handing

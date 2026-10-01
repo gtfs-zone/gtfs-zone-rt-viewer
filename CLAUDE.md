@@ -15,22 +15,22 @@ pnpm vendor:check # diff vendored files against their source repo, per VENDORED.
 git config core.hooksPath .githooks   # once per clone; runs vendor:check pre-commit
 ```
 
-## Shared modules (`interlocking`)
+## Shared modules (`gtfs-zone-web-common`)
 
 A third of `src/` is no longer in this repo. The files that have moved out of
-the apps live in the `interlocking` package, a git dependency shipping raw
+the apps live in the `gtfs-zone-web-common` package, a git dependency shipping raw
 TypeScript with no build step. The scheduled feed parser is one of them, as
-`interlocking/gtfs/scheduled`, along with the feed clock, the load modal, the
+`gtfs-zone-web-common/gtfs/scheduled`, along with the feed clock, the load modal, the
 curated examples, and the realtime half: the payload types, the live index, the
 alert lookups and the page furniture the object pages render through, and the
 app shell: its markup (mounted by `src/shell.ts`, which `index.ts` must import
 first), its stylesheet (`@import`ed by `src/styles/main.css`), the page-state
-manager, the focus controller and the panel host. Import them as `interlocking/ui/...`,
-`interlocking/gtfs/...`, `interlocking/map/...` and `interlocking/util/...`;
+manager, the focus controller and the panel host. Import them as `gtfs-zone-web-common/ui/...`,
+`gtfs-zone-web-common/gtfs/...`, `gtfs-zone-web-common/map/...` and `gtfs-zone-web-common/util/...`;
 `tsconfig.json` `paths` and a `resolve.alias` in `vite.config.js` both point at
-`node_modules/interlocking/src`.
+`node_modules/gtfs-zone-web-common/src`.
 
-A shared change is a commit in interlocking, a tag, and a bump in each of the
+A shared change is a commit in gtfs-zone-web-common, a tag, and a bump in each of the
 three consumers. It is not edited here and `vendor:check` does not cover it.
 
 Restart the dev server after a bump. The alias resolves through a pnpm symlink
@@ -47,7 +47,7 @@ flow rule still holds: coloring-book -> test-track -> yard-master.
 - Do NOT use Playwright (or any browser automation) to verify changes. The user does
   visual/browser verification themselves. Stop at `pnpm typecheck` / `pnpm build` and
   hand off.
-- UI conventions live in interlocking's `CLAUDE.md`: no `cursor-help`, `toggle` not `checkbox` for on/off settings, `SELECTED_ROW_CLASS` for picked list rows.
+- UI conventions live in gtfs-zone-web-common's `CLAUDE.md`: no `cursor-help`, `toggle` not `checkbox` for on/off settings, `SELECTED_ROW_CLASS` for picked list rows.
 
 ## Related Repos
 

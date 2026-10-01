@@ -10,7 +10,7 @@
      database.
    - `BreadcrumbItem`, `NavigationEvent`, `PageStateManagerConfig`,
      `StateValidator`, `pageStatesEqual` and `sameLocation` are generic over the
-     union and live in `interlocking`'s `ui/page-state-manager.ts`.
+     union and live in `gtfs-zone-web-common`'s `ui/page-state-manager.ts`.
    - Skipped `136329b`: the `zone` and `location_group` variants and their
      `isPageState` cases are GTFS Flex pages test-track has no data for.
    - `1c16f14`'s modal dimension is taken as of Phase 12, with this repo's own

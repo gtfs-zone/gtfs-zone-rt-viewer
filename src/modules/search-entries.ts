@@ -11,13 +11,13 @@
 import { CONFIG } from '../config';
 import type { PageState } from '../types/page-state';
 import type { FeedSession } from './feed-session';
-import { vehicleDisplayName } from 'interlocking/gtfs/entity-render';
+import { vehicleDisplayName } from 'gtfs-zone-web-common/gtfs/entity-render';
 import {
   dotMarker,
   routeMarker,
   stopMarker,
   type SearchEntry,
-} from 'interlocking/ui/search-controller';
+} from 'gtfs-zone-web-common/ui/search-controller';
 
 /** Non-empty values only, so the haystack has no runs of blanks to match into. */
 function haystack(...parts: (string | undefined)[]): string {

@@ -27,7 +27,7 @@
  * from the code that draws it.
  */
 
-import { eyebrow, lede, glyphList, type HelpPageEntry } from 'interlocking/ui/help-modal';
+import { eyebrow, lede, glyphList, type HelpPageEntry } from 'gtfs-zone-web-common/ui/help-modal';
 import {
   renderBlurb,
   renderVersionAndSource,
@@ -36,7 +36,7 @@ import {
   renderDataSourcesSection,
   renderFeedbackSection,
   type AboutApp,
-} from 'interlocking/ui/about-links';
+} from 'gtfs-zone-web-common/ui/about-links';
 
 export type HelpGroup = 'Getting Started' | 'Reference';
 

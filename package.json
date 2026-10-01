@@ -1,5 +1,5 @@
 {
-  "name": "viz.rt.gtfs.zone",
+  "name": "gtfs-zone-rt-viewer",
   "version": "0.0.0-development",
   "description": "Static frontend for visualizing GTFS realtime feeds",
   "main": "src/index.html",
@@ -37,7 +37,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "daisyui": "^5.7.46",
     "gtfs-realtime-bindings": "^1.1.1",
-    "interlocking": "github:gtfs-zone/interlocking#v4.0.0",
+    "gtfs-zone-web-common": "github:gtfs-zone/gtfs-zone-web-common#v5.0.1",
     "jszip": "^3.10.2",
     "maplibre-gl": "^6.11.2",
     "papaparse": "^5.7.0"

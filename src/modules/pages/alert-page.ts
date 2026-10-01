@@ -2,7 +2,7 @@
  * The alert page, plus the compact alert list every other page embeds.
  */
 
-import type { AlertRecord, ServiceAlert } from 'interlocking/gtfs/rt-types';
+import type { AlertRecord, ServiceAlert } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { PageState } from '../../types/page-state';
 import {
   ALERT_LEVEL_LABELS,
@@ -15,7 +15,7 @@ import {
   preferredText,
   selectorLevel,
   translations,
-} from 'interlocking/gtfs/alerts';
+} from 'gtfs-zone-web-common/gtfs/alerts';
 import type { RenderContext } from '../render-context';
 import {
   entityLink,
@@ -28,7 +28,7 @@ import {
   propList,
   renderRawJson,
   section,
-} from 'interlocking/gtfs/entity-render';
+} from 'gtfs-zone-web-common/gtfs/entity-render';
 
 type EntitySelector = NonNullable<ServiceAlert['informedEntity']>[number];
 

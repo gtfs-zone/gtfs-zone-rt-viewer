@@ -1,16 +1,16 @@
 import * as maplibregl from 'maplibre-gl';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { CONFIG } from './config';
-import type { GTFSScheduled } from 'interlocking/gtfs/scheduled';
-import type { VehiclePosition } from 'interlocking/gtfs/rt-types';
+import type { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
+import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { PageState } from './types/page-state';
-import { BasemapControl, initialMapStyle, onBasemapChanged } from 'interlocking/map/basemap-control';
-import type { MapAppearance } from 'interlocking/map/basemap-control';
-import { AutoZoom } from 'interlocking/map/auto-zoom';
-import { MAP_MAX_ZOOM } from 'interlocking/map/basemap-styles';
-import { fitPadding } from 'interlocking/map/fit-padding';
-import { SearchPlaceMarker } from 'interlocking/map/place-search';
-import type { PlacePayload } from 'interlocking/map/place-search';
+import { BasemapControl, initialMapStyle, onBasemapChanged } from 'gtfs-zone-web-common/map/basemap-control';
+import type { MapAppearance } from 'gtfs-zone-web-common/map/basemap-control';
+import { AutoZoom } from 'gtfs-zone-web-common/map/auto-zoom';
+import { MAP_MAX_ZOOM } from 'gtfs-zone-web-common/map/basemap-styles';
+import { fitPadding } from 'gtfs-zone-web-common/map/fit-padding';
+import { SearchPlaceMarker } from 'gtfs-zone-web-common/map/place-search';
+import type { PlacePayload } from 'gtfs-zone-web-common/map/place-search';
 import { LayerManager } from './modules/layer-manager';
 import type { MapDataIssues } from './modules/layer-manager';
 

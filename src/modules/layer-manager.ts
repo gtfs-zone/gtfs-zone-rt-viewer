@@ -2,7 +2,7 @@
    @sha 0d38e50
    @status adopted
    Promoted from `modified` in Phase 8. The shared half of this file is now
-   `interlocking`'s `layer-specs.ts` (source ids, layer ids, filters, zoom ramps, fade
+   `gtfs-zone-web-common`'s `layer-specs.ts` (source ids, layer ids, filters, zoom ramps, fade
    bands, spotlight expressions) and `stop-layer-style.ts` (how one stop circle
    looks). What is left is this app's own half: which sources exist and what
    fills them. Upstream's remaining manager is the editor's, built on
@@ -25,7 +25,7 @@
    (the small-feed fade exemption, which is the same change this repo already
    carried from `424cbdf`), `dc1d421`'s hovered-stop highlight, `767ac02`'s
    deduped focused expression, and `cef96c7`'s direction arrows on the single
-   spotlighted route, which is what gives `interlocking`'s `map-icons.ts` a caller. */
+   spotlighted route, which is what gives `gtfs-zone-web-common`'s `map-icons.ts` a caller. */
 
 import type * as maplibregl from 'maplibre-gl';
 import type {
@@ -35,12 +35,12 @@ import type {
   Map as MapLibreMap,
 } from 'maplibre-gl';
 import { CONFIG } from '../config';
-import type { GTFSScheduled } from 'interlocking/gtfs/scheduled';
-import type { VehiclePosition } from 'interlocking/gtfs/rt-types';
-import { routeSortKey } from 'interlocking/gtfs/route-sort';
-import { casingColor } from 'interlocking/gtfs/route-colors';
-import { clearThemeColorCache, resolveThemeColor } from 'interlocking/util/theme-color';
-import { ensureMapIcons } from 'interlocking/map/icons';
+import type { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
+import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
+import { routeSortKey } from 'gtfs-zone-web-common/gtfs/route-sort';
+import { casingColor } from 'gtfs-zone-web-common/gtfs/route-colors';
+import { clearThemeColorCache, resolveThemeColor } from 'gtfs-zone-web-common/util/theme-color';
+import { ensureMapIcons } from 'gtfs-zone-web-common/map/icons';
 import {
   NO_ROUTE_FILTER,
   ROUTES_CASING_LAYER,
@@ -65,7 +65,7 @@ import {
   zoomWidth,
   type StopFadeBands,
   type StopFeatureState,
-} from 'interlocking/map/layer-specs';
+} from 'gtfs-zone-web-common/map/layer-specs';
 import {
   STOP_FOCUS_HALO_LAYER,
   STOP_FOCUS_RING_LAYER,
@@ -77,7 +77,7 @@ import {
   stopFillColor,
   stopsBackgroundPaint,
   type StopStyleOptions,
-} from 'interlocking/map/stop-layer-style';
+} from 'gtfs-zone-web-common/map/stop-layer-style';
 
 /**
  * Counts of feed data the map could not draw. Surfaced on the status page —
@@ -923,7 +923,7 @@ export class LayerManager {
    * route. MapLibre reads the alpha channel as a distance field, so the shape
    * is blurred slightly to give the edge a ramp instead of a hard step.
    *
-   * Separate from `interlocking`'s `map-icons.ts`: that file's `route-arrow` is a
+   * Separate from `gtfs-zone-web-common`'s `map-icons.ts`: that file's `route-arrow` is a
    * white-on-dark chevron laid along a line, not a tintable vehicle marker.
    */
   private addArrowImage(): void {

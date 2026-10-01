@@ -2,19 +2,19 @@
  * The right panel's object pages: one dispatcher over `PageState`.
  *
  * The host, meaning the breadcrumb header, the `data-nav` links, and the scroll
- * and `<details>` restore around each re-render, is `interlocking`'s
+ * and `<details>` restore around each re-render, is `gtfs-zone-web-common`'s
  * `PanelHost`. The panel re-renders on every realtime poll, which is every 15
  * seconds; what this adds is that trigger, the realtime index the pages read,
  * the live relative times, and the route-strip hover.
  */
 
 import type { PageState } from '../types/page-state';
-import type { BreadcrumbItem } from 'interlocking/ui/breadcrumb-trail';
-import { PanelHost } from 'interlocking/ui/panel-host';
+import type { BreadcrumbItem } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
+import { PanelHost } from 'gtfs-zone-web-common/ui/panel-host';
 import type { FeedSession } from './feed-session';
-import { RtIndex } from 'interlocking/gtfs/rt-index';
+import { RtIndex } from 'gtfs-zone-web-common/gtfs/rt-index';
 import type { RenderContext } from './render-context';
-import { formatRelative } from 'interlocking/gtfs/entity-render';
+import { formatRelative } from 'gtfs-zone-web-common/gtfs/entity-render';
 import { renderAlertPage } from './pages/alert-page';
 import { renderRoutePage } from './pages/route-page';
 import { renderStopPage } from './pages/stop-page';

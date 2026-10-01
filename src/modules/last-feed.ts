@@ -10,7 +10,7 @@
  * JSON, a half-written value — reads as absent rather than being migrated.
  */
 
-import type { FeedSelection } from 'interlocking/gtfs/feed-selection';
+import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { isReproducible } from './feed-url';
 
 const KEY = 'viz:last-feed';

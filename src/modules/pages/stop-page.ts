@@ -10,12 +10,12 @@
  * in `stop_times`.
  */
 
-import type { AlertRecord } from 'interlocking/gtfs/rt-types';
-import type { Stop } from 'interlocking/gtfs/scheduled';
+import type { AlertRecord } from 'gtfs-zone-web-common/gtfs/rt-types';
+import type { Stop } from 'gtfs-zone-web-common/gtfs/scheduled';
 import type { PageState } from '../../types/page-state';
-import { alertsForStop } from 'interlocking/gtfs/alerts';
-import { stopTypeLabel } from 'interlocking/ui/breadcrumb-trail';
-import type { RtIndex } from 'interlocking/gtfs/rt-index';
+import { alertsForStop } from 'gtfs-zone-web-common/gtfs/alerts';
+import { stopTypeLabel } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
+import type { RtIndex } from 'gtfs-zone-web-common/gtfs/rt-index';
 import type { RenderContext } from '../render-context';
 import {
   VEHICLE_STATUS_LABELS,
@@ -31,7 +31,7 @@ import {
   routeBadge,
   section,
   vehicleDisplayName,
-} from 'interlocking/gtfs/entity-render';
+} from 'gtfs-zone-web-common/gtfs/entity-render';
 import { renderAlertList } from './alert-page';
 
 const MAX_DEPARTURES = 20;

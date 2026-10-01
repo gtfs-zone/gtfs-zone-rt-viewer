@@ -1,11 +1,11 @@
 import type { PageState } from '../types/page-state';
-import type { BreadcrumbItem } from 'interlocking/ui/breadcrumb-trail';
-import { stopTypeLabel } from 'interlocking/ui/breadcrumb-trail';
-import { feedByUrl } from 'interlocking/gtfs/feed-catalog';
-import type { FeedSelection } from 'interlocking/gtfs/feed-selection';
-import { describeSelection } from 'interlocking/gtfs/feed-selection';
+import type { BreadcrumbItem } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
+import { stopTypeLabel } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
+import { feedByUrl } from 'gtfs-zone-web-common/gtfs/feed-catalog';
+import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import { describeSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import type { FeedSession } from './feed-session';
-import { vehicleDisplayName } from 'interlocking/gtfs/entity-render';
+import { vehicleDisplayName } from 'gtfs-zone-web-common/gtfs/entity-render';
 
 /**
  * Synchronous breadcrumb building and focus validation against the loaded feed.

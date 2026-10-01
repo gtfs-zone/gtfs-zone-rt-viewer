@@ -12,11 +12,11 @@
  * open or closed; the list is only repainted while the modal is up.
  */
 
-import type { AlertRecord } from 'interlocking/gtfs/rt-types';
+import type { AlertRecord } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { PageState } from '../types/page-state';
-import { ALERT_LEVEL_LABELS, alertLevel, isActiveNow, preferredText } from 'interlocking/gtfs/alerts';
-import { showModal } from 'interlocking/ui/modal-utils';
-import { escapeHtml } from 'interlocking/util/escape-html';
+import { ALERT_LEVEL_LABELS, alertLevel, isActiveNow, preferredText } from 'gtfs-zone-web-common/gtfs/alerts';
+import { showModal } from 'gtfs-zone-web-common/ui/modal-utils';
+import { escapeHtml } from 'gtfs-zone-web-common/util/escape-html';
 
 const LIST_ID = 'alerts-list';
 

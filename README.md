@@ -19,7 +19,7 @@ git config core.hooksPath .githooks   # once per clone; runs vendor:check pre-co
 ```
 
 Shared modules come from
-[interlocking](https://github.com/gtfs-zone/interlocking), a git dependency.
+[gtfs-zone-web-common](https://github.com/gtfs-zone/gtfs-zone-web-common), a git dependency.
 What is still hand-copied from other repos is listed in `VENDORED.md`.
 
 ## Releasing

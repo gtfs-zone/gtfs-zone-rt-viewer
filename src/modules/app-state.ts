@@ -1,23 +1,23 @@
 /**
  * Focus changes and feed selection.
  *
- * The focus half is `interlocking`'s `FocusController`: map click, panel link,
+ * The focus half is `gtfs-zone-web-common`'s `FocusController`: map click, panel link,
  * hash change and boot restore all converge on it. What this adds is the feed
  * half of the hash, and the boot sequence that reads a link before its feed
  * has loaded.
  */
 
-import type { FeedSelection } from 'interlocking/gtfs/feed-selection';
-import type { BreadcrumbItem } from 'interlocking/ui/breadcrumb-trail';
-import type { FocusHooks } from 'interlocking/ui/focus-controller';
-import { FocusController } from 'interlocking/ui/focus-controller';
-import { homeWithModal } from 'interlocking/ui/page-state-manager';
+import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import type { BreadcrumbItem } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
+import type { FocusHooks } from 'gtfs-zone-web-common/ui/focus-controller';
+import { FocusController } from 'gtfs-zone-web-common/ui/focus-controller';
+import { homeWithModal } from 'gtfs-zone-web-common/ui/page-state-manager';
 import type { PageState } from '../types/page-state';
 import { buildBreadcrumbs, validateState } from './breadcrumbs';
 import type { FeedSession } from './feed-session';
-import { describeMissing, isComplete } from 'interlocking/gtfs/feed-selection';
+import { describeMissing, isComplete } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { paramsToSelection, selectionToParams } from './feed-url';
-import { notify } from 'interlocking/ui/notification-system';
+import { notify } from 'gtfs-zone-web-common/ui/notification-system';
 import { createPageStateManager } from './page-state-manager';
 
 /** What the hash named at boot, read once before anything loads. */

@@ -2,7 +2,7 @@
    @sha 1ce064d
    @status adopted
    @changes
-   - The `PageStateManager` class is `interlocking`'s `ui/page-state-manager.ts`
+   - The `PageStateManager` class is `gtfs-zone-web-common`'s `ui/page-state-manager.ts`
      now, generic over the page-state union. What is left here is this app's
      hash codec, which the shared class is constructed with.
    - The codec covers test-track's five page variants; upstream's `agency` /
@@ -12,9 +12,9 @@
      namespaced so they cannot collide with the feed params the manager merges
      into the same hash. */
 
-import type { PageStateCodec } from 'interlocking/ui/page-state-manager';
-import { PageStateManager } from 'interlocking/ui/page-state-manager';
-import type { BreadcrumbItem } from 'interlocking/ui/breadcrumb-trail';
+import type { PageStateCodec } from 'gtfs-zone-web-common/ui/page-state-manager';
+import { PageStateManager } from 'gtfs-zone-web-common/ui/page-state-manager';
+import type { BreadcrumbItem } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
 import type { ModalState, ModalType, PageState } from '../types/page-state';
 import { MODAL_TYPES, isPageState } from '../types/page-state';
 

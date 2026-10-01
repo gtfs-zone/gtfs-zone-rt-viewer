@@ -7,7 +7,7 @@
  * list is a shortcut to a feature that does not exist.
  */
 
-import type { ShortcutCommand } from 'interlocking/ui/keyboard-shortcuts';
+import type { ShortcutCommand } from 'gtfs-zone-web-common/ui/keyboard-shortcuts';
 
 interface ShortcutHost {
   /** Open the load modal and load whatever it returns. */

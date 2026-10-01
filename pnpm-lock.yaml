@@ -20,9 +20,9 @@ importers:
       gtfs-realtime-bindings:
         specifier: ^1.1.1
         version: 1.1.1
-      interlocking:
-        specifier: github:gtfs-zone/interlocking#v4.0.0
-        version: https://codeload.github.com/gtfs-zone/interlocking/tar.gz/17e7be762021eeb7463b92b5f678494406c07ddf(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0)
+      gtfs-zone-web-common:
+        specifier: github:gtfs-zone/gtfs-zone-web-common#v5.0.1
+        version: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/5b2b35eda87ef2424bd153c769611d71a978fe9b(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0)
       jszip:
         specifier: ^3.10.2
         version: 3.10.2
@@ -752,6 +752,19 @@ packages:
   gtfs-realtime-bindings@1.1.1:
     resolution: {integrity: sha512-+k8+/MmiBmUUWlASs4CeTkV+Qyz/FgbZxXdg9rDU62XRfJOpRaRe+nKWCGKse965jffVZ0tIu1K+R7hRvjSLfQ==}
 
+  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/5b2b35eda87ef2424bd153c769611d71a978fe9b:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/5b2b35eda87ef2424bd153c769611d71a978fe9b}
+    version: 5.0.1
+    peerDependencies:
+      '@leeoniya/ufuzzy': '*'
+      gtfs-realtime-bindings: '*'
+      jszip: '*'
+      maplibre-gl: '>=6.4.1 <7'
+      papaparse: '*'
+    peerDependenciesMeta:
+      gtfs-realtime-bindings:
+        optional: true
+
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
@@ -765,19 +778,6 @@ packages:
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
-
-  interlocking@https://codeload.github.com/gtfs-zone/interlocking/tar.gz/17e7be762021eeb7463b92b5f678494406c07ddf:
-    resolution: {gitHosted: true, integrity: sha512-nwtRfluJkInbjkqlOW/Te5XRBBrRBcXMJWkGHwkh9FQI+hyEv7nk9sroTmdiaxKojMiHYqr6N43j82Xgn3VTUg==, tarball: https://codeload.github.com/gtfs-zone/interlocking/tar.gz/17e7be762021eeb7463b92b5f678494406c07ddf}
-    version: 4.0.0
-    peerDependencies:
-      '@leeoniya/ufuzzy': '*'
-      gtfs-realtime-bindings: '*'
-      jszip: '*'
-      maplibre-gl: '>=6.4.1 <7'
-      papaparse: '*'
-    peerDependenciesMeta:
-      gtfs-realtime-bindings:
-        optional: true
 
   isarray@1.0.0:
     resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
@@ -1676,6 +1676,15 @@ snapshots:
       protobufjs: 7.6.6
       protobufjs-cli: 1.3.3(protobufjs@7.6.6)
 
+  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/5b2b35eda87ef2424bd153c769611d71a978fe9b(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0):
+    dependencies:
+      '@leeoniya/ufuzzy': 1.0.19
+      jszip: 3.10.2
+      maplibre-gl: 6.11.2
+      papaparse: 5.7.0
+    optionalDependencies:
+      gtfs-realtime-bindings: 1.1.1
+
   has-flag@4.0.0: {}
 
   immediate@3.0.6: {}
@@ -1686,15 +1695,6 @@ snapshots:
       wrappy: 1.0.2
 
   inherits@2.0.4: {}
-
-  interlocking@https://codeload.github.com/gtfs-zone/interlocking/tar.gz/17e7be762021eeb7463b92b5f678494406c07ddf(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0):
-    dependencies:
-      '@leeoniya/ufuzzy': 1.0.19
-      jszip: 3.10.2
-      maplibre-gl: 6.11.2
-      papaparse: 5.7.0
-    optionalDependencies:
-      gtfs-realtime-bindings: 1.1.1
 
   isarray@1.0.0: {}
 

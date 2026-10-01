@@ -1,19 +1,19 @@
 import { CONFIG } from '../config';
-import { GTFSScheduled } from 'interlocking/gtfs/scheduled';
+import { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
 import { GTFSRealtime } from '../gtfs-rt';
 import type { FeedStatus, FetchStartDetail } from '../gtfs-rt';
-import type { AlertRecord, TripUpdate } from 'interlocking/gtfs/rt-types';
-import type { VehiclePosition } from 'interlocking/gtfs/rt-types';
-import { adoptFeedTimezone } from 'interlocking/gtfs/feed-time';
-import { feedProgressIndicator } from 'interlocking/ui/progress-indicator';
-import { downloadPercent, formatBytes, LoadCancelledError } from 'interlocking/gtfs/feed-download';
-import type { FeedSelection, RealtimeEndpointName, ScheduledSource } from 'interlocking/gtfs/feed-selection';
+import type { AlertRecord, TripUpdate } from 'gtfs-zone-web-common/gtfs/rt-types';
+import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
+import { adoptFeedTimezone } from 'gtfs-zone-web-common/gtfs/feed-time';
+import { feedProgressIndicator } from 'gtfs-zone-web-common/ui/progress-indicator';
+import { downloadPercent, formatBytes, LoadCancelledError } from 'gtfs-zone-web-common/gtfs/feed-download';
+import type { FeedSelection, RealtimeEndpointName, ScheduledSource } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   REALTIME_ENDPOINT_LABELS,
   isComplete,
   resolvedRealtimeUrls,
   resolvedScheduledUrl,
-} from 'interlocking/gtfs/feed-selection';
+} from 'gtfs-zone-web-common/gtfs/feed-selection';
 
 /**
  * The remembered poll interval, or the default. Anything not on the offered

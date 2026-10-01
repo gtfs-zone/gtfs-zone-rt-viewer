@@ -1,19 +1,19 @@
 import type { EndpointStatus } from '../gtfs-rt';
 import type { FeedSession } from './feed-session';
 import type { MapDataIssues } from './layer-manager';
-import type { FeedGaps, ScheduleRelationshipCounts } from 'interlocking/gtfs/rt-index';
-import type { RealtimeEndpointName } from 'interlocking/gtfs/feed-selection';
-import { REALTIME_ENDPOINTS, REALTIME_ENDPOINT_LABELS } from 'interlocking/gtfs/feed-selection';
+import type { FeedGaps, ScheduleRelationshipCounts } from 'gtfs-zone-web-common/gtfs/rt-index';
+import type { RealtimeEndpointName } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import { REALTIME_ENDPOINTS, REALTIME_ENDPOINT_LABELS } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   TRIP_SCHEDULE_RELATIONSHIP_LABELS,
   STOP_TIME_SCHEDULE_RELATIONSHIP_LABELS,
-} from 'interlocking/gtfs/entity-render';
-import { localClock } from 'interlocking/gtfs/feed-time';
+} from 'gtfs-zone-web-common/gtfs/entity-render';
+import { localClock } from 'gtfs-zone-web-common/gtfs/feed-time';
 import { isReproducible } from './feed-url';
-import { isLocalUrl, resolveRealtimeUrl } from 'interlocking/gtfs/feed-url-resolve';
+import { isLocalUrl, resolveRealtimeUrl } from 'gtfs-zone-web-common/gtfs/feed-url-resolve';
 import { CONFIG } from '../config';
-import { notify } from 'interlocking/ui/notification-system';
-import { renderIssueCard } from 'interlocking/ui/issue-card';
+import { notify } from 'gtfs-zone-web-common/ui/notification-system';
+import { renderIssueCard } from 'gtfs-zone-web-common/ui/issue-card';
 import introHtml from '../intro.html?raw';
 
 /**

@@ -3,7 +3,7 @@
  * exists before any other module is evaluated and looks up an element id.
  */
 
-import { mountAppShell } from 'interlocking/ui/app-shell';
+import { mountAppShell } from 'gtfs-zone-web-common/ui/app-shell';
 
 // The realtime refresh rate is a dropdown, so it sits beside the rendered
 // action row rather than inside it.

@@ -3,8 +3,8 @@ import {
   renderNavIcon,
   renderSunIcon,
   type NavIconName,
-} from 'interlocking/ui/nav-icons';
-import type { NavbarAction } from 'interlocking/ui/navbar-actions';
+} from 'gtfs-zone-web-common/ui/nav-icons';
+import type { NavbarAction } from 'gtfs-zone-web-common/ui/navbar-actions';
 
 /**
  * This app's navbar action row and dock artwork.
