@@ -1,4 +1,4 @@
-# Test Track — Claude Guide
+# gtfs-zone-rt-viewer - Claude Guide
 
 ## Project Overview
 
@@ -36,11 +36,11 @@ three consumers. It is not edited here and `vendor:check` does not cover it.
 Restart the dev server after a bump. The alias resolves through a pnpm symlink
 into the store, and Vite does not watch `node_modules`, so files whose transform
 is still cached keep importing the old store path: the page then holds two
-copies of a shared module, each with its own module-level state. Interlocking's
+copies of a shared module, each with its own module-level state. gtfs-zone-web-common's
 `util/module-state` keeps that from corrupting anything and logs `loaded twice`.
 
 What is still hand-copied is in `VENDORED.md`, and for that half the one-way
-flow rule still holds: coloring-book -> test-track -> yard-master.
+flow rule still holds: gtfs-zone-editor -> rt-viewer -> rt-manager.
 
 ## Rules
 
@@ -53,11 +53,11 @@ flow rule still holds: coloring-book -> test-track -> yard-master.
 
 | Repo | Description | URL |
 |---|---|---|
-| cafe-car | GTFS-RT HTTP API serving real-time feeds | https://git.kcfam.us/gtfs.zone/cafe-car |
-| vehicle-poser | Worker that tracks and posts vehicle positions | https://git.kcfam.us/gtfs.zone/vehicle-poser |
-| trip-updogger | Worker that generates trip update predictions | https://git.kcfam.us/gtfs.zone/trip-updogger |
-| schedule-foamer | Worker that ingests and processes GTFS schedule data | https://git.kcfam.us/gtfs.zone/schedule-foamer |
-| railroad-club | Shared Python library for GTFS types and utilities | https://git.kcfam.us/gtfs.zone/railroad-club |
-| music-student | Orchestration repo for deployments and infra | https://git.kcfam.us/gtfs.zone/music-student |
-| landing-zone | Static marketing/status site | https://git.kcfam.us/gtfs.zone/landing-zone |
+| rt-api | GTFS-RT HTTP API serving real-time feeds | https://github.com/gtfs-zone/gtfs-zone-rt-api |
+| rt-traccar-receiver | Worker that tracks and posts vehicle positions | https://github.com/gtfs-zone/gtfs-zone-rt-traccar-receiver |
+| rt-delay-estimator | Worker that generates trip update predictions | https://github.com/gtfs-zone/gtfs-zone-rt-delay-estimator |
+| static-importer | Worker that ingests and processes GTFS schedule data | https://github.com/gtfs-zone/gtfs-zone-static-importer |
+| gtfs-zone-db-models | Shared Python library for GTFS types and utilities | https://github.com/gtfs-zone/gtfs-zone-db-models |
+| dev-stack | Orchestration repo for deployments and infra | https://github.com/gtfs-zone/gtfs-zone-dev-stack |
+| homepage | Static marketing/status site | https://github.com/gtfs-zone/gtfs-zone-homepage |
 

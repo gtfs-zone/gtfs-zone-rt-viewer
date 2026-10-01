@@ -1,11 +1,11 @@
-# Test Track
+# gtfs-zone-rt-viewer
 
 A static frontend for visualizing GTFS Realtime feeds. Deployed at
 `viz.rt.gtfs.zone`.
 
 A Vite/TypeScript/daisyUI app with MapLibre. It loads a GTFS schedule and
-reads the realtime feeds cafe-car serves: `https://rt.gtfs.zone` in production,
-`http://localhost:8000` (the music-student stack) under `pnpm dev`.
+reads the realtime feeds rt-api serves: `https://rt.gtfs.zone` in production,
+`http://localhost:8000` (the dev-stack) under `pnpm dev`.
 
 ```bash
 pnpm install
