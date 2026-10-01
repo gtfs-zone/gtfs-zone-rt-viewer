@@ -17,9 +17,9 @@ import {
 } from 'gtfs-zone-web-common/ui/help-modal';
 import {
   HELP_GROUP_ORDER,
-  HELP_PAGES,
   setHelpRuntimeData,
-} from './modules/help-pages';
+} from 'gtfs-zone-web-common/ui/help-pages';
+import { HELP_PAGES } from './modules/help-pages';
 import {
   KeyboardShortcuts,
   describeShortcuts,

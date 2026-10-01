@@ -1,24 +1,3 @@
-/* @vendored-from gtfs-zone-editor:src/modules/help-pages.ts
-   @sha 6b91ac8
-   @status modified
-   @changes
-   - Editor-only pages dropped (Getting Started/Shapes/Fares/On-Demand/
-     Publishing); HELP_PAGES is [welcomePage, aboutPage, mapKeyPage,
-     shortcutsPage]
-   - welcomePage copy rewritten for viz.rt.gtfs.zone (live vehicle map, not
-     the GTFS editor)
-   - ABOUT_APP replaced with gtfs-zone-rt-viewer's existing AboutApp config, moved
-     here from the old about-modal.ts
-   - The Keyboard Shortcuts page is back as of Phase 12, once
-     `keyboard-shortcuts.ts` was parameterized over an app-supplied command
-     list: `buildShortcutsTable` and the `shortcuts` half of
-     `setHelpRuntimeData` are upstream's, fed from this app's own list
-   - mapKeyPage rewritten for this app's own symbology (routes, vehicles,
-     stops) instead of gtfs-zone-editor's pathways/stops
-   - mapKeyPage gained a direction-of-travel row in Phase 8, when the
-     spotlighted route got its chevrons
-   - `getHelpPage` is dropped: the viewer looks pages up in the registry it
-     was handed, and nothing here needs the lookup */
 /**
  * The help page registry: what pages exist, their grouping, and their copy.
  *
@@ -27,48 +6,23 @@
  * from the code that draws it.
  */
 
+import { eyebrow, lede, glyphList } from 'gtfs-zone-web-common/ui/help-modal';
+import { type AboutApp } from 'gtfs-zone-web-common/ui/about-links';
 import {
-  eyebrow,
-  lede,
-  glyphList,
-  type HelpPageEntry,
-} from 'gtfs-zone-web-common/ui/help-modal';
+  aboutPage,
+  shortcutsPage,
+  ICON_CHECK,
+  ICON_LEG,
+  ICON_LOAD,
+  ICON_MAP,
+  type HelpPage,
+} from 'gtfs-zone-web-common/ui/help-pages';
 import {
-  renderBlurb,
-  renderVersionAndSource,
-  renderProjectSection,
-  renderResourcesSection,
-  renderDataSourcesSection,
-  renderFeedbackSection,
-  type AboutApp,
-} from 'gtfs-zone-web-common/ui/about-links';
-
-export type HelpGroup = 'Getting Started' | 'Reference';
-
-/** This app's pages, narrowing the viewer's `group` to the groups it has. */
-export interface HelpPage extends HelpPageEntry {
-  group: HelpGroup;
-}
-
-/** The order the viewer's sidebar groups these in. */
-export const HELP_GROUP_ORDER: HelpGroup[] = ['Getting Started', 'Reference'];
-
-function icon(paths: string): string {
-  return `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
-}
-
-const ICON_LOAD = icon(
-  '<path d="M16 4v16M9 13l7 7 7-7"/><path d="M6 24v3a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3"/>'
-);
-const ICON_MAP = icon(
-  '<path d="M16 5c-4.4 0-8 3.4-8 7.6C8 18.4 16 27 16 27s8-8.6 8-14.4C24 8.4 20.4 5 16 5z"/><circle cx="16" cy="12.5" r="2.5"/>'
-);
-const ICON_CHECK = icon(
-  '<path d="M16 4l9 4v7c0 6.6-4 11.4-9 13-5-1.6-9-6.4-9-13v-7z"/><path d="M12 16l3 3 5-6"/>'
-);
-const ICON_LEG = icon(
-  '<circle cx="6" cy="26" r="2"/><circle cx="24" cy="8" r="2"/><path d="M6.5 24c5.5-9 8-11 8-16 0 5 2.5 7 8 16"/>'
-);
+  mapKeyCircle,
+  mapKeyLine,
+  mapKeyRow,
+  renderMapKey,
+} from 'gtfs-zone-web-common/gtfs/map-key';
 
 const welcomePage: HelpPage = {
   id: 'welcome',
@@ -133,69 +87,7 @@ const ABOUT_APP: AboutApp = {
   },
 };
 
-/**
- * Version and keyboard-shortcuts data aren't known when this module loads
- * (they come from `__APP_VERSION__` and the app's own command list), so
- * `index.ts` pushes them in once during boot.
- */
-let helpRuntimeData: {
-  version: string;
-  shortcuts: Array<{ key: string; description: string }>;
-} = { version: '', shortcuts: [] };
-
-export function setHelpRuntimeData(data: {
-  version: string;
-  shortcuts: Array<{ key: string; description: string }>;
-}): void {
-  helpRuntimeData = data;
-}
-
-function buildShortcutsTable(
-  shortcuts: Array<{ key: string; description: string }>
-): string {
-  const rows = shortcuts
-    .map((s) => {
-      const keyHtml = s.key
-        .split('+')
-        .map((token) => `<kbd class="kbd kbd-xs">${token}</kbd>`)
-        .join('+');
-      return `<tr><td class="whitespace-nowrap">${keyHtml}</td><td>${s.description}</td></tr>`;
-    })
-    .join('');
-  return `
-    <table class="table table-xs w-full">
-      <thead><tr><th>Key</th><th>Action</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  `;
-}
-
-const aboutPage: HelpPage = {
-  id: 'about',
-  label: 'About',
-  group: 'Reference',
-  title: 'About viz.rt.gtfs.zone',
-  render: () =>
-    [
-      renderBlurb(ABOUT_APP),
-      renderVersionAndSource(ABOUT_APP, helpRuntimeData.version),
-      renderProjectSection(ABOUT_APP),
-      renderResourcesSection(),
-      renderDataSourcesSection(),
-      renderFeedbackSection(ABOUT_APP),
-    ].join('\n'),
-};
-
 // ─── Reference: Map Key ────────────────────────────────────────────────────
-
-function circle(fill: string, stroke: string, dot?: boolean): string {
-  const inner = dot ? `<circle cx="7" cy="7" r="2.5" fill="#000000"/>` : '';
-  return `<svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0"><circle cx="7" cy="7" r="5" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>${inner}</svg>`;
-}
-
-function swatchLine(color: string): string {
-  return `<svg width="20" height="14" viewBox="0 0 20 14" style="flex-shrink:0"><line x1="2" y1="7" x2="18" y2="7" stroke="${color}" stroke-width="3" stroke-linecap="round"/></svg>`;
-}
 
 function triangle(color: string): string {
   return `<svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0"><polygon points="7,1 12,12 2,12" fill="${color}" stroke="#0f172a" stroke-width="1"/></svg>`;
@@ -213,56 +105,32 @@ const mapKeyPage: HelpPage = {
   label: 'Map Key',
   group: 'Reference',
   title: 'Map Key',
-  render: () => {
-    const row = (swatch: string, label: string) =>
-      `<div class="flex items-center gap-2">${swatch}<span>${label}</span></div>`;
-
-    const stops = [
-      row(circle('#ffffff', '#000000'), 'Stop'),
-      row(circle('#ffffff', '#000000', true), 'Station'),
-      row(circle('#f59e0b', '#000000'), 'Entrance'),
-      row(circle('#8b5cf6', '#000000'), 'Generic node'),
-      row(circle('#10b981', '#000000'), 'Boarding area'),
-      row(circle('#ffffff', '#9ca3af'), "Inherits its station's location"),
-    ].join('');
-
-    const routesAndVehicles = [
-      row(
-        swatchLine('#3b82f6'),
-        "Route (the feed's color, or an assigned one)"
-      ),
-      row(chevronLine('#3b82f6'), 'Direction of travel, on the selected route'),
-      row(circle('#3b82f6', '#0f172a'), 'Vehicle'),
-      row(triangle('#3b82f6'), 'Vehicle, with a known heading'),
-      row(circle('#94a3b8', '#0f172a'), "Vehicle, route couldn't be matched"),
-    ].join('');
-
-    return `
-      <div class="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
-        <div class="col-span-2 grid grid-cols-2 gap-x-6">
-          <div class="font-semibold text-xs opacity-60 mb-1">Stops</div>
-          <div class="font-semibold text-xs opacity-60 mb-1">Routes &amp; Vehicles</div>
-        </div>
-        <div class="flex flex-col gap-1">${stops}</div>
-        <div class="flex flex-col gap-1">${routesAndVehicles}</div>
-      </div>
-    `;
-  },
-};
-
-// ─── Reference: Keyboard Shortcuts ─────────────────────────────────────────
-
-const shortcutsPage: HelpPage = {
-  id: 'shortcuts',
-  label: 'Keyboard Shortcuts',
-  group: 'Reference',
-  title: 'Using keyboard shortcuts',
-  render: () => buildShortcutsTable(helpRuntimeData.shortcuts),
+  render: () =>
+    renderMapKey({
+      unlocatedLabel: "Inherits its station's location",
+      title: 'Routes &amp; Vehicles',
+      rows: [
+        mapKeyRow(
+          mapKeyLine('#3b82f6'),
+          "Route (the feed's color, or an assigned one)"
+        ),
+        mapKeyRow(
+          chevronLine('#3b82f6'),
+          'Direction of travel, on the selected route'
+        ),
+        mapKeyRow(mapKeyCircle('#3b82f6', '#0f172a'), 'Vehicle'),
+        mapKeyRow(triangle('#3b82f6'), 'Vehicle, with a known heading'),
+        mapKeyRow(
+          mapKeyCircle('#94a3b8', '#0f172a'),
+          "Vehicle, route couldn't be matched"
+        ),
+      ].join(''),
+    }),
 };
 
 export const HELP_PAGES: HelpPage[] = [
   welcomePage,
-  aboutPage,
+  aboutPage(ABOUT_APP),
   mapKeyPage,
   shortcutsPage,
 ];
