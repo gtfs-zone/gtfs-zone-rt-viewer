@@ -1,5 +1,5 @@
 /* @vendored-from gtfs-zone-editor:src/types/page-state.ts
-   @sha ce1bfa0
+   @sha 2960a87
    @status modified
    @changes
    - Page types reduced to gtfs-zone-rt-viewer's four object pages plus home: dropped

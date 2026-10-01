@@ -1,5 +1,5 @@
 /* @vendored-from gtfs-zone-editor:src/modules/page-state-manager.ts
-   @sha 1ce064d
+   @sha 58d4030
    @status adopted
    @changes
    - The `PageStateManager` class is `gtfs-zone-web-common`'s `ui/page-state-manager.ts`

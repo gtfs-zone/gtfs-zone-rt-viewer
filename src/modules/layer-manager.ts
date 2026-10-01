@@ -1,5 +1,5 @@
 /* @vendored-from gtfs-zone-editor:src/modules/layer-manager.ts
-   @sha 0d38e50
+   @sha a8e7afd
    @status adopted
    Promoted from `modified` in Phase 8. The shared half of this file is now
    `gtfs-zone-web-common`'s `layer-specs.ts` (source ids, layer ids, filters, zoom ramps, fade

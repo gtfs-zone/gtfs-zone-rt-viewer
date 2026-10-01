@@ -1,5 +1,5 @@
 /* @vendored-from gtfs-zone-editor:src/modules/help-pages.ts
-   @sha 59ed6d0
+   @sha 37edcb3
    @status modified
    @changes
    - Editor-only pages dropped (Getting Started/Shapes/Fares/On-Demand/
