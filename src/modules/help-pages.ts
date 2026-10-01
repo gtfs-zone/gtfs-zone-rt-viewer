@@ -120,7 +120,7 @@ const ABOUT_APP: AboutApp = {
   blurbFooter:
     'Every feed is fetched and decoded in your browser. Nothing you load is uploaded anywhere.',
   contactSubject: 'viz.rt.gtfs.zone feedback',
-  repo: 'test-track',
+  repo: 'gtfs-zone-rt-viewer',
   sibling: {
     name: 'edit.gtfs.zone',
     href: 'https://edit.gtfs.zone',
