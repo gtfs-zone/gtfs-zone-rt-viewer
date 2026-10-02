@@ -8,7 +8,7 @@
  * poll — entries are rebuilt per query, which is what makes that free.
  */
 
-import { CONFIG } from '../config';
+import { VEHICLE_UNMATCHED_COLOR } from 'gtfs-zone-web-common/map/layer-manager';
 import type { PageState } from '../types/page-state';
 import type { FeedSession } from './feed-session';
 import { vehicleDisplayName } from 'gtfs-zone-web-common/gtfs/entity-render';
@@ -74,7 +74,7 @@ export function buildSearchEntries(
       (vehicle.tripId ? feed?.trips.get(vehicle.tripId)?.route_id : undefined);
     const color =
       (routeId ? feed?.routes.get(routeId)?.color : undefined) ??
-      CONFIG.VEHICLE_UNMATCHED_COLOR;
+      VEHICLE_UNMATCHED_COLOR;
     entries.push({
       payload: { type: 'vehicle', vehicle_id: vehicle.key },
       icon: dotMarker(color),

@@ -15,8 +15,10 @@ import { MAP_MAX_ZOOM } from 'gtfs-zone-web-common/map/basemap-styles';
 import { fitPadding } from 'gtfs-zone-web-common/map/fit-padding';
 import { SearchPlaceMarker } from 'gtfs-zone-web-common/map/place-search';
 import type { PlacePayload } from 'gtfs-zone-web-common/map/place-search';
-import { LayerManager } from './modules/layer-manager';
-import type { MapDataIssues } from './modules/layer-manager';
+import {
+  LayerManager,
+  type MapDataIssues,
+} from 'gtfs-zone-web-common/map/layer-manager';
 
 interface MapView {
   center: [number, number];

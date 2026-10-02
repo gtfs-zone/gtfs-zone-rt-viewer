@@ -48,7 +48,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "daisyui": "^5.7.46",
     "gtfs-realtime-bindings": "^1.1.1",
-    "gtfs-zone-web-common": "github:gtfs-zone/gtfs-zone-web-common#v5.3.0",
+    "gtfs-zone-web-common": "github:gtfs-zone/gtfs-zone-web-common#v5.4.0",
     "jszip": "^3.10.2",
     "maplibre-gl": "^6.11.2",
     "papaparse": "^5.7.0"

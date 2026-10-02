@@ -1,6 +1,6 @@
 import type { EndpointStatus } from '../gtfs-rt';
 import type { FeedSession } from './feed-session';
-import type { MapDataIssues } from './layer-manager';
+import type { MapDataIssues } from 'gtfs-zone-web-common/map/layer-manager';
 import type {
   FeedGaps,
   ScheduleRelationshipCounts,
