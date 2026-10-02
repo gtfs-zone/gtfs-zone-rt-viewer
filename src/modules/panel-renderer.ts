@@ -11,9 +11,11 @@ import { RtPanel } from 'gtfs-zone-web-common/gtfs/rt-panel';
 import type { RtIndex } from 'gtfs-zone-web-common/gtfs/rt-index';
 import type { FeedSession } from './feed-session';
 import type { RenderContext } from './render-context';
-import { renderAlertPage } from './pages/alert-page';
-import { renderRoutePage } from './pages/route-page';
-import { renderStopPage } from './pages/stop-page';
+import type { RtPageHooks } from 'gtfs-zone-web-common/gtfs/rt-page';
+import { renderAlertPage } from 'gtfs-zone-web-common/gtfs/alert-page';
+import { renderRoutePage } from 'gtfs-zone-web-common/gtfs/route-page';
+import { renderStopPage } from 'gtfs-zone-web-common/gtfs/stop-page';
+import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
 import { renderVehiclePage } from './pages/vehicle-page';
 
 export interface PanelRendererHooks {
@@ -39,6 +41,11 @@ export class PanelRenderer extends RtPanel<PageState> {
   }
 }
 
+const PAGE_HOOKS: RtPageHooks<PageState, VehiclePosition> = {
+  vehicleLink: (v) => ({ type: 'vehicle', vehicle_id: v.key }),
+  vehicleNoun: 'vehicle',
+};
+
 function renderPage(
   ctx: RenderContext,
   index: RtIndex,
@@ -48,12 +55,12 @@ function renderPage(
     case 'home':
       return '';
     case 'route':
-      return renderRoutePage(ctx, index, state);
+      return renderRoutePage(ctx, index, state.route_id, PAGE_HOOKS);
     case 'stop':
-      return renderStopPage(ctx, index, state);
+      return renderStopPage(ctx, index, state.stop_id, PAGE_HOOKS);
     case 'vehicle':
       return renderVehiclePage(ctx, index, state);
     case 'alert':
-      return renderAlertPage(ctx, state);
+      return renderAlertPage(ctx, state.alert_id);
   }
 }

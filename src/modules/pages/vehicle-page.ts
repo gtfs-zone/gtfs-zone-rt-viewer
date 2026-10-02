@@ -29,7 +29,7 @@ import {
   vehicleDisplayName,
 } from 'gtfs-zone-web-common/gtfs/entity-render';
 import { localClock } from 'gtfs-zone-web-common/gtfs/feed-time';
-import { renderAlertList } from './alert-page';
+import { renderAlertList } from 'gtfs-zone-web-common/gtfs/alert-page';
 
 /**
  * Last-known state for every vehicle the page has rendered.

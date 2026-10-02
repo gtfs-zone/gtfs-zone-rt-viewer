@@ -21,8 +21,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       gtfs-zone-web-common:
-        specifier: github:gtfs-zone/gtfs-zone-web-common#v5.6.0
-        version: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/591f8b42d30784df6e582f9bc2b3a9dd84dd4a27(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0)
+        specifier: github:gtfs-zone/gtfs-zone-web-common#v5.9.0
+        version: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/64bded6eac3b787dcaf6108d265333adf3296577(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0)
       jszip:
         specifier: ^3.10.2
         version: 3.10.2
@@ -1250,9 +1250,9 @@ packages:
   gtfs-realtime-bindings@1.1.1:
     resolution: {integrity: sha512-+k8+/MmiBmUUWlASs4CeTkV+Qyz/FgbZxXdg9rDU62XRfJOpRaRe+nKWCGKse965jffVZ0tIu1K+R7hRvjSLfQ==}
 
-  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/591f8b42d30784df6e582f9bc2b3a9dd84dd4a27:
-    resolution: {gitHosted: true, integrity: sha512-QJs29Ev8SGBcw7Rj5ktbx1m6kPndYAtBU+S1Fop32bVHqRlj4++61Qh3N1jPgIM1JXRMKe1eqWf1srA+A70T3A==, tarball: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/591f8b42d30784df6e582f9bc2b3a9dd84dd4a27}
-    version: 5.6.0
+  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/64bded6eac3b787dcaf6108d265333adf3296577:
+    resolution: {gitHosted: true, integrity: sha512-PGwGHtgXE1yxFXy8ZZ78Yf5+pqIc9LQ7VSuylMSuDLq2hbUe5BxpzAHUbhUyRNTfIyqGPyZqgq5j2dmJuHYH4g==, tarball: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/64bded6eac3b787dcaf6108d265333adf3296577}
+    version: 5.9.0
     peerDependencies:
       '@leeoniya/ufuzzy': '*'
       gtfs-realtime-bindings: '*'
@@ -2799,7 +2799,7 @@ snapshots:
       protobufjs: 7.6.6
       protobufjs-cli: 1.3.3(protobufjs@7.6.6)
 
-  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/591f8b42d30784df6e582f9bc2b3a9dd84dd4a27(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0):
+  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/64bded6eac3b787dcaf6108d265333adf3296577(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0):
     dependencies:
       '@leeoniya/ufuzzy': 1.0.19
       jszip: 3.10.2
