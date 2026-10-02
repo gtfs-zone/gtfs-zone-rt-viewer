@@ -1,5 +1,6 @@
 import { transit_realtime } from 'gtfs-realtime-bindings';
 import { CONFIG } from './config';
+import { t } from './i18n/messages';
 import type {
   AlertRecord,
   TripUpdate,
@@ -381,7 +382,9 @@ async function decodeFeed(url: string): Promise<transit_realtime.FeedMessage> {
     return transit_realtime.FeedMessage.decode(new Uint8Array(buf));
   } catch (err) {
     throw new Error(
-      `Decode failed: ${err instanceof Error ? err.message : String(err)}`,
+      t('load.decodeFailed', {
+        message: err instanceof Error ? err.message : String(err),
+      }),
       { cause: err }
     );
   }

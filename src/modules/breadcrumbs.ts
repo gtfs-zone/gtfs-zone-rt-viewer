@@ -13,6 +13,7 @@ import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { describeSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import type { FeedSession } from './feed-session';
 import { vehicleDisplayName } from 'gtfs-zone-web-common/gtfs/entity-render';
+import { t } from '../i18n/messages';
 
 /**
  * Synchronous breadcrumb building and focus validation against the loaded feed.
@@ -50,7 +51,10 @@ function feedName(session: FeedSession): string | null {
     return named[0].name.trim();
   }
   if (named.length > 1) {
-    return `${named[0].name.trim()} +${named.length - 1} more`;
+    return t('crumb.more', {
+      name: named[0].name.trim(),
+      count: named.length - 1,
+    });
   }
 
   const cataloged = catalogName(session.selection);
@@ -70,8 +74,8 @@ function feedName(session: FeedSession): string | null {
  */
 function home(session: FeedSession): BreadcrumbItem<PageState> {
   return {
-    typeLabel: 'Feed',
-    label: truncateCrumb(feedName(session) ?? 'No feed'),
+    typeLabel: t('crumb.feed'),
+    label: truncateCrumb(feedName(session) ?? t('crumb.noFeed')),
     pageState: { type: 'home' },
   };
 }
@@ -128,7 +132,7 @@ export function buildBreadcrumbs(
         home(session),
         ...(routeId ? [routeCrumb(feed, routeId)] : []),
         {
-          typeLabel: 'Vehicle',
+          typeLabel: t('crumb.vehicle'),
           label: truncateCrumb(vehicleLabel(session, state.vehicle_id)),
           pageState: state,
         },
@@ -141,7 +145,7 @@ export function buildBreadcrumbs(
         home(session),
         ...(parent ? [alertParentCrumb(feed, parent)] : []),
         {
-          typeLabel: 'Service alert',
+          typeLabel: t('crumb.alert'),
           label: truncateCrumb(alertLabel(session, state.alert_id)),
           pageState: state,
         },

@@ -1,4 +1,5 @@
 import { CONFIG } from '../config';
+import { t } from '../i18n/messages';
 import { GTFSRealtime } from '../gtfs-rt';
 import type { FeedStatus, FetchStartDetail } from '../gtfs-rt';
 import type {
@@ -65,7 +66,7 @@ export class FeedSession extends FeedSessionBase {
   /** Load a complete selection: the schedule first, then start the RT poller. */
   async load(selection: FeedSelection): Promise<void> {
     if (!isComplete(selection)) {
-      throw new Error('Selection is incomplete');
+      throw new Error(t('load.incomplete'));
     }
     const previous = this.selection;
     this.selection = selection;

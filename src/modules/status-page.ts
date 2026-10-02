@@ -23,7 +23,9 @@ import {
 import { CONFIG } from '../config';
 import { notify } from 'gtfs-zone-web-common/ui/notification-system';
 import { renderIssueCard } from 'gtfs-zone-web-common/ui/issue-card';
-import introHtml from '../intro.html?raw';
+import { formatNumber } from 'gtfs-zone-web-common/i18n/fmt';
+import { t } from '../i18n/messages';
+import { introHtml } from '../intro';
 
 /**
  * The right panel's "nothing focused" content: what is loaded, how much of it,
@@ -61,17 +63,20 @@ function formatClock(ms: number | null): string {
 function formatRelative(ms: number): string {
   const secs = Math.max(0, Math.round((Date.now() - ms) / 1000));
   if (secs < 60) {
-    return `${secs}s ago`;
+    return t('time.secondsAgo', { s: secs });
   }
   if (secs < 3600) {
-    return `${Math.floor(secs / 60)}m ${secs % 60}s ago`;
+    return t('time.minutesAgo', { m: Math.floor(secs / 60), s: secs % 60 });
   }
-  return `${Math.floor(secs / 3600)}h ${Math.floor((secs % 3600) / 60)}m ago`;
+  return t('time.hoursAgo', {
+    h: Math.floor(secs / 3600),
+    m: Math.floor((secs % 3600) / 60),
+  });
 }
 
 function formatCountdown(target: number): string {
   const secs = Math.round((target - Date.now()) / 1000);
-  return secs <= 0 ? 'now' : `${secs}s`;
+  return secs <= 0 ? t('time.now') : t('time.seconds', { s: secs });
 }
 
 /**
@@ -82,7 +87,7 @@ function formatCountdown(target: number): string {
  */
 function renderUrl(url: string, useCors: boolean, isRealtime: boolean): string {
   if (!url) {
-    return '<p class="text-xs opacity-40">not set</p>';
+    return `<p class="text-xs opacity-40">${t('status.notSet')}</p>`;
   }
 
   const resolved = isRealtime ? resolveRealtimeUrl(url, CONFIG.RT_BASE) : url;
@@ -97,10 +102,10 @@ function renderUrl(url: string, useCors: boolean, isRealtime: boolean): string {
         ? `<p class="text-xs font-mono break-all opacity-40">-&gt; ${escHtml(resolved)}</p>`
         : ''
     }
-    ${useCors && !proxyBypassed ? '<p class="text-xs opacity-50">via cors.kcfam.us</p>' : ''}
+    ${useCors && !proxyBypassed ? `<p class="text-xs opacity-50">${t('status.viaProxy')}</p>` : ''}
     ${
       proxyBypassed
-        ? '<p class="text-xs opacity-50">local URL — CORS proxy not applied (it cannot reach this machine)</p>'
+        ? `<p class="text-xs opacity-50">${t('status.localUrl')}</p>`
         : ''
     }`;
 }
@@ -109,7 +114,7 @@ function statTile(label: string, value: number | string): string {
   return `
     <div class="rounded-lg bg-base-200 px-3 py-2">
       <p class="text-xs opacity-60">${escHtml(label)}</p>
-      <p class="text-lg font-semibold tabular-nums">${escHtml(String(value))}</p>
+      <p class="text-lg font-semibold tabular-nums">${escHtml(typeof value === 'number' ? formatNumber(value) : value)}</p>
     </div>`;
 }
 
@@ -118,18 +123,18 @@ function renderCounts(session: FeedSession): string {
   const rt = session.rtCounts;
   return `
     <section class="space-y-2">
-      <h3 class="font-semibold text-sm">Counts</h3>
+      <h3 class="font-semibold text-sm">${t('status.counts')}</h3>
       <div class="grid grid-cols-3 gap-2">
-        ${statTile('Stops', s?.stops ?? 0)}
-        ${statTile('Routes', s?.routes ?? 0)}
-        ${statTile('Trips', s?.trips ?? 0)}
-        ${statTile('Shapes', s?.shapes ?? 0)}
-        ${statTile('Agencies', s?.agencies ?? 0)}
-        ${statTile('Services', s?.services ?? 0)}
-        ${statTile('Stop times', s?.stopTimes ?? 0)}
-        ${statTile('Vehicles', rt.vehicles)}
-        ${statTile('Trip updates', rt.tripUpdates)}
-        ${statTile('Alerts', rt.alerts)}
+        ${statTile(t('status.stops'), s?.stops ?? 0)}
+        ${statTile(t('status.routes'), s?.routes ?? 0)}
+        ${statTile(t('status.trips'), s?.trips ?? 0)}
+        ${statTile(t('status.shapes'), s?.shapes ?? 0)}
+        ${statTile(t('status.agencies'), s?.agencies ?? 0)}
+        ${statTile(t('status.services'), s?.services ?? 0)}
+        ${statTile(t('status.stopTimes'), s?.stopTimes ?? 0)}
+        ${statTile(t('status.vehicles'), rt.vehicles)}
+        ${statTile(t('status.tripUpdates'), rt.tripUpdates)}
+        ${statTile(t('status.alerts'), rt.alerts)}
       </div>
     </section>`;
 }
@@ -145,35 +150,35 @@ function renderEndpoint(
 
   const fetched = ep.lastFetchedAt
     ? `${formatClock(ep.lastFetchedAt)} <span class="opacity-60" data-since="${ep.lastFetchedAt}">${formatRelative(ep.lastFetchedAt)}</span>`
-    : '<span class="opacity-40">never</span>';
+    : `<span class="opacity-40">${t('status.never')}</span>`;
 
   const dataAge = ep.feedTimestamp
     ? `${formatClock(ep.feedTimestamp * 1000)} <span class="opacity-60" data-since="${ep.feedTimestamp * 1000}">${formatRelative(ep.feedTimestamp * 1000)}</span>`
-    : '<span class="opacity-40">not reported</span>';
+    : `<span class="opacity-40">${t('status.notReported')}</span>`;
 
   return `
     <div class="rounded-lg border border-base-300 p-3 space-y-2">
       <div class="flex items-center gap-2">
         <h4 class="font-medium text-sm flex-1">${escHtml(label)}</h4>
         ${ep.inFlight ? '<span class="loading loading-spinner loading-xs"></span>' : ''}
-        ${ep.lastError ? '<span class="badge badge-error badge-xs">error</span>' : ''}
-        ${!ep.url ? '<span class="badge badge-ghost badge-xs">not set</span>' : ''}
+        ${ep.lastError ? `<span class="badge badge-error badge-xs">${t('status.error')}</span>` : ''}
+        ${!ep.url ? `<span class="badge badge-ghost badge-xs">${t('status.notSet')}</span>` : ''}
       </div>
 
       <dl class="text-xs space-y-1">
         <div class="flex justify-between gap-2">
-          <dt class="opacity-60">Last fetched</dt><dd class="text-right">${fetched}</dd>
+          <dt class="opacity-60">${t('status.lastFetched')}</dt><dd class="text-right">${fetched}</dd>
         </div>
         <div class="flex justify-between gap-2">
-          <dt class="opacity-60">Feed timestamp <span class="opacity-50">(data age)</span></dt>
+          <dt class="opacity-60">${t('status.feedTimestamp')} <span class="opacity-50">${t('status.dataAge')}</span></dt>
           <dd class="text-right">${dataAge}</dd>
         </div>
         <div class="flex justify-between gap-2">
-          <dt class="opacity-60">Entities</dt>
-          <dd class="text-right tabular-nums">${ep.entityCount ?? '—'}</dd>
+          <dt class="opacity-60">${t('status.entities')}</dt>
+          <dd class="text-right tabular-nums">${ep.entityCount === null || ep.entityCount === undefined ? '—' : formatNumber(ep.entityCount)}</dd>
         </div>
         <div class="flex justify-between gap-2">
-          <dt class="opacity-60">Next refresh</dt>
+          <dt class="opacity-60">${t('status.nextRefresh')}</dt>
           <dd class="text-right">${
             nextPollAt
               ? `<span data-until="${nextPollAt}">${formatCountdown(nextPollAt)}</span>`
@@ -184,7 +189,7 @@ function renderEndpoint(
 
       ${
         ep.lastError
-          ? `<p class="text-xs text-error break-words">${escHtml(ep.lastError)} <span class="opacity-60">at ${formatClock(ep.lastErrorAt)}</span></p>`
+          ? `<p class="text-xs text-error break-words">${escHtml(ep.lastError)} <span class="opacity-60">${t('status.errorAt', { time: formatClock(ep.lastErrorAt) })}</span></p>`
           : ''
       }
 
@@ -196,9 +201,9 @@ function renderEndpoint(
 }
 
 const VEHICLE_ID_STRATEGY_NOTE: Record<string, string> = {
-  trip: 'derived from vehicle.id + trip_id + start_date',
-  entity: 'derived from vehicle.id + trip + entity.id',
-  index: 'no usable identity — derived from the entity index',
+  trip: t('status.idTrip'),
+  entity: t('status.idEntity'),
+  index: t('status.idIndex'),
 };
 
 /**
@@ -220,20 +225,18 @@ function renderVehicleIdReport(ep: EndpointStatus): string {
     ? `<ul class="mt-1 space-y-0.5">${dups
         .map(
           (d) =>
-            `<li><span class="font-mono break-all">${escHtml(d.vehicleId || '(empty)')}</span> — ${d.count} vehicles</li>`
+            `<li><span class="font-mono break-all">${escHtml(d.vehicleId || t('status.empty'))}</span> — ${t('status.dupVehicles', { count: d.count })}</li>`
         )
         .join('')}</ul>`
     : '';
 
   return `
     <div class="rounded-lg border border-warning/40 bg-warning/10 p-2 text-xs space-y-1">
-      <p class="font-medium">vehicle.id is not unique per vehicle</p>
-      <p class="opacity-70">
-        GTFS-RT specifies <span class="font-mono">VehicleDescriptor.id</span> "should be
-        unique per vehicle, and is used for tracking the vehicle as it proceeds through
-        the system." This feed reuses it, so an instance key
-        (${escHtml(VEHICLE_ID_STRATEGY_NOTE[strategy] ?? strategy)}) was derived to address vehicles.
-      </p>
+      <p class="font-medium">${t('status.idNotUnique')}</p>
+      <p class="opacity-70">${t('status.idNotUniqueText', {
+        field: '<span class="font-mono">VehicleDescriptor.id</span>',
+        strategy: escHtml(VEHICLE_ID_STRATEGY_NOTE[strategy] ?? strategy),
+      })}</p>
       ${list}
     </div>`;
 }
@@ -266,7 +269,7 @@ function renderEndpoints(session: FeedSession): string {
   };
   return `
     <section class="space-y-2">
-      <h3 class="font-semibold text-sm">Realtime endpoints</h3>
+      <h3 class="font-semibold text-sm">${t('status.endpoints')}</h3>
       ${REALTIME_ENDPOINTS.map((n) =>
         renderEndpoint(
           status.endpoints[n],
@@ -286,12 +289,12 @@ function renderScheduledSection(session: FeedSession): string {
 
   const source =
     src.kind === 'file'
-      ? `<p class="text-xs opacity-60">Loaded from uploaded file <span class="font-mono">${escHtml(src.label)}</span> — not reproducible from a link.</p>`
+      ? `<p class="text-xs opacity-60">${t('status.uploaded', { name: `<span class="font-mono">${escHtml(src.label)}</span>` })}</p>`
       : renderUrl(src.url, src.useCors, false);
 
   return `
     <section class="space-y-2">
-      <h3 class="font-semibold text-sm">Scheduled feed</h3>
+      <h3 class="font-semibold text-sm">${t('status.scheduled')}</h3>
       <div class="rounded-lg border border-base-300 p-3 space-y-2">
         <div class="flex items-center gap-2">
           <p class="text-sm flex-1">${escHtml(src.label)}</p>
@@ -330,30 +333,37 @@ function renderFeedGaps(gaps: FeedGaps | null): string {
   const inferred = gaps.stopSequenceDerived > 0 || unplaced > 0;
 
   const notes = [
-    `GTFS-RT makes the field optional, so ${gaps.missingStopSequence} of ${gaps.vehicles} vehicles do not report it.`,
+    t('status.gapsOptional', {
+      missing: gaps.missingStopSequence,
+      total: gaps.vehicles,
+    }),
   ];
   if (gaps.resolvedFromStopId > 0) {
     notes.push(
-      `${gaps.resolvedFromStopId} named the stop with <span class="font-mono">stop_id</span> instead, which the spec equally allows; their positions come from that.`
+      t('status.gapsStopId', {
+        count: gaps.resolvedFromStopId,
+        field: '<span class="font-mono">stop_id</span>',
+      })
     );
   }
   if (gaps.stopSequenceDerived > 0) {
     notes.push(
-      `${gaps.stopSequenceDerived} named no stop at all, so the soonest still-future <span class="font-mono">stop_time_update</span> on the same trip was used; those are marked "derived" wherever they appear.`
+      t('status.gapsDerived', {
+        count: gaps.stopSequenceDerived,
+        field: '<span class="font-mono">stop_time_update</span>',
+      })
     );
   }
   if (unplaced > 0) {
-    notes.push(
-      `${unplaced} could not be placed by any of these and stay in the route strip's unplaced list.`
-    );
+    notes.push(t('status.gapsUnplaced', { count: unplaced }));
   }
 
   return `
     <section class="space-y-2">
-      <h3 class="font-semibold text-sm">${inferred ? 'Feed data gaps' : 'How this feed reports position'}</h3>
+      <h3 class="font-semibold text-sm">${inferred ? t('status.gaps') : t('status.gapsNeutral')}</h3>
       <div class="rounded-lg border ${inferred ? 'border-warning/40' : 'border-base-300'} p-3 space-y-2">
         <div class="flex justify-between gap-2 text-xs">
-          <span>Vehicles with no <span class="font-mono">current_stop_sequence</span></span>
+          <span>${t('status.gapsRow', { field: '<span class="font-mono">current_stop_sequence</span>' })}</span>
           <span class="tabular-nums font-semibold">${gaps.missingStopSequence}</span>
         </div>
         <p class="text-xs opacity-50">${notes.join(' ')}</p>
@@ -393,9 +403,7 @@ function renderScheduleRelationships(
     }
     const label =
       TRIP_SCHEDULE_RELATIONSHIP_LABELS[relationship] ?? String(relationship);
-    rows.push(
-      line(`${n} vehicle${n === 1 ? '' : 's'} reporting trip ${label}`, n)
-    );
+    rows.push(line(t('status.relVehicles', { count: n, label }), n));
   }
   for (const [relationship, n] of counts.updateTrips) {
     if (relationship === 0) {
@@ -403,9 +411,7 @@ function renderScheduleRelationships(
     }
     const label =
       TRIP_SCHEDULE_RELATIONSHIP_LABELS[relationship] ?? String(relationship);
-    rows.push(
-      line(`${n} trip update${n === 1 ? '' : 's'} reporting trip ${label}`, n)
-    );
+    rows.push(line(t('status.relUpdates', { count: n, label }), n));
   }
   for (const [relationship, n] of counts.stopTimes) {
     if (relationship === 0) {
@@ -414,9 +420,7 @@ function renderScheduleRelationships(
     const label =
       STOP_TIME_SCHEDULE_RELATIONSHIP_LABELS[relationship] ??
       String(relationship);
-    rows.push(
-      line(`${n} stop time${n === 1 ? '' : 's'} reporting ${label}`, n)
-    );
+    rows.push(line(t('status.relStopTimes', { count: n, label }), n));
   }
   if (rows.length === 0) {
     return '';
@@ -424,10 +428,10 @@ function renderScheduleRelationships(
 
   return `
     <section class="space-y-2">
-      <h3 class="font-semibold text-sm">Trips outside the schedule</h3>
+      <h3 class="font-semibold text-sm">${t('status.relTitle')}</h3>
       <div class="rounded-lg border border-base-300 p-3 space-y-2">
         ${rows.join('')}
-        <p class="text-xs opacity-50">These are statements the feed made about specific trips, not gaps in what it reported. CANCELED and SKIPPED mean the times shown are not times anyone can catch.</p>
+        <p class="text-xs opacity-50">${t('status.relNote')}</p>
       </div>
     </section>`;
 }
@@ -441,26 +445,26 @@ function renderMapIssues(issues: MapDataIssues | null): string {
   if (!issues) {
     return '';
   }
-  return renderIssueCard('Map data issues', [
+  return renderIssueCard(t('status.mapIssues'), [
     {
-      label: 'Stops dropped (no stop_id)',
+      label: t('status.stopsNoId'),
       count: issues.stopsMissingId,
-      note: 'Cannot be drawn or linked.',
+      note: t('status.stopsNoIdNote'),
     },
     {
-      label: 'Stops dropped (no coordinates)',
+      label: t('status.stopsNoCoords'),
       count: issues.stopsMissingCoords,
-      note: 'stop_lat / stop_lon missing or unparseable.',
+      note: t('status.stopsNoCoordsNote'),
     },
     {
-      label: 'Vehicles with no matching route',
+      label: t('status.vehiclesUnmatched'),
       count: issues.vehiclesUnmatched,
-      note: 'Drawn in the neutral color instead of a route color.',
+      note: t('status.vehiclesUnmatchedNote'),
     },
     {
-      label: 'Vehicles collapsed onto one map feature',
+      label: t('status.vehiclesCollapsed'),
       count: issues.vehiclesDuplicateKeys,
-      note: 'Should be 0 — a non-zero count means the vehicle key derivation is broken.',
+      note: t('status.vehiclesCollapsedNote'),
     },
   ]);
 }
@@ -475,21 +479,21 @@ function renderStationIssues(session: FeedSession): string {
   if (!issues) {
     return '';
   }
-  return renderIssueCard('Station hierarchy issues', [
+  return renderIssueCard(t('status.stationIssues'), [
     {
-      label: 'parent_station points at a missing stop',
+      label: t('status.danglingParent'),
       count: issues.danglingParent,
-      note: 'The referenced parent is not in stops.txt.',
+      note: t('status.danglingParentNote'),
     },
     {
-      label: 'parent_station points at the wrong type',
+      label: t('status.wrongParent'),
       count: issues.nonStationParent,
-      note: 'A platform/entrance/node should reference a station; a boarding area a platform.',
+      note: t('status.wrongParentNote'),
     },
     {
-      label: 'Stops caught in a parent_station cycle',
+      label: t('status.cycle'),
       count: issues.cyclicStops,
-      note: 'Traversal is cut to avoid hanging.',
+      note: t('status.cycleNote'),
     },
   ]);
 }
@@ -516,7 +520,7 @@ function renderPaddedColumns(session: FeedSession): string {
 
   return `
     <section class="space-y-2">
-      <h3 class="font-semibold text-sm">Whitespace-padded columns</h3>
+      <h3 class="font-semibold text-sm">${t('status.padded')}</h3>
       <div class="rounded-lg border border-warning/40 p-3 space-y-2">
         ${padded
           .map(
@@ -526,11 +530,10 @@ function renderPaddedColumns(session: FeedSession): string {
               <span><span class="font-mono">${escHtml(file)}</span> <span class="font-mono">${escHtml(column)}</span></span>
               <span class="tabular-nums font-semibold">${rows}</span>
             </div>
-            <p class="text-xs opacity-50">
-              ${rows} rows had leading or trailing whitespace. The GTFS reference forbids this;
-              they were trimmed. Untrimmed, no realtime
-              <span class="font-mono">${escHtml(column)}</span> would match this feed.
-            </p>
+            <p class="text-xs opacity-50">${t('status.paddedNote', {
+              rows,
+              column: `<span class="font-mono">${escHtml(column)}</span>`,
+            })}</p>
           </div>`
           )
           .join('')}
@@ -554,7 +557,7 @@ function renderRawTables(session: FeedSession): string {
 
   return `
     <section class="space-y-2">
-      <h3 class="font-semibold text-sm">Feed metadata</h3>
+      <h3 class="font-semibold text-sm">${t('status.metadata')}</h3>
       ${tables
         .map(
           ([file, row]) => `
@@ -589,17 +592,13 @@ function renderShare(session: FeedSession): string {
   const reproducible = isReproducible(session.selection);
   return `
     <section class="space-y-2">
-      <h3 class="font-semibold text-sm">Share</h3>
+      <h3 class="font-semibold text-sm">${t('status.share')}</h3>
       <div class="rounded-lg border border-base-300 p-3 space-y-2">
         <button class="btn btn-xs btn-primary" id="status-copy-link" ${
           reproducible ? '' : 'disabled'
-        }>Copy shareable link</button>
+        }>${t('status.copyLink')}</button>
         <p class="text-xs opacity-60">
-          ${
-            reproducible
-              ? 'The link carries both feed URLs and whatever is focused.'
-              : 'This session loaded a scheduled feed from an uploaded file, which a link cannot reproduce.'
-          }
+          ${reproducible ? t('status.shareNote') : t('status.shareFile')}
         </p>
       </div>
     </section>`;
@@ -608,14 +607,11 @@ function renderShare(session: FeedSession): string {
 function renderEmpty(): string {
   return `
     <div class="flex flex-col gap-6 py-4">
-      ${introHtml}
+      ${introHtml()}
       <div class="flex flex-col items-center text-center gap-3">
-        <p class="text-xs opacity-40 max-w-xs">
-          A session needs a scheduled GTFS feed for the routes and stops, and at
-          least one realtime endpoint for what is happening on them now.
-        </p>
+        <p class="text-xs opacity-40 max-w-xs">${t('status.emptyNote')}</p>
         <button type="button" id="status-empty-load" class="btn btn-primary btn-sm">
-          Pick a feed
+          ${t('status.pickFeed')}
         </button>
       </div>
     </div>`;
@@ -752,8 +748,8 @@ export class StatusPage {
       }
       void navigator.clipboard
         .writeText(this.shareUrl())
-        .then(() => notify.success('Link copied'))
-        .catch(() => notify.error('Could not copy to clipboard'));
+        .then(() => notify.success(t('status.copied')))
+        .catch(() => notify.error(t('status.copyFailed')));
     });
   }
 }

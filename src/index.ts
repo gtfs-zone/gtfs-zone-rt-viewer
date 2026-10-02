@@ -61,6 +61,7 @@ import { searchPlaces } from 'gtfs-zone-web-common/map/place-search';
 import type { PlacePayload } from 'gtfs-zone-web-common/map/place-search';
 import { buildSearchEntries } from './modules/search-entries';
 import type { ModalState, PageState } from './types/page-state';
+import { t } from './i18n/messages';
 
 // ─── Shell ────────────────────────────────────────────────────────────────────
 
@@ -88,7 +89,7 @@ try {
 } catch (e) {
   console.error('[map] failed to initialize:', e);
   document.getElementById('map')!.innerHTML =
-    '<div class="h-full flex items-center justify-center p-6 text-center text-sm opacity-70">The map needs WebGL, which this browser has turned off or does not support.</div>';
+    `<div class="h-full flex items-center justify-center p-6 text-center text-sm opacity-70">${t('app.noWebgl')}</div>`;
 }
 // The map accent comes from the theme palette, so it has to be repainted
 // whenever the theme switches.
@@ -166,13 +167,16 @@ const panelRenderer = new PanelRenderer(panelContent, session, {
 panelRenderer.initialize();
 
 /** The tab title, set on navigation only — the panel re-renders every poll. */
-const DEFAULT_TITLE = document.title;
+const DEFAULT_TITLE = t('app.title');
+document.title = DEFAULT_TITLE;
 function setDocumentTitle(state: PageState): void {
   // The breadcrumb trail truncates its labels to keep crumbs compact, but an
   // alert's full header text is more useful in a tab title than a crumb, so
   // the title is built from the untruncated label instead of the trail.
   if (state.type === 'alert') {
-    document.title = `Service alert ${alertLabel(session, state.alert_id)} | viz.rt.gtfs.zone`;
+    document.title = t('app.alertTitle', {
+      label: alertLabel(session, state.alert_id),
+    });
     return;
   }
   document.title =
@@ -428,17 +432,17 @@ async function loadFeed(selection: FeedSelection): Promise<string | null> {
   const label = describeSelection(selection);
   try {
     await session.load(selection);
-    notify.success(`Loaded ${label}`);
+    notify.success(t('load.loaded', { label }));
     return null;
   } catch (err) {
     if (err instanceof LoadCancelledError) {
-      notify.info('Load cancelled');
-      return 'Load cancelled.';
+      notify.info(t('load.cancelled'));
+      return t('load.cancelledNotice');
     }
     console.error('Load failed:', err);
     const reason = err instanceof Error ? err.message : String(err);
-    notify.error(`Failed to load ${label}: ${reason}`);
-    return `Could not load ${label}: ${reason}`;
+    notify.error(t('load.failed', { label, reason }));
+    return t('load.failedNotice', { label, reason });
   }
 }
 
@@ -488,15 +492,18 @@ reloadBtn.addEventListener('click', async () => {
   reloadBtn.disabled = true;
   try {
     await session.reload();
-    notify.success(`Reloaded ${label}`);
+    notify.success(t('load.reloaded', { label }));
   } catch (err) {
     if (err instanceof LoadCancelledError) {
-      notify.info('Load cancelled');
+      notify.info(t('load.cancelled'));
       return;
     }
     console.error('Reload failed:', err);
     notify.error(
-      `Failed to reload ${label}: ${err instanceof Error ? err.message : String(err)}`
+      t('load.reloadFailed', {
+        label,
+        reason: err instanceof Error ? err.message : String(err),
+      })
     );
   } finally {
     reloadBtn.disabled = false;
@@ -509,10 +516,10 @@ const intervalLabel = document.getElementById('rt-interval-label')!;
 
 function renderIntervalMenu(): void {
   const current = session.pollIntervalMs;
-  intervalLabel.textContent = `${current / 1000}s`;
+  intervalLabel.textContent = t('shell.seconds', { n: current / 1000 });
   intervalMenu.innerHTML = CONFIG.RT_INTERVAL_OPTIONS_MS.map(
     (ms) =>
-      `<li><a data-rt-interval="${ms}" class="${ms === current ? 'menu-active' : ''}">${ms / 1000}s</a></li>`
+      `<li><a data-rt-interval="${ms}" class="${ms === current ? 'menu-active' : ''}">${t('shell.seconds', { n: ms / 1000 })}</a></li>`
   ).join('');
 }
 

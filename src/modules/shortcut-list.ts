@@ -8,6 +8,7 @@
  */
 
 import type { ShortcutCommand } from 'gtfs-zone-web-common/ui/keyboard-shortcuts';
+import { t } from '../i18n/messages';
 
 interface ShortcutHost {
   /** Open the load modal and load whatever it returns. */
@@ -22,7 +23,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
   return [
     {
       keys: 'ctrl+o',
-      description: 'Open the load feed dialog',
+      description: t('shortcut.openLoad'),
       handler: (e) => {
         e?.preventDefault();
         return host.openLoadModal();
@@ -32,7 +33,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
     // command-palette one, and neither is worth making the user guess.
     {
       keys: '/',
-      description: 'Focus map search',
+      description: t('shortcut.focusSearch'),
       handler: (e) => {
         e?.preventDefault();
         focusMapSearch();
@@ -40,7 +41,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
     },
     {
       keys: 'ctrl+k',
-      description: 'Focus map search',
+      description: t('shortcut.focusSearch'),
       handler: (e) => {
         e?.preventDefault();
         focusMapSearch();
@@ -50,7 +51,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
     // way this one is pressed.
     {
       keys: 'escape',
-      description: 'Clear the search',
+      description: t('shortcut.clearSearch'),
       allowInInputFields: true,
       handler: () => {
         (
@@ -62,7 +63,7 @@ export function viewerShortcuts(host: ShortcutHost): ShortcutCommand[] {
     // `?` is Shift+/, so the normalized key string carries the modifier.
     {
       keys: 'shift+?',
-      description: 'Show the guide',
+      description: t('shortcut.showGuide'),
       handler: (e) => {
         e?.preventDefault();
         host.openGuide();

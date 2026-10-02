@@ -34,6 +34,7 @@ import type {
   RealtimeSource,
   ScheduledSource,
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
+import { t } from '../i18n/messages';
 
 // `static` stays in the list so a legacy-only hash still counts as naming a feed.
 const PARAM_KEYS = [
@@ -152,6 +153,6 @@ function labelForUrl(url: string): string {
   try {
     return new URL(url, location.href).host;
   } catch {
-    return 'Linked feed';
+    return t('load.linkedFeed');
   }
 }

@@ -20,6 +20,7 @@ import {
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { paramsToSelection, selectionToParams } from './feed-url';
 import { createPageStateManager } from './page-state-manager';
+import { t } from '../i18n/messages';
 
 /** What the hash named at boot, read once before anything loads. */
 export interface BootRequest {
@@ -82,7 +83,9 @@ export class AppState extends ValidatedFocusController<
       // the modal is open at all, which the hint cannot.
       problem: complete
         ? null
-        : `This link names only part of a feed — ${describeMissing(selection).toLowerCase()}.`,
+        : t('load.partialLink', {
+            missing: describeMissing(selection).toLowerCase(),
+          }),
       pending,
     };
   }

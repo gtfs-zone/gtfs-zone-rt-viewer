@@ -22,6 +22,7 @@ import {
 } from 'gtfs-zone-web-common/gtfs/alerts';
 import { showModal } from 'gtfs-zone-web-common/ui/modal-utils';
 import { escapeHtml } from 'gtfs-zone-web-common/util/escape-html';
+import { t } from '../i18n/messages';
 
 const LIST_ID = 'alerts-list';
 
@@ -53,9 +54,9 @@ export class AlertsModal {
   /** Resolves when the modal closes, however it was closed. */
   async show(): Promise<void> {
     await showModal({
-      title: 'Service Alerts',
+      title: t('alerts.title'),
       body: `<div id="${LIST_ID}" class="space-y-3">${this.renderList()}</div>`,
-      actions: [{ label: 'Close', onClick: () => {} }],
+      actions: [{ label: t('alerts.close'), onClick: () => {} }],
       escapeAction: 0,
       boxClassName: 'max-w-2xl',
       onMount: () => {
@@ -107,7 +108,7 @@ export class AlertsModal {
 
   private renderList(): string {
     if (this.records.length === 0) {
-      return '<p class="text-sm opacity-40 text-center py-8">No service alerts.</p>';
+      return `<p class="text-sm opacity-40 text-center py-8">${t('alerts.none')}</p>`;
     }
     // Active first — the rest are scheduled or expired and can wait.
     const active = this.records.filter((r) => isActiveNow(r.alert));
@@ -116,13 +117,14 @@ export class AlertsModal {
       ...this.records.filter((r) => !isActiveNow(r.alert)),
     ];
     return `
-      <p class="text-xs opacity-60">${active.length} active of ${this.records.length} in the feed.</p>
+      <p class="text-xs opacity-60">${t('alerts.activeOf', { active: active.length, total: this.records.length })}</p>
       ${ordered.map((record) => this.renderRow(record)).join('')}`;
   }
 
   private renderRow(record: AlertRecord): string {
     const header =
-      preferredText(record.alert.headerText) || `Alert ${record.id}`;
+      preferredText(record.alert.headerText) ||
+      t('alerts.fallback', { id: record.id });
     const desc = preferredText(record.alert.descriptionText);
     const state: PageState = { type: 'alert', alert_id: record.id };
     return `<a
@@ -133,8 +135,8 @@ export class AlertsModal {
       <div class="flex items-center gap-2">
         ${
           isActiveNow(record.alert)
-            ? '<span class="badge badge-warning badge-xs">active</span>'
-            : '<span class="badge badge-ghost badge-xs">not active</span>'
+            ? `<span class="badge badge-warning badge-xs">${t('alerts.active')}</span>`
+            : `<span class="badge badge-ghost badge-xs">${t('alerts.notActive')}</span>`
         }
         <span class="text-xs opacity-50">${escapeHtml(ALERT_LEVEL_LABELS[alertLevel(record)])}</span>
       </div>

@@ -5,6 +5,7 @@ import {
   type NavIconName,
 } from 'gtfs-zone-web-common/ui/nav-icons';
 import type { NavbarAction } from 'gtfs-zone-web-common/ui/navbar-actions';
+import { t } from '../i18n/messages';
 
 /**
  * This app's navbar action row and dock artwork.
@@ -31,7 +32,7 @@ export const NAVBAR_ACTIONS: NavbarAction[] = [
   {
     kind: 'icon',
     id: 'reload-feed-btn',
-    label: 'Reload feed',
+    label: t('nav.reload'),
     icon: renderLocalIcon(RELOAD_PATH),
     tooltipId: 'reload-feed-tip',
   },
@@ -39,7 +40,7 @@ export const NAVBAR_ACTIONS: NavbarAction[] = [
     // The href is written at boot from the loaded feed's schedule URL.
     kind: 'link',
     id: 'edit-feed-btn',
-    label: 'Edit schedule in edit.gtfs.zone',
+    label: t('nav.edit'),
     icon: renderLocalIcon(PENCIL_PATH),
     href: '#',
     external: true,
@@ -48,7 +49,7 @@ export const NAVBAR_ACTIONS: NavbarAction[] = [
   {
     kind: 'icon',
     id: 'alerts-btn',
-    label: 'Service Alerts',
+    label: t('nav.alerts'),
     icon: renderNavIcon('alerts'),
     badgeId: 'alerts-badge',
     badgeClass: 'badge-error',
@@ -56,7 +57,7 @@ export const NAVBAR_ACTIONS: NavbarAction[] = [
   {
     kind: 'toggle',
     id: 'theme-toggle',
-    label: 'Toggle theme',
+    label: t('nav.theme'),
     iconOn: renderSunIcon('swap-on h-5 w-5'),
     iconOff: renderMoonIcon('swap-off h-5 w-5'),
     inputClass: 'theme-controller',
@@ -65,14 +66,14 @@ export const NAVBAR_ACTIONS: NavbarAction[] = [
   {
     kind: 'icon',
     id: 'help-btn',
-    label: 'Guide',
+    label: t('nav.guide'),
     icon: renderNavIcon('guide'),
   },
   {
     kind: 'labeled',
     id: 'load-btn',
     // Opens the one modal covering every feed source.
-    label: 'Load',
+    label: t('nav.load'),
     icon: renderNavIcon('load', { sizeClass: 'h-4 w-4' }),
     btnClass: 'btn-primary',
   },

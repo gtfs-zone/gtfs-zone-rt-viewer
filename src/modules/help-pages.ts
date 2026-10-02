@@ -23,40 +23,38 @@ import {
   mapKeyRow,
   renderMapKey,
 } from 'gtfs-zone-web-common/gtfs/map-key';
+import { t } from '../i18n/messages';
 
 const welcomePage: HelpPage = {
   id: 'welcome',
-  label: 'Welcome',
+  label: t('help.welcome.label'),
   group: 'Getting Started',
-  title: 'Welcome to viz.rt.gtfs.zone',
+  title: t('help.welcome.title'),
   showOnce: true,
   render: () =>
     [
       eyebrow('GTFS.zone'),
-      lede(
-        'viz.rt.gtfs.zone shows a GTFS Realtime feed on a live map. Every feed is fetched and decoded in your browser. Nothing you load is uploaded anywhere.'
-      ),
+      lede(t('help.welcome.lede')),
       glyphList([
         {
           icon: ICON_LOAD,
-          term: 'Load a feed',
-          description:
-            'Point it at a scheduled GTFS feed plus its realtime feeds.',
+          term: t('help.welcome.load'),
+          description: t('help.welcome.loadText'),
         },
         {
           icon: ICON_MAP,
-          term: 'Watch vehicles move',
-          description: 'Positions update every few seconds on the map.',
+          term: t('help.welcome.watch'),
+          description: t('help.welcome.watchText'),
         },
         {
           icon: ICON_LEG,
-          term: 'Check predictions',
-          description: 'Arrival predictions and how late each trip is running.',
+          term: t('help.welcome.predict'),
+          description: t('help.welcome.predictText'),
         },
         {
           icon: ICON_CHECK,
-          term: 'Spot disruptions',
-          description: 'Active service alerts show up alongside the routes.',
+          term: t('help.welcome.disrupt'),
+          description: t('help.welcome.disruptText'),
         },
       ]),
     ].join(''),
@@ -66,24 +64,20 @@ const welcomePage: HelpPage = {
 
 const ABOUT_APP: AboutApp = {
   name: 'viz.rt.gtfs.zone',
-  blurb: [
-    'viz.rt.gtfs.zone shows a GTFS Realtime feed on a live map.',
-    'GTFS Realtime is what an agency publishes alongside its schedule to say where its vehicles are right now, how late each trip is running, and what is disrupted. Point this at a scheduled GTFS feed plus its realtime feeds and the map draws the rest:',
-  ],
+  blurb: [t('help.about.blurb'), t('help.about.blurb2')],
   highlights: [
-    'Routes and stops from the schedule',
-    'Vehicles moving along them, updated every few seconds',
-    'Arrival predictions at any stop',
-    'Active service alerts',
+    t('help.about.routes'),
+    t('help.about.vehicles'),
+    t('help.about.predictions'),
+    t('help.about.alerts'),
   ],
-  blurbFooter:
-    'Every feed is fetched and decoded in your browser. Nothing you load is uploaded anywhere.',
-  contactSubject: 'viz.rt.gtfs.zone feedback',
+  blurbFooter: t('help.about.footer'),
+  contactSubject: t('help.about.subject'),
   repo: 'gtfs-zone-rt-viewer',
   sibling: {
     name: 'edit.gtfs.zone',
     href: 'https://edit.gtfs.zone',
-    note: 'build and edit a GTFS schedule feed in the browser',
+    note: t('help.about.sibling'),
   },
 };
 
@@ -102,27 +96,21 @@ function chevronLine(color: string): string {
 
 const mapKeyPage: HelpPage = {
   id: 'map-key',
-  label: 'Map Key',
+  label: t('help.mapKey.label'),
   group: 'Reference',
-  title: 'Map Key',
+  title: t('help.mapKey.title'),
   render: () =>
     renderMapKey({
-      unlocatedLabel: "Inherits its station's location",
-      title: 'Routes &amp; Vehicles',
+      unlocatedLabel: t('help.mapKey.unlocated'),
+      title: t('help.mapKey.routes'),
       rows: [
-        mapKeyRow(
-          mapKeyLine('#3b82f6'),
-          "Route (the feed's color, or an assigned one)"
-        ),
-        mapKeyRow(
-          chevronLine('#3b82f6'),
-          'Direction of travel, on the selected route'
-        ),
-        mapKeyRow(mapKeyCircle('#3b82f6', '#0f172a'), 'Vehicle'),
-        mapKeyRow(triangle('#3b82f6'), 'Vehicle, with a known heading'),
+        mapKeyRow(mapKeyLine('#3b82f6'), t('help.mapKey.route')),
+        mapKeyRow(chevronLine('#3b82f6'), t('help.mapKey.direction')),
+        mapKeyRow(mapKeyCircle('#3b82f6', '#0f172a'), t('help.mapKey.vehicle')),
+        mapKeyRow(triangle('#3b82f6'), t('help.mapKey.heading')),
         mapKeyRow(
           mapKeyCircle('#94a3b8', '#0f172a'),
-          "Vehicle, route couldn't be matched"
+          t('help.mapKey.unmatched')
         ),
       ].join(''),
     }),
