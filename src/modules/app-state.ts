@@ -10,8 +10,7 @@
 import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import type { BreadcrumbItem } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
 import type { FocusHooks } from 'gtfs-zone-web-common/ui/focus-controller';
-import { FocusController } from 'gtfs-zone-web-common/ui/focus-controller';
-import { homeWithModal } from 'gtfs-zone-web-common/ui/page-state-manager';
+import { ValidatedFocusController } from 'gtfs-zone-web-common/ui/focus-controller';
 import type { PageState } from '../types/page-state';
 import { buildBreadcrumbs, validateState } from './breadcrumbs';
 import type { FeedSession } from './feed-session';
@@ -20,7 +19,6 @@ import {
   isComplete,
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { paramsToSelection, selectionToParams } from './feed-url';
-import { notify } from 'gtfs-zone-web-common/ui/notification-system';
 import { createPageStateManager } from './page-state-manager';
 
 /** What the hash named at boot, read once before anything loads. */
@@ -36,20 +34,15 @@ export interface BootRequest {
 
 export type AppStateHooks = FocusHooks<PageState>;
 
-export class AppState extends FocusController<
+export class AppState extends ValidatedFocusController<
   PageState,
   BreadcrumbItem<PageState>
 > {
-  private session: FeedSession;
-
   constructor(session: FeedSession, hooks: AppStateHooks) {
-    super(createPageStateManager(), hooks);
-    this.session = session;
-
-    this.pages.setBreadcrumbBuilder((state) =>
-      buildBreadcrumbs(session, state)
-    );
-    this.pages.setStateValidator((state) => validateState(session, state));
+    super(createPageStateManager(), hooks, {
+      breadcrumbs: (state) => buildBreadcrumbs(session, state),
+      validate: (state) => validateState(session, state),
+    });
 
     // The selection is half of the hash, so any change to it — a modal load, an
     // inline URL edit on the status page — has to be reflected there too.
@@ -60,12 +53,7 @@ export class AppState extends FocusController<
     // A new scheduled feed almost never contains the object that was focused in
     // the old one, and leaving a stale focus in place would render an object
     // page for something the loaded feed does not describe.
-    session.addEventListener('scheduleloaded', () => {
-      const current = this.focus;
-      if (current.type !== 'home' && !validateState(session, current)) {
-        this.clearFocus();
-      }
-    });
+    session.addEventListener('scheduleloaded', () => this.dropInvalidFocus());
   }
 
   /**
@@ -99,30 +87,17 @@ export class AppState extends FocusController<
     };
   }
 
-  /** Apply the focus a link carried, once its feed has actually loaded. */
+  /**
+   * Apply the focus a link carried, once its feed has actually loaded. A focus
+   * that no longer resolves is reported rather than silently dropped.
+   */
   finishBoot(pending: PageState): void {
-    this.applyPendingFocus(pending);
+    this.pendingFocus = pending;
+    this.resolvePendingFocus(true);
   }
 
   /** Paint the empty app when boot loaded nothing. */
   bootEmpty(): void {
     this.repaint();
-  }
-
-  /**
-   * A focus restored from a link is applied without dispatching navigation
-   * history, but a focus that no longer resolves is reported rather than
-   * silently dropped — a dead link should say so.
-   */
-  private applyPendingFocus(pending: PageState): void {
-    if (pending.type !== 'home' && !validateState(this.session, pending)) {
-      notify.warning(
-        `Nothing in this feed matches the linked ${pending.type}.`
-      );
-      // The modal outlives the page it was linked over: it names no object.
-      this.adopt(homeWithModal(pending));
-    } else {
-      this.adopt(pending);
-    }
   }
 }
