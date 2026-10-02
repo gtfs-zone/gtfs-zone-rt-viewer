@@ -1,5 +1,4 @@
 import { CONFIG } from '../config';
-import { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
 import { GTFSRealtime } from '../gtfs-rt';
 import type { FeedStatus, FetchStartDetail } from '../gtfs-rt';
 import type {
@@ -7,17 +6,12 @@ import type {
   TripUpdate,
 } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
-import { adoptFeedTimezone } from 'gtfs-zone-web-common/gtfs/feed-time';
+import { FeedSessionBase } from 'gtfs-zone-web-common/gtfs/feed-session';
 import { feedProgressIndicator } from 'gtfs-zone-web-common/ui/progress-indicator';
-import {
-  downloadPercent,
-  formatBytes,
-  LoadCancelledError,
-} from 'gtfs-zone-web-common/gtfs/feed-download';
+import { LoadCancelledError } from 'gtfs-zone-web-common/gtfs/feed-download';
 import type {
   FeedSelection,
   RealtimeEndpointName,
-  ScheduledSource,
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   REALTIME_ENDPOINT_LABELS,
@@ -57,19 +51,10 @@ export interface RealtimeCounts {
  * Re-dispatches the poller's payload events, so consumers (map, alerts modal,
  * status page) never have to re-subscribe when the poller is replaced.
  */
-export class FeedSession extends EventTarget {
+export class FeedSession extends FeedSessionBase {
   selection: FeedSelection | null = null;
-  scheduledFeed: GTFSScheduled | null = null;
   poller: GTFSRealtime | null = null;
   rtCounts: RealtimeCounts = { vehicles: 0, tripUpdates: 0, alerts: 0 };
-  scheduleError: string | null = null;
-  scheduleLoadedAt: number | null = null;
-
-  // Latest decoded payloads, kept so a focused object can be resolved by id
-  // without waiting for the next poll. Replaced wholesale on each poll.
-  vehicles = new Map<string, VehiclePosition>();
-  alerts = new Map<string, AlertRecord>();
-  tripUpdates: TripUpdate[] = [];
 
   private intervalMs = readStoredIntervalMs();
 
@@ -84,11 +69,18 @@ export class FeedSession extends EventTarget {
     }
     const previous = this.selection;
     this.selection = selection;
+    const scheduled = selection.scheduled!;
     try {
-      await this.loadScheduled(selection.scheduled!);
+      await this.loadSchedule(
+        scheduled.kind === 'file'
+          ? { file: scheduled.file }
+          : { url: resolvedScheduledUrl(scheduled) },
+        scheduled.label
+      );
     } catch (err) {
-      // A cancelled load leaves the session exactly as it was.
-      if (err instanceof LoadCancelledError) {
+      // A cancelled load leaves the session exactly as it was, unless a newer
+      // load has already replaced the selection.
+      if (err instanceof LoadCancelledError && this.selection === selection) {
         this.selection = previous;
       }
       throw err;
@@ -119,77 +111,6 @@ export class FeedSession extends EventTarget {
     }
     this.poller?.setIntervalMs(intervalMs);
     this.emitChange();
-  }
-
-  private async loadScheduled(source: ScheduledSource): Promise<void> {
-    const feed = new GTFSScheduled();
-    const label = source.label;
-
-    // Download and parse are separate operations so the bar shows real byte
-    // progress first, then per-file parse progress.
-    let parsing = false;
-    const hooks = {
-      onDownload: (loaded: number, total: number | null) => {
-        feedProgressIndicator.updateProgress(
-          'scheduled-download',
-          downloadPercent(loaded, total) ?? 0,
-          total
-            ? `Downloading ${label} — ${formatBytes(loaded)} of ${formatBytes(total)}`
-            : `Downloading ${label} — ${formatBytes(loaded)}`
-        );
-      },
-      onParse: (fileName: string, done: number, total: number) => {
-        if (!parsing) {
-          parsing = true;
-          feedProgressIndicator.finishLoading('scheduled-download');
-          feedProgressIndicator.startLoading(
-            'scheduled-parse',
-            `Parsing ${label}…`
-          );
-        }
-        feedProgressIndicator.updateProgress(
-          'scheduled-parse',
-          Math.round((done / total) * 100),
-          `Parsing ${label} — ${fileName}`
-        );
-      },
-    };
-
-    // A file upload has no fetch to abort, so it gets no Cancel button.
-    const controller = source.kind === 'file' ? null : new AbortController();
-    feedProgressIndicator.startLoading(
-      'scheduled-download',
-      `Downloading ${label}…`,
-      controller ? { onCancel: () => controller.abort() } : {}
-    );
-    try {
-      if (source.kind === 'file') {
-        await feed.loadFromFile(source.file, hooks);
-      } else {
-        await feed.loadFromUrl(resolvedScheduledUrl(source), {
-          ...hooks,
-          signal: controller!.signal,
-        });
-      }
-      this.scheduledFeed = feed;
-      // Every transit time rendered from here on is anchored to this feed's zone.
-      adoptFeedTimezone(feed);
-      this.scheduleError = null;
-      this.scheduleLoadedAt = Date.now();
-      this.dispatchEvent(
-        new CustomEvent<GTFSScheduled>('scheduleloaded', { detail: feed })
-      );
-    } catch (err) {
-      // A cancel is not a feed error: the previously loaded feed stays live.
-      if (!(err instanceof LoadCancelledError)) {
-        this.scheduleError = err instanceof Error ? err.message : String(err);
-      }
-      throw err;
-    } finally {
-      feedProgressIndicator.finishLoading('scheduled-download');
-      feedProgressIndicator.finishLoading('scheduled-parse');
-      this.emitChange();
-    }
   }
 
   private startPoller(selection: FeedSelection): void {
@@ -252,9 +173,5 @@ export class FeedSession extends EventTarget {
     });
 
     poller.start();
-  }
-
-  private emitChange(): void {
-    this.dispatchEvent(new Event('change'));
   }
 }
