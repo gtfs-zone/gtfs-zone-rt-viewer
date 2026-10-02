@@ -63,6 +63,7 @@ export const NAVBAR_ACTIONS: NavbarAction[] = [
     inputClass: 'theme-controller',
     value: 'light',
   },
+  { kind: 'locale', id: 'locale-toggle' },
   {
     kind: 'icon',
     id: 'help-btn',
