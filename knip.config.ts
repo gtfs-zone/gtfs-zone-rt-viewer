@@ -1,13 +1,8 @@
 import type { KnipConfig } from 'knip';
 
 const config: KnipConfig = {
-  entry: [
-    'src/index.html',
-    'src/styles/main.css',
-    // Standalone scripts invoked directly (not imported by other modules)
-    'scripts/**/*.ts',
-  ],
-  project: ['src/**/*.{ts,css}', 'scripts/**/*.ts'],
+  entry: ['src/index.html', 'src/styles/main.css'],
+  project: ['src/**/*.{ts,css}'],
   ignoreDependencies: [
     // Global GeoJSON namespace, referenced without an import
     '@types/geojson',

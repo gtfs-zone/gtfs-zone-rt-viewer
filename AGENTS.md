@@ -6,7 +6,6 @@ Static frontend for visualizing GTFS Realtime feeds, deployed to
 ## Commands
 
 ```bash
-pnpm vendor:check # diff vendored files against their source repo, per VENDORED.md
 pnpm vuln         # osv-scanner vulnerability gate
 ```
 
@@ -22,12 +21,9 @@ package, a git dependency shipping raw TypeScript. Import it as
 `src/shell.ts` mounts the shell and `index.ts` must import it first.
 
 A shared change is a commit in gtfs-zone-web-common, a tag, and a bump in each
-consumer. It is not edited here and `vendor:check` does not cover it. Restart
-the dev server after a bump: Vite does not watch `node_modules`, so a stale
-transform can load two copies of a shared module (logged as `loaded twice`).
-
-What is still hand-copied is in `VENDORED.md`, flowing one way:
-gtfs-zone-editor -> rt-viewer -> rt-manager.
+consumer. It is not edited here. Restart the dev server after a bump: Vite does
+not watch `node_modules`, so a stale transform can load two copies of a shared
+module (logged as `loaded twice`).
 
 ## Conventions
 

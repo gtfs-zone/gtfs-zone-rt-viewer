@@ -10,16 +10,14 @@ reads the realtime feeds rt-api serves: `https://rt.gtfs.zone` in production,
 ```bash
 pnpm install
 pnpm dev          # vite on :8080
-pnpm check        # typecheck, eslint, knip, vendor:check
+pnpm check        # typecheck, eslint, knip
 pnpm format
 pnpm build
-pnpm vendor:check # diff vendored files against their source repo, per VENDORED.md
 pnpm vuln         # osv-scanner vulnerability gate
 ```
 
 Shared modules come from
 [gtfs-zone-web-common](https://github.com/gtfs-zone/gtfs-zone-web-common), a git dependency.
-What is still hand-copied from other repos is listed in `VENDORED.md`.
 
 ## Releasing
 
