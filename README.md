@@ -1,5 +1,7 @@
 # gtfs-zone-rt-viewer
 
+[![CI](https://img.shields.io/github/actions/workflow/status/gtfs-zone/gtfs-zone-rt-viewer/check.yml?branch=main&label=CI)](https://github.com/gtfs-zone/gtfs-zone-rt-viewer/actions/workflows/check.yml?query=branch%3Amain) [![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue)](LICENSE.txt) [![viz.rt.gtfs.zone](https://img.shields.io/website?url=https%3A%2F%2Fviz.rt.gtfs.zone&label=viz.rt.gtfs.zone)](https://viz.rt.gtfs.zone)
+
 A static frontend for visualizing GTFS Realtime feeds. Deployed at
 `viz.rt.gtfs.zone`.
 
