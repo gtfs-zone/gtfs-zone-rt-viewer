@@ -1,29 +1,13 @@
 /**
  * Application-wide configuration constants.
  * All magic numbers live here — import CONFIG rather than inlining literals.
- *
- * The map block is ported from gtfs-zone-editor's `src/config.ts`; only the
- * constants the layer stack actually reads were carried over.
  */
 export const CONFIG = {
-  // Map navigation — zoom level used when focusing a single stop or vehicle.
-  STOP_FOCUS_ZOOM: 16,
-
-  // Camera animation durations (ms). Focusing always moves the camera now;
-  // these match gtfs-zone-editor. The follow ease is short so it never queues
-  // behind the next 15s poll.
-  FOCUS_POINT_DURATION: 1500,
-  FOCUS_BOUNDS_DURATION: 2000,
-  FOLLOW_DURATION: 300,
-
   // localStorage keys for map view + appearance (Plan 03 decided these are
   // deliberately *not* in the URL: they are per-device preferences, not part
   // of what a shared link describes).
   MAP_VIEW_KEY: 'tt.map.view',
   MAP_APPEARANCE_KEY: 'tt.map.appearance',
-
-  // Debounce for persisting the map view on moveend.
-  MAP_VIEW_SAVE_DEBOUNCE: 400,
 
   // Realtime poll interval — a per-device preference like the map view above,
   // deliberately not in the shared URL.
