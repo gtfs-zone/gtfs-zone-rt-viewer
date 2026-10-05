@@ -327,6 +327,14 @@ async function boot(): Promise<void> {
   }
   appState.bootEmpty();
 
+  // Only a boot that ends at the load modal shows the welcome: a link that
+  // loaded, or one naming a modal, already says what the visitor wants.
+  if (!req.pending.modal) {
+    await showHelpPageOnce('welcome', {
+      continueLabel: t('help.welcome.start'),
+    });
+  }
+
   // The link's own offer, on the first pass only: once the user has picked
   // something else in the modal, re-offering the link that failed is noise.
   let linkedWith = req.selection ? linkedOffer(req.selection) : undefined;
@@ -387,14 +395,10 @@ async function boot(): Promise<void> {
 }
 
 // The viewer needs the registry before a page can open, including the welcome
-// page `start` shows below.
+// page `boot` shows.
 setHelpPages(HELP_PAGES, HELP_GROUP_ORDER);
 
-async function start(): Promise<void> {
-  await showHelpPageOnce('welcome');
-  await boot();
-}
-void start();
+void boot();
 
 // ─── Alerts button ────────────────────────────────────────────────────────────
 document

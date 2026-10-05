@@ -213,6 +213,7 @@ export const fr: Translation<typeof en> = {
   'help.welcome.disrupt': 'Repérer les perturbations',
   'help.welcome.disruptText':
     "Les alertes de service en cours s'affichent à côté des lignes.",
+  'help.welcome.start': 'Commencer !',
 
   'help.about.blurb':
     'viz.rt.gtfs.zone affiche un flux GTFS Realtime sur une carte en direct.',

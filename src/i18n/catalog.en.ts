@@ -204,6 +204,7 @@ export const en = {
   'help.welcome.disrupt': 'Spot disruptions',
   'help.welcome.disruptText':
     'Active service alerts show up alongside the routes.',
+  'help.welcome.start': 'Get started!',
 
   'help.about.blurb':
     'viz.rt.gtfs.zone shows a GTFS Realtime feed on a live map.',
