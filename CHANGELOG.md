@@ -1,3 +1,27 @@
+## v0.20.0 (2026-10-06)
+
+### Feat
+
+- add the language toggle to the navbar
+- translate the UI into French through t() and the fmt helpers
+
+### Fix
+
+- **welcome**: add a primary Get started button and skip it for feed links
+
+### Refactor
+
+- use RtMapController from gtfs-zone-web-common
+- use route, stop and alert pages from gtfs-zone-web-common
+- extend ValidatedFocusController from gtfs-zone-web-common
+- extend RtPanel from gtfs-zone-web-common
+- use breadcrumb helpers from gtfs-zone-web-common
+- build schedule search entries with gtfs-zone-web-common
+- extend FeedSessionBase from gtfs-zone-web-common
+- use layer manager from gtfs-zone-web-common
+- build page-state codec from gtfs-zone-web-common
+- build help pages from gtfs-zone-web-common
+
 ## v0.19.4 (2026-10-02)
 
 ## v0.19.3 (2026-10-01)
