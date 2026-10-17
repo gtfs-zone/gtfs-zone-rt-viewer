@@ -1,3 +1,9 @@
+## v0.21.0 (2026-10-17)
+
+### Feat
+
+- **seo**: lead the title and description with fast, free, and open source
+
 ## v0.20.0 (2026-10-06)
 
 ### Feat
