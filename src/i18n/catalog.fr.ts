@@ -3,7 +3,8 @@ import type { en } from './catalog.en';
 
 /** viz.rt.gtfs.zone's UI strings, in French. */
 export const fr: Translation<typeof en> = {
-  'app.title': 'viz.rt.gtfs.zone - Visualiseur GTFS Realtime',
+  'app.title':
+    'viz.rt.gtfs.zone - Visualiseur GTFS Realtime rapide, gratuit et open source',
   'app.alertTitle': 'Alerte de service {label} | viz.rt.gtfs.zone',
   'app.noWebgl':
     'La carte nécessite WebGL, que ce navigateur a désactivé ou ne prend pas en charge.',

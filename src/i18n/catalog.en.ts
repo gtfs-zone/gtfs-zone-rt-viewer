@@ -1,6 +1,7 @@
 /** viz.rt.gtfs.zone's UI strings, in English: the source of the keys. */
 export const en = {
-  'app.title': 'viz.rt.gtfs.zone - GTFS Realtime Visualizer',
+  'app.title':
+    'viz.rt.gtfs.zone - Fast, free, open source GTFS Realtime visualizer',
   'app.alertTitle': 'Service alert {label} | viz.rt.gtfs.zone',
   'app.noWebgl':
     'The map needs WebGL, which this browser has turned off or does not support.',
