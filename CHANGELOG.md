@@ -1,3 +1,13 @@
+## v0.22.0 (2026-10-28)
+
+### Feat
+
+- link the GitHub repo from the navbar
+
+### Fix
+
+- **deps**: upgrade packages with published security advisories
+
 ## v0.21.2 (2026-10-19)
 
 ## v0.21.1 (2026-10-18)
