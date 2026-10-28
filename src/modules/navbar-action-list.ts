@@ -4,7 +4,10 @@ import {
   renderSunIcon,
   type NavIconName,
 } from 'gtfs-zone-web-common/ui/nav-icons';
-import type { NavbarAction } from 'gtfs-zone-web-common/ui/navbar-actions';
+import {
+  githubAction,
+  type NavbarAction,
+} from 'gtfs-zone-web-common/ui/navbar-actions';
 import { t } from '../i18n/messages';
 
 /**
@@ -70,6 +73,7 @@ export const NAVBAR_ACTIONS: NavbarAction[] = [
     label: t('nav.guide'),
     icon: renderNavIcon('guide'),
   },
+  githubAction('gtfs-zone-rt-viewer'),
   {
     kind: 'labeled',
     id: 'load-btn',
