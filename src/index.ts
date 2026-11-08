@@ -12,9 +12,9 @@ import type { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
 import type { AlertRecord } from 'gtfs-zone-web-common/gtfs/rt-types';
 import {
   setHelpPages,
-  showHelpModal,
   showHelpPageOnce,
 } from 'gtfs-zone-web-common/ui/help-modal';
+import { showRoutedHelpModal } from './modules/routed-help';
 import {
   HELP_GROUP_ORDER,
   setHelpRuntimeData,
@@ -216,7 +216,9 @@ const alertsModal = new AlertsModal({
 });
 const modalRouter = createModalRouter<ModalState>(appState.pages);
 modalRouter.register('alerts', () => alertsModal.show());
-modalRouter.register('help', (modal) => showHelpModal(modal.page));
+modalRouter.register('help', (modal) =>
+  showRoutedHelpModal(appState.pages, modal.page)
+);
 
 // ─── Map search ───────────────────────────────────────────────────────────────
 // Selecting a feed object is the same event as clicking it on the map; a place
