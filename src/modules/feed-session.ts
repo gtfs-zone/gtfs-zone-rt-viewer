@@ -8,6 +8,7 @@ import type {
 } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
 import { FeedSessionBase } from 'gtfs-zone-web-common/gtfs/feed-session';
+import { alertTripIds } from 'gtfs-zone-web-common/gtfs/alerts';
 import { feedProgressIndicator } from 'gtfs-zone-web-common/ui/progress-indicator';
 import { LoadCancelledError } from 'gtfs-zone-web-common/gtfs/feed-download';
 import type {
@@ -71,6 +72,9 @@ export class FeedSession extends FeedSessionBase {
     const previous = this.selection;
     this.selection = selection;
     const scheduled = selection.scheduled!;
+    // The current schedule is released as the load starts, so its realtime
+    // half stops with it.
+    this.stopPoller();
     try {
       await this.loadSchedule(
         scheduled.kind === 'file'
@@ -79,8 +83,8 @@ export class FeedSession extends FeedSessionBase {
         scheduled.label
       );
     } catch (err) {
-      // A cancelled load leaves the session exactly as it was, unless a newer
-      // load has already replaced the selection.
+      // A cancelled load keeps the previous selection, so Reload can bring it
+      // back, unless a newer load has already replaced it.
       if (err instanceof LoadCancelledError && this.selection === selection) {
         this.selection = previous;
       }
@@ -114,12 +118,17 @@ export class FeedSession extends FeedSessionBase {
     this.emitChange();
   }
 
-  private startPoller(selection: FeedSelection): void {
+  private stopPoller(): void {
     this.poller?.stop();
+    this.poller = null;
     this.rtCounts = { vehicles: 0, tripUpdates: 0, alerts: 0 };
     this.vehicles = new Map();
     this.alerts = new Map();
     this.tripUpdates = [];
+  }
+
+  private startPoller(selection: FeedSelection): void {
+    this.stopPoller();
 
     const poller = new GTFSRealtime(
       resolvedRealtimeUrls(selection.realtime!, CONFIG.RT_BASE),
@@ -143,36 +152,65 @@ export class FeedSession extends FeedSessionBase {
     });
     poller.addEventListener('statuschange', () => this.emitChange());
 
+    // Each payload is applied once the scheduled trips it names are fetched.
     poller.addEventListener('vehicles', (e) => {
       const detail = (e as CustomEvent<VehiclePosition[]>).detail;
-      this.rtCounts.vehicles = detail.length;
-      this.vehicles = new Map(detail.map((v) => [v.key, v]));
-      // Keys are derived to be unique, so the map must not lose anything. A
-      // mismatch means the derivation collapsed two vehicles onto one key.
-      if (import.meta.env.DEV && this.vehicles.size !== detail.length) {
-        console.warn(
-          `[FeedSession] vehicle key collision: ${detail.length} payload vehicles, ${this.vehicles.size} distinct keys`
-        );
-      }
-      this.dispatchEvent(
-        new CustomEvent<VehiclePosition[]>('vehicles', { detail })
+      this.withTrips(
+        'vehicles',
+        detail.map((v) => v.tripId),
+        () => {
+          if (this.poller === poller) {
+            this.applyVehicles(detail);
+          }
+        }
       );
     });
     poller.addEventListener('tripUpdates', (e) => {
       const detail = (e as CustomEvent<TripUpdate[]>).detail;
-      this.rtCounts.tripUpdates = detail.length;
-      this.tripUpdates = detail;
-      this.dispatchEvent(
-        new CustomEvent<TripUpdate[]>('tripUpdates', { detail })
+      this.withTrips(
+        'tripUpdates',
+        detail.map((u) => u.trip?.tripId),
+        () => {
+          if (this.poller !== poller) {
+            return;
+          }
+          this.rtCounts.tripUpdates = detail.length;
+          this.tripUpdates = detail;
+          this.dispatchEvent(
+            new CustomEvent<TripUpdate[]>('tripUpdates', { detail })
+          );
+        }
       );
     });
     poller.addEventListener('alerts', (e) => {
       const detail = (e as CustomEvent<AlertRecord[]>).detail;
-      this.rtCounts.alerts = detail.length;
-      this.alerts = new Map(detail.map((a) => [a.id, a]));
-      this.dispatchEvent(new CustomEvent<AlertRecord[]>('alerts', { detail }));
+      this.withTrips('alerts', alertTripIds(detail), () => {
+        if (this.poller !== poller) {
+          return;
+        }
+        this.rtCounts.alerts = detail.length;
+        this.alerts = new Map(detail.map((a) => [a.id, a]));
+        this.dispatchEvent(
+          new CustomEvent<AlertRecord[]>('alerts', { detail })
+        );
+      });
     });
 
     poller.start();
+  }
+
+  private applyVehicles(detail: VehiclePosition[]): void {
+    this.rtCounts.vehicles = detail.length;
+    this.vehicles = new Map(detail.map((v) => [v.key, v]));
+    // Keys are derived to be unique, so the map must not lose anything. A
+    // mismatch means the derivation collapsed two vehicles onto one key.
+    if (import.meta.env.DEV && this.vehicles.size !== detail.length) {
+      console.warn(
+        `[FeedSession] vehicle key collision: ${detail.length} payload vehicles, ${this.vehicles.size} distinct keys`
+      );
+    }
+    this.dispatchEvent(
+      new CustomEvent<VehiclePosition[]>('vehicles', { detail })
+    );
   }
 }

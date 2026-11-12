@@ -17,6 +17,9 @@ importers:
       daisyui:
         specifier: ^5.7.46
         version: 5.7.46
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
       gtfs-realtime-bindings:
         specifier: ^1.1.1
         version: 1.1.1
@@ -24,11 +27,8 @@ importers:
         specifier: github:gtfs-zone/gtfs-zone-vocab#v0.2.0
         version: https://codeload.github.com/gtfs-zone/gtfs-zone-vocab/tar.gz/341ec43a9b0b7cd179e53ce9ae371c4a0cf1b4be
       gtfs-zone-web-common:
-        specifier: github:gtfs-zone/gtfs-zone-web-common#v5.21.0
-        version: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/1cec4967f0136d729032984b237e9f84faea1974(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(gtfs-zone-vocab@https://codeload.github.com/gtfs-zone/gtfs-zone-vocab/tar.gz/341ec43a9b0b7cd179e53ce9ae371c4a0cf1b4be)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0)
-      jszip:
-        specifier: ^3.10.2
-        version: 3.10.2
+        specifier: github:gtfs-zone/gtfs-zone-web-common#v5.22.0
+        version: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/f2140164e1078482ca47a7bc11e7d7dc7ca30137(@leeoniya/ufuzzy@1.0.19)(fflate@0.8.3)(gtfs-realtime-bindings@1.1.1)(gtfs-zone-vocab@https://codeload.github.com/gtfs-zone/gtfs-zone-vocab/tar.gz/341ec43a9b0b7cd179e53ce9ae371c4a0cf1b4be)(maplibre-gl@6.11.2)(papaparse@5.7.0)
       maplibre-gl:
         specifier: ^6.11.2
         version: 6.11.2
@@ -1056,9 +1056,6 @@ packages:
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
-  core-util-is@1.0.3:
-    resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
-
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -1200,6 +1197,9 @@ packages:
       picomatch:
         optional: true
 
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
+
   file-entry-cache@11.1.5:
     resolution: {integrity: sha512-+PFTHITI08JIGhnNpGNI8T8inUpgZfk3GNEqfT9R2zZV2iFXg3CvqzSl/uEhs7TSGujYRELEANyDvS8Fj7+S7Q==}
 
@@ -1254,14 +1254,14 @@ packages:
     resolution: {gitHosted: true, tarball: https://codeload.github.com/gtfs-zone/gtfs-zone-vocab/tar.gz/341ec43a9b0b7cd179e53ce9ae371c4a0cf1b4be}
     version: 0.2.0
 
-  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/1cec4967f0136d729032984b237e9f84faea1974:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/1cec4967f0136d729032984b237e9f84faea1974}
-    version: 5.21.0
+  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/f2140164e1078482ca47a7bc11e7d7dc7ca30137:
+    resolution: {gitHosted: true, integrity: sha512-Ib+hB+Rz2SYpc+C2Cqo7tODPf1790RGAJaGjLzFbmsJQ2EQPvKPea1H+8XJLipdcOrzznFafedMSVfJ4eOutkw==, tarball: https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/f2140164e1078482ca47a7bc11e7d7dc7ca30137}
+    version: 5.22.0
     peerDependencies:
       '@leeoniya/ufuzzy': '*'
+      fflate: '*'
       gtfs-realtime-bindings: '*'
       gtfs-zone-vocab: '*'
-      jszip: '*'
       maplibre-gl: '>=6.4.1 <7'
       papaparse: '*'
     peerDependenciesMeta:
@@ -1290,9 +1290,6 @@ packages:
     resolution: {integrity: sha512-YChdK5txDjwGUvgR7oCJcLGkwi3LDh8Zx8tS7ndYciLEg/oOCL26VUBSUEtgS7EjiybcBqFxh5j0rAdDX7/bbg==}
     engines: {node: '>= 4'}
 
-  immediate@3.0.6:
-    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
-
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
@@ -1311,9 +1308,6 @@ packages:
   is-glob@4.0.3:
     resolution: {integrity: sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==}
     engines: {node: '>=0.10.0'}
-
-  isarray@1.0.0:
-    resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
@@ -1339,9 +1333,6 @@ packages:
   json-stringify-pretty-compact@4.0.0:
     resolution: {integrity: sha512-3CNZ2DnrpByG9Nqj6Xo8vqbjT4F6N+tb4Gb28ESAZjYZ5yqvmc56J+/kuIwkaAMOyblTQhUW7PxMkUb8Q36N3Q==}
 
-  jszip@3.10.2:
-    resolution: {integrity: sha512-3l+rb15IOWtUhU0H5MFqES/T6Kh7abYwjosBey/vD6hDt8zoEffkSC5Ws5SGtgVw3gBx2NEbhTeSW1+kWkpyTQ==}
-
   kdbush@4.1.0:
     resolution: {integrity: sha512-e9vurzrXJQrFX6ckpHP3bvj5l+9CnYzkxDNnNQ1h2QTqdWsUAJgXiKdGNcOa1EY85dU8KbQ+z/FdQdB7P+9yfQ==}
 
@@ -1363,9 +1354,6 @@ packages:
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
-
-  lie@3.3.0:
-    resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
 
   lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==}
@@ -1542,9 +1530,6 @@ packages:
   package-manager-detector@1.8.0:
     resolution: {integrity: sha512-yQA4H19AmPEoMUeavPMDIe1higySl/gH/yaQrkT/s07Qp+7pp2hYz30N3z2l5BkjVkF9Ow6o0wjJamm2y7Sn0A==}
 
-  pako@1.0.11:
-    resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
-
   papaparse@5.7.0:
     resolution: {integrity: sha512-qBGxg/7Q3Kl9Wfhrz2Z74UnvnHTXLNG6jmKJFeBvP2+y4lV7So+7SR62+Zd47JvdrCkX+nDcnr0ObPzek/+6RA==}
 
@@ -1590,9 +1575,6 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  process-nextick-args@2.0.1:
-    resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
-
   protobufjs-cli@1.3.3:
     resolution: {integrity: sha512-zwmt6JeStPjeofZbl+QADexAVzP1EgsIAsO7mCfKkW/8oBxHwgTqJ1aD7zDrcCC0Nb+SLWSvCR3RDaKgIO3P8w==}
     engines: {node: '>=12.0.0'}
@@ -1622,9 +1604,6 @@ packages:
   quickselect@3.0.0:
     resolution: {integrity: sha512-XdjUArbK4Bm5fLLvlm5KpTFOiOThgfWWI4axAZDWg4E/0mKdZyI9tNEfds27qCi1ze/vwTR16kvmmGhRra3c2g==}
 
-  readable-stream@2.3.8:
-    resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
-
   require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
@@ -1643,16 +1622,10 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
-  safe-buffer@5.1.2:
-    resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
-
   semver@7.8.5:
     resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
     hasBin: true
-
-  setimmediate@1.0.5:
-    resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
 
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
@@ -1673,9 +1646,6 @@ packages:
   source-map@0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
-
-  string_decoder@1.1.1:
-    resolution: {integrity: sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==}
 
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
@@ -1767,9 +1737,6 @@ packages:
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
-
-  util-deprecate@1.0.2:
-    resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
   vite@7.3.7:
     resolution: {integrity: sha512-AHEzTORMbi7/7aXp7w7KZ5+DCUdSeLsJz0grY8xHpc9DHdYb0vQu6DqJfm2tOw3gDExNgPgnJTXxM6syYFHaCA==}
@@ -2581,8 +2548,6 @@ snapshots:
 
   color-name@1.1.4: {}
 
-  core-util-is@1.0.3: {}
-
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -2750,6 +2715,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.7
 
+  fflate@0.8.3: {}
+
   file-entry-cache@11.1.5:
     dependencies:
       flat-cache: 6.1.23
@@ -2806,11 +2773,11 @@ snapshots:
 
   gtfs-zone-vocab@https://codeload.github.com/gtfs-zone/gtfs-zone-vocab/tar.gz/341ec43a9b0b7cd179e53ce9ae371c4a0cf1b4be: {}
 
-  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/1cec4967f0136d729032984b237e9f84faea1974(@leeoniya/ufuzzy@1.0.19)(gtfs-realtime-bindings@1.1.1)(gtfs-zone-vocab@https://codeload.github.com/gtfs-zone/gtfs-zone-vocab/tar.gz/341ec43a9b0b7cd179e53ce9ae371c4a0cf1b4be)(jszip@3.10.2)(maplibre-gl@6.11.2)(papaparse@5.7.0):
+  gtfs-zone-web-common@https://codeload.github.com/gtfs-zone/gtfs-zone-web-common/tar.gz/f2140164e1078482ca47a7bc11e7d7dc7ca30137(@leeoniya/ufuzzy@1.0.19)(fflate@0.8.3)(gtfs-realtime-bindings@1.1.1)(gtfs-zone-vocab@https://codeload.github.com/gtfs-zone/gtfs-zone-vocab/tar.gz/341ec43a9b0b7cd179e53ce9ae371c4a0cf1b4be)(maplibre-gl@6.11.2)(papaparse@5.7.0):
     dependencies:
       '@leeoniya/ufuzzy': 1.0.19
+      fflate: 0.8.3
       gtfs-zone-vocab: https://codeload.github.com/gtfs-zone/gtfs-zone-vocab/tar.gz/341ec43a9b0b7cd179e53ce9ae371c4a0cf1b4be
-      jszip: 3.10.2
       maplibre-gl: 6.11.2
       papaparse: 5.7.0
     optionalDependencies:
@@ -2830,8 +2797,6 @@ snapshots:
 
   ignore@7.0.11: {}
 
-  immediate@3.0.6: {}
-
   imurmurhash@0.1.4: {}
 
   inflight@1.0.6:
@@ -2846,8 +2811,6 @@ snapshots:
   is-glob@4.0.3:
     dependencies:
       is-extglob: 2.1.1
-
-  isarray@1.0.0: {}
 
   isexe@2.0.0: {}
 
@@ -2880,13 +2843,6 @@ snapshots:
   json-stable-stringify-without-jsonify@1.0.1: {}
 
   json-stringify-pretty-compact@4.0.0: {}
-
-  jszip@3.10.2:
-    dependencies:
-      lie: 3.3.0
-      pako: 1.0.11
-      readable-stream: 2.3.8
-      setimmediate: 1.0.5
 
   kdbush@4.1.0: {}
 
@@ -2923,10 +2879,6 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
-
-  lie@3.3.0:
-    dependencies:
-      immediate: 3.0.6
 
   lightningcss-android-arm64@1.32.0:
     optional: true
@@ -3132,8 +3084,6 @@ snapshots:
 
   package-manager-detector@1.8.0: {}
 
-  pako@1.0.11: {}
-
   papaparse@5.7.0: {}
 
   path-exists@4.0.0: {}
@@ -3163,8 +3113,6 @@ snapshots:
   prelude-ls@1.2.1: {}
 
   prettier@3.9.9: {}
-
-  process-nextick-args@2.0.1: {}
 
   protobufjs-cli@1.3.3(protobufjs@7.6.6):
     dependencies:
@@ -3205,16 +3153,6 @@ snapshots:
       hookified: 2.2.0
 
   quickselect@3.0.0: {}
-
-  readable-stream@2.3.8:
-    dependencies:
-      core-util-is: 1.0.3
-      inherits: 2.0.4
-      isarray: 1.0.0
-      process-nextick-args: 2.0.1
-      safe-buffer: 5.1.2
-      string_decoder: 1.1.1
-      util-deprecate: 1.0.2
 
   require-from-string@2.0.2: {}
 
@@ -3260,11 +3198,7 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.63.5
       fsevents: 2.3.3
 
-  safe-buffer@5.1.2: {}
-
   semver@7.8.5: {}
-
-  setimmediate@1.0.5: {}
 
   shebang-command@2.0.0:
     dependencies:
@@ -3278,10 +3212,6 @@ snapshots:
 
   source-map@0.6.1:
     optional: true
-
-  string_decoder@1.1.1:
-    dependencies:
-      safe-buffer: 5.1.2
 
   strip-json-comments@3.1.1: {}
 
@@ -3358,8 +3288,6 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
-
-  util-deprecate@1.0.2: {}
 
   vite@7.3.7(@types/node@24.19.0)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.15)(yaml@2.9.1):
     dependencies:
