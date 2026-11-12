@@ -1,3 +1,9 @@
+## v0.25.0 (2026-11-12)
+
+### Feat
+
+- **map**: label routes via gtfs-zone-web-common v5.21.0
+
 ## v0.24.0 (2026-11-09)
 
 ### Feat
