@@ -28,7 +28,10 @@ import { viewerShortcuts } from './modules/shortcut-list';
 import { createModalRouter } from 'gtfs-zone-web-common/ui/modal-router';
 import { AlertsModal } from './modules/alerts-modal';
 import { initFieldTooltipPortal } from 'gtfs-zone-web-common/util/tooltip-position';
-import type { LinkedOffer } from 'gtfs-zone-web-common/ui/load-modal';
+import type {
+  LinkedOffer,
+  LoadModalResult,
+} from 'gtfs-zone-web-common/ui/load-modal';
 import { showLoadModal } from 'gtfs-zone-web-common/ui/load-modal';
 import { notify } from 'gtfs-zone-web-common/ui/notification-system';
 import { LoadCancelledError } from 'gtfs-zone-web-common/gtfs/feed-download';
@@ -44,13 +47,11 @@ import {
   renderNavbarActions,
 } from 'gtfs-zone-web-common/ui/navbar-actions';
 import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
-import { describeSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
-import { FeedSession } from './modules/feed-session';
 import {
-  clearLastFeed,
-  readLastFeed,
-  writeLastFeed,
-} from './modules/last-feed';
+  describeSelection,
+  hasAnyRealtimeUrl,
+} from 'gtfs-zone-web-common/gtfs/feed-selection';
+import { FeedSession } from './modules/feed-session';
 import { StatusPage } from './modules/status-page';
 import { AppState } from './modules/app-state';
 import { PanelRenderer } from './modules/panel-renderer';
@@ -131,17 +132,6 @@ session.addEventListener('scheduleloaded', (e) => {
   // `loadScheduledFeed` replaces the previous feed's data in place — no explicit
   // clear, which would only cost an extra empty repaint.
   mapCtrl.loadScheduledFeed(scheduled);
-  // The one place that knows both a load succeeded and what it parsed, so the
-  // selection and its counts are remembered in a single write.
-  if (session.selection) {
-    const counts = scheduled.counts();
-    writeLastFeed(session.selection, {
-      label: describeSelection(session.selection),
-      routes: counts.routes,
-      stops: counts.stops,
-      trips: counts.trips,
-    });
-  }
   // Blank the vehicles layer for the new feed: `startPoller` resets the
   // session's vehicle map, but if the first poll on the new feed fails the old
   // feed's markers would otherwise linger on the map.
@@ -268,7 +258,11 @@ reloadWrap.classList.add('hidden');
 editWrap.classList.add('hidden');
 function showFeedControls(): void {
   reloadWrap.classList.remove('hidden');
-  intervalDropdown.classList.remove('hidden');
+  // The refresh rate is the poller's; a schedule-only feed has none.
+  intervalDropdown.classList.toggle(
+    'hidden',
+    !hasAnyRealtimeUrl(session.selection?.realtime ?? null)
+  );
   // The editor link only works from a URL-backed scheduled feed — file uploads
   // have no URL to hand off — so it stays hidden otherwise. A
   // `…/outer.zip#inner.zip` URL is handed over whole and will fail there:
@@ -342,27 +336,16 @@ async function boot(): Promise<void> {
   let linkedWith = req.selection ? linkedOffer(req.selection) : undefined;
   let seed = req.selection;
 
-  // A stored feed that no longer loads must not trap boot in a reopen loop, so
-  // the record is forgotten and the modal is offered exactly once more.
-  let retried = false;
+  // A failed load reopens the modal with the reason, until it is dismissed.
+  // A stored feed that fails to restore is deleted by the cache, so it is not
+  // offered again.
   for (;;) {
-    const last = readLastFeed();
-    console.log(
-      last
-        ? '[boot] modal opened, stored feed available'
-        : '[boot] modal opened, nothing stored'
-    );
+    const library = session.library();
+    console.log(`[boot] modal opened, ${library.feeds.length} stored feeds`);
     const result = await showLoadModal(seed, {
       notice: notice ?? undefined,
       linkedWith,
-      continueWith: last
-        ? {
-            name: last.summary.label,
-            routes: last.summary.routes,
-            stops: last.summary.stops,
-            trips: last.summary.trips,
-          }
-        : undefined,
+      library,
     });
     linkedWith = undefined;
     seed = null;
@@ -371,28 +354,11 @@ async function boot(): Promise<void> {
       console.log('[boot] modal dismissed');
       return;
     }
-    if (result.kind === 'selection') {
-      await handleLoadResult(result.selection);
-      return;
-    }
-    // `continue` is only reachable when the card was rendered, so `last` is set.
-    if (!last) {
-      return;
-    }
-    const failure = await loadFeed(last.selection);
-    if (!failure) {
+    notice = await loadModalResult(result);
+    if (!notice) {
       showFeedControls();
       return;
     }
-    if (retried) {
-      return;
-    }
-    // The stored feed is what failed, so it is forgotten before the reopen —
-    // otherwise its card is offered again and the loop is the only thing
-    // stopping it.
-    clearLastFeed();
-    notice = failure;
-    retried = true;
   }
 }
 
@@ -434,11 +400,21 @@ setHelpRuntimeData({
  * Returns the reason it failed, or null when the feed is now loaded, so boot can
  * put that reason in front of the user instead of only in a toast.
  */
-async function loadFeed(selection: FeedSelection): Promise<string | null> {
+async function loadFeed(
+  selection: FeedSelection,
+  storedId?: string
+): Promise<string | null> {
   const label = describeSelection(selection);
   try {
-    await session.load(selection);
-    notify.success(t('load.loaded', { label }));
+    await session.load(selection, storedId);
+    notify.success(
+      session.scheduleRestored
+        ? t('load.restored', { label })
+        : t('load.loaded', { label })
+    );
+    if (session.storeError) {
+      notify.error(session.storeError);
+    }
     return null;
   } catch (err) {
     if (err instanceof LoadCancelledError) {
@@ -452,18 +428,19 @@ async function loadFeed(selection: FeedSelection): Promise<string | null> {
   }
 }
 
-/** True when the feed is now loaded; false for a cancelled or failed load. */
-async function handleLoadResult(
-  selection: FeedSelection | null
-): Promise<boolean> {
+/** Load what the modal closed with; the reason it failed, or null. */
+async function loadModalResult(
+  result: NonNullable<LoadModalResult>
+): Promise<string | null> {
+  if (result.kind !== 'stored') {
+    return loadFeed(result.selection);
+  }
+  const selection = session.storedSelection(result.id);
   if (!selection) {
-    return false;
+    console.warn(`[load] stored feed ${result.id} is gone`);
+    return t('load.storedGone');
   }
-  if (await loadFeed(selection)) {
-    return false;
-  }
-  showFeedControls();
-  return true;
+  return loadFeed(selection, result.id);
 }
 
 /**
@@ -474,12 +451,12 @@ async function handleLoadResult(
  * the selection it produces is already in the hash on its own.
  */
 async function openLoadModal(): Promise<void> {
-  // The modal can also return `{ kind: 'continue' }`, but only when it is given
-  // a `continueWith` card, which this call site does not.
-  const result = await showLoadModal(session.selection);
-  await handleLoadResult(
-    result?.kind === 'selection' ? result.selection : null
-  );
+  const result = await showLoadModal(session.selection, {
+    library: session.library(),
+  });
+  if (result && !(await loadModalResult(result))) {
+    showFeedControls();
+  }
 }
 
 document
@@ -498,7 +475,14 @@ reloadBtn.addEventListener('click', async () => {
   reloadBtn.disabled = true;
   try {
     await session.reload();
-    notify.success(t('load.reloaded', { label }));
+    notify.success(
+      session.scheduleRestored
+        ? t('load.reloadedUnchanged', { label })
+        : t('load.reloaded', { label })
+    );
+    if (session.storeError) {
+      notify.error(session.storeError);
+    }
   } catch (err) {
     if (err instanceof LoadCancelledError) {
       notify.info(t('load.cancelled'));

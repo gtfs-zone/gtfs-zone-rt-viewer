@@ -40,6 +40,11 @@ export const fr: Translation<typeof en> = {
   'load.linkedFeed': 'Flux du lien',
   'load.partialLink': "Ce lien ne désigne qu'une partie d'un flux : {missing}.",
   'load.decodeFailed': 'Échec du décodage : {message}',
+  'load.restored':
+    '{label} ouvert depuis la copie enregistrée dans ce navigateur',
+  'load.reloadedUnchanged':
+    "L'horaire de {label} n'a pas changé ; restauré depuis la copie enregistrée",
+  'load.storedGone': "Ce flux enregistré n'est plus dans ce navigateur.",
 
   'crumb.feed': 'Flux',
   'crumb.noFeed': 'Aucun flux',
@@ -155,6 +160,10 @@ export const fr: Translation<typeof en> = {
   'status.pickFeed': 'Choisir un flux',
   'status.copied': 'Lien copié',
   'status.copyFailed': 'Impossible de copier dans le presse-papiers',
+  'status.restored':
+    'Restauré depuis la copie enregistrée dans ce navigateur, sans nouveau téléchargement. Le serveur a indiqué la même version, ou le flux a été ouvert depuis Vos flux.',
+  'status.noRealtime':
+    "Aucun flux temps réel n'est chargé ; la carte affiche seulement l'horaire.",
 
   'vehicle.notReported': 'non indiqué',
   'vehicle.seqFromStopId':

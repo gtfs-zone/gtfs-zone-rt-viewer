@@ -8,15 +8,19 @@ import type {
 } from 'gtfs-zone-web-common/gtfs/rt-types';
 import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
 import { FeedSessionBase } from 'gtfs-zone-web-common/gtfs/feed-session';
+import { ParseCache } from 'gtfs-zone-web-common/gtfs/parse-cache';
+import type { FeedLibrary } from 'gtfs-zone-web-common/ui/load-modal';
 import { alertTripIds } from 'gtfs-zone-web-common/gtfs/alerts';
 import { feedProgressIndicator } from 'gtfs-zone-web-common/ui/progress-indicator';
 import { LoadCancelledError } from 'gtfs-zone-web-common/gtfs/feed-download';
 import type {
   FeedSelection,
   RealtimeEndpointName,
+  RealtimeSource,
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   REALTIME_ENDPOINT_LABELS,
+  hasAnyRealtimeUrl,
   isComplete,
   resolvedRealtimeUrls,
   resolvedScheduledUrl,
@@ -39,6 +43,12 @@ function readStoredIntervalMs(): number {
     : CONFIG.RT_INTERVAL_DEFAULT_MS;
 }
 
+/** What the parse cache keeps with a stored feed, to rebuild its selection. */
+interface StoredExtra {
+  useCors: boolean;
+  realtime: RealtimeSource | null;
+}
+
 export interface RealtimeCounts {
   vehicles: number;
   tripUpdates: number;
@@ -46,8 +56,9 @@ export interface RealtimeCounts {
 }
 
 /**
- * Owns the loaded feeds: the scheduled dataset, the RT poller, and the selection
- * they came from. Everything that loads a feed goes through here so there is a
+ * Owns the loaded feeds: the scheduled dataset, the RT poller when the
+ * selection has realtime, and the selection they came from. Schedules load
+ * through the parse cache, which keeps only the feed in use. Everything that loads a feed goes through here so there is a
  * single place that reports progress and a single place the status page reads.
  *
  * Re-dispatches the poller's payload events, so consumers (map, alerts modal,
@@ -57,6 +68,7 @@ export class FeedSession extends FeedSessionBase {
   selection: FeedSelection | null = null;
   poller: GTFSRealtime | null = null;
   rtCounts: RealtimeCounts = { vehicles: 0, tripUpdates: 0, alerts: 0 };
+  protected parseCache = new ParseCache('viz');
 
   private intervalMs = readStoredIntervalMs();
 
@@ -64,8 +76,12 @@ export class FeedSession extends FeedSessionBase {
     return this.poller?.getStatus() ?? null;
   }
 
-  /** Load a complete selection: the schedule first, then start the RT poller. */
-  async load(selection: FeedSelection): Promise<void> {
+  /**
+   * Load a complete selection: the schedule first, then the RT poller if it
+   * names an endpoint. `storedId` restores that stored feed instead of
+   * fetching the schedule.
+   */
+  async load(selection: FeedSelection, storedId?: string): Promise<void> {
     if (!isComplete(selection)) {
       throw new Error(t('load.incomplete'));
     }
@@ -76,11 +92,21 @@ export class FeedSession extends FeedSessionBase {
     // half stops with it.
     this.stopPoller();
     try {
+      const extra: StoredExtra = {
+        useCors: scheduled.kind === 'url' && scheduled.useCors,
+        realtime: selection.realtime,
+      };
       await this.loadSchedule(
-        scheduled.kind === 'file'
-          ? { file: scheduled.file }
-          : { url: resolvedScheduledUrl(scheduled) },
-        scheduled.label
+        storedId
+          ? { stored: storedId }
+          : scheduled.kind === 'file'
+            ? { file: scheduled.file }
+            : { url: resolvedScheduledUrl(scheduled) },
+        scheduled.label,
+        {
+          sourceUrl: scheduled.kind === 'url' ? scheduled.url : undefined,
+          extra,
+        }
       );
     } catch (err) {
       // A cancelled load keeps the previous selection, so Reload can bring it
@@ -90,8 +116,38 @@ export class FeedSession extends FeedSessionBase {
       }
       throw err;
     }
-    this.startPoller(selection);
+    if (hasAnyRealtimeUrl(selection.realtime)) {
+      this.startPoller(selection);
+    } else {
+      console.log('[FeedSession] no realtime endpoints; schedule only');
+    }
     this.emitChange();
+  }
+
+  /** The selection a stored feed was loaded with, or null when it is gone. */
+  storedSelection(id: string): FeedSelection | null {
+    const entry = this.parseCache.get(id);
+    if (!entry) {
+      return null;
+    }
+    const extra = entry.extra as StoredExtra | undefined;
+    return {
+      scheduled: {
+        kind: 'url',
+        url: entry.sourceUrl,
+        useCors: extra?.useCors ?? true,
+        label: entry.label,
+      },
+      realtime: extra?.realtime ?? null,
+    };
+  }
+
+  /** The stored feeds, for the load modal's "Your feeds". */
+  library(): FeedLibrary {
+    return {
+      feeds: this.parseCache.offers(this.scheduleEntry?.id ?? null),
+      onDelete: (id) => this.parseCache.delete(id),
+    };
   }
 
   /** Re-run the current selection from scratch: schedule download plus a fresh poller. */

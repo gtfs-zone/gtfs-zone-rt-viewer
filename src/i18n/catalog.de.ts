@@ -41,6 +41,12 @@ export const de: Translation<typeof en> = {
   'load.partialLink':
     'Dieser Link bezeichnet nur einen Teil eines Feeds: {missing}.',
   'load.decodeFailed': 'Dekodierung fehlgeschlagen: {message}',
+  'load.restored':
+    '{label} aus der in diesem Browser gespeicherten Kopie geöffnet',
+  'load.reloadedUnchanged':
+    'Der Fahrplan von {label} ist unverändert; aus der gespeicherten Kopie wiederhergestellt',
+  'load.storedGone':
+    'Dieser gespeicherte Feed ist nicht mehr in diesem Browser.',
 
   'crumb.feed': 'Feed',
   'crumb.noFeed': 'Kein Feed',
@@ -160,6 +166,10 @@ export const de: Translation<typeof en> = {
   'status.pickFeed': 'Feed auswählen',
   'status.copied': 'Link kopiert',
   'status.copyFailed': 'Kopieren in die Zwischenablage nicht möglich',
+  'status.restored':
+    'Aus der in diesem Browser gespeicherten Kopie wiederhergestellt, nicht erneut heruntergeladen. Der Server meldete dieselbe Version, oder der Feed wurde unter Ihre Feeds geöffnet.',
+  'status.noRealtime':
+    'Kein Echtzeit-Feed geladen; die Karte zeigt nur den Fahrplan.',
 
   'vehicle.notReported': 'nicht angegeben',
   'vehicle.seqFromStopId':

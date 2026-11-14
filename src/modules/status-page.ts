@@ -259,7 +259,12 @@ function renderHeaderDump(ep: EndpointStatus): string {
 function renderEndpoints(session: FeedSession): string {
   const status = session.status;
   if (!status) {
-    return '';
+    return session.scheduledFeed
+      ? `<section class="space-y-2">
+      <h3 class="font-semibold text-sm">${t('status.endpoints')}</h3>
+      <p class="text-xs opacity-60">${t('status.noRealtime')}</p>
+    </section>`
+      : '';
   }
   const rt = session.selection?.realtime;
   const rawUrls: Record<RealtimeEndpointName, string> = {
@@ -305,6 +310,8 @@ function renderScheduledSection(session: FeedSession): string {
           }
         </div>
         ${session.scheduleError ? `<p class="text-xs text-error break-words">${escHtml(session.scheduleError)}</p>` : ''}
+        ${session.scheduleRestored ? `<p class="text-xs opacity-60">${t('status.restored')}</p>` : ''}
+        ${session.storeError ? `<p class="text-xs text-error break-words">${escHtml(session.storeError)}</p>` : ''}
         ${source}
       </div>
     </section>`;

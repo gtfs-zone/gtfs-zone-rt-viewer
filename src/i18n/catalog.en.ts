@@ -37,6 +37,10 @@ export const en = {
   'load.linkedFeed': 'Linked feed',
   'load.partialLink': 'This link names only part of a feed: {missing}.',
   'load.decodeFailed': 'Decode failed: {message}',
+  'load.restored': 'Opened {label} from the copy stored in this browser',
+  'load.reloadedUnchanged':
+    'The schedule of {label} is unchanged; restored it from the stored copy',
+  'load.storedGone': 'That stored feed is no longer in this browser.',
 
   'crumb.feed': 'Feed',
   'crumb.noFeed': 'No feed',
@@ -149,6 +153,10 @@ export const en = {
   'status.pickFeed': 'Pick a feed',
   'status.copied': 'Link copied',
   'status.copyFailed': 'Could not copy to clipboard',
+  'status.restored':
+    'Restored from the copy stored in this browser, not downloaded again. The server reported the same version, or it was opened from Your feeds.',
+  'status.noRealtime':
+    'No realtime feed is loaded; the map shows the schedule only.',
 
   'vehicle.notReported': 'not reported',
   'vehicle.seqFromStopId':
