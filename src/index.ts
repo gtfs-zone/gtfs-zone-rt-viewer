@@ -432,6 +432,9 @@ async function loadFeed(
 async function loadModalResult(
   result: NonNullable<LoadModalResult>
 ): Promise<string | null> {
+  if (result.kind === 'offer') {
+    throw new Error(`[load] unexpected app offer ${result.id}; viz lists none`);
+  }
   if (result.kind !== 'stored') {
     return loadFeed(result.selection);
   }

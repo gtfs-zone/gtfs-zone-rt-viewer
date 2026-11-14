@@ -75,6 +75,7 @@ export const en = {
   'status.services': 'Services',
   'status.stopTimes': 'Stop times',
   'status.vehicles': 'Vehicles',
+  'status.scheduledVehicles': 'Scheduled vehicles',
   'status.tripUpdates': 'Trip updates',
   'status.alerts': 'Alerts',
   'status.never': 'never',
@@ -157,6 +158,10 @@ export const en = {
     'Restored from the copy stored in this browser, not downloaded again. The server reported the same version, or it was opened from Your feeds.',
   'status.noRealtime':
     'No realtime feed is loaded; the map shows the schedule only.',
+  'status.simulating':
+    'No realtime feed is loaded. The map shows scheduled vehicles where the timetable puts them now, recomputed every {seconds}s.',
+  'status.simulatingCapped':
+    '{running} trips are running now; only the first {shown} are drawn.',
 
   'vehicle.notReported': 'not reported',
   'vehicle.seqFromStopId':
@@ -185,6 +190,12 @@ export const en = {
     'This instance is distinguished by trip {trip} on {date}.',
   'vehicle.gone':
     'No longer in the feed as of {time}. Everything below is the last poll that contained it.',
+  'vehicle.scheduled': 'Scheduled',
+  'vehicle.scheduledBanner':
+    'Scheduled, not live. This position is computed from the timetable, not reported by a vehicle.',
+  'vehicle.scheduledGone':
+    'Not on the road per the timetable as of {time}. Everything below is its last scheduled position.',
+  'vehicle.rawScheduled': 'Scheduled vehicle (simulated)',
   'vehicle.live': 'Live',
   'vehicle.position': 'Position',
   'vehicle.bearing': 'Bearing',

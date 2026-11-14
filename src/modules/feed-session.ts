@@ -68,9 +68,20 @@ export class FeedSession extends FeedSessionBase {
   selection: FeedSelection | null = null;
   poller: GTFSRealtime | null = null;
   rtCounts: RealtimeCounts = { vehicles: 0, tripUpdates: 0, alerts: 0 };
+  /**
+   * Scheduled runs on the road at the last tick, before the worker's cap, or
+   * null when vehicles are not simulated (a realtime feed, or nothing loaded).
+   */
+  scheduledRunning: number | null = null;
   protected parseCache = new ParseCache('viz');
 
   private intervalMs = readStoredIntervalMs();
+  private simTimer: ReturnType<typeof setInterval> | null = null;
+
+  /** Vehicles come from the timetable, not a realtime feed. */
+  get simulating(): boolean {
+    return this.simTimer !== null;
+  }
 
   get status(): FeedStatus | null {
     return this.poller?.getStatus() ?? null;
@@ -91,6 +102,7 @@ export class FeedSession extends FeedSessionBase {
     // The current schedule is released as the load starts, so its realtime
     // half stops with it.
     this.stopPoller();
+    this.stopSimulation();
     try {
       const extra: StoredExtra = {
         useCors: scheduled.kind === 'url' && scheduled.useCors,
@@ -119,7 +131,8 @@ export class FeedSession extends FeedSessionBase {
     if (hasAnyRealtimeUrl(selection.realtime)) {
       this.startPoller(selection);
     } else {
-      console.log('[FeedSession] no realtime endpoints; schedule only');
+      console.log('[FeedSession] no realtime endpoints; simulating vehicles');
+      this.startSimulation();
     }
     this.emitChange();
   }
@@ -183,8 +196,85 @@ export class FeedSession extends FeedSessionBase {
     this.tripUpdates = [];
   }
 
+  /** The simulation stops with the schedule it reads. */
+  protected releaseSchedule(): void {
+    this.stopSimulation();
+    super.releaseSchedule();
+  }
+
+  private stopSimulation(): void {
+    if (!this.simTimer) {
+      return;
+    }
+    clearInterval(this.simTimer);
+    this.simTimer = null;
+    this.scheduledRunning = null;
+    this.rtCounts.vehicles = 0;
+    this.vehicles = new Map();
+    console.log('[FeedSession] scheduled vehicles stopped');
+  }
+
+  /**
+   * Recompute scheduled vehicle positions every `SCHEDULED_TICK_MS` and apply
+   * them as the session's vehicles. A tick still in flight skips the next
+   * one; a failed tick stops the simulation.
+   */
+  private startSimulation(): void {
+    this.stopSimulation();
+    const feed = this.scheduledFeed;
+    if (!feed) {
+      throw new Error('[FeedSession] no schedule to simulate');
+    }
+    let busy = false;
+    const tick = (): void => {
+      if (busy) {
+        return;
+      }
+      busy = true;
+      const live = () => this.simTimer === timer && this.scheduledFeed === feed;
+      feed
+        .scheduledVehicles(Date.now())
+        .then(({ vehicles, running }) => {
+          if (!live()) {
+            return;
+          }
+          this.withTrips(
+            'vehicles',
+            vehicles.map((v) => v.tripId),
+            () => {
+              if (!live()) {
+                return;
+              }
+              this.scheduledRunning = running;
+              this.applyVehicles(vehicles);
+              this.emitChange();
+            }
+          );
+        })
+        .catch((err) => {
+          if (!live()) {
+            return;
+          }
+          console.error('[FeedSession] scheduled vehicles failed', err);
+          this.stopSimulation();
+          this.dispatchEvent(
+            new CustomEvent<VehiclePosition[]>('vehicles', { detail: [] })
+          );
+          this.emitChange();
+        })
+        .finally(() => {
+          busy = false;
+        });
+    };
+    const timer = setInterval(tick, CONFIG.SCHEDULED_TICK_MS);
+    this.simTimer = timer;
+    console.log('[FeedSession] simulating scheduled vehicles');
+    tick();
+  }
+
   private startPoller(selection: FeedSelection): void {
     this.stopPoller();
+    this.stopSimulation();
 
     const poller = new GTFSRealtime(
       resolvedRealtimeUrls(selection.realtime!, CONFIG.RT_BASE),
