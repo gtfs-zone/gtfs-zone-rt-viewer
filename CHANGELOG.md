@@ -1,3 +1,9 @@
+## v0.25.1 (2026-11-14)
+
+### Fix
+
+- **i18n**: name cors.gtfs.zone as the CORS proxy
+
 ## v0.25.0 (2026-11-12)
 
 ### Feat
