@@ -62,7 +62,7 @@ export const fr: Translation<typeof en> = {
   'time.seconds': '{s} s',
 
   'status.notSet': 'non défini',
-  'status.viaProxy': 'via cors.kcfam.us',
+  'status.viaProxy': 'via cors.gtfs.zone',
   'status.localUrl':
     'URL locale : proxy CORS non appliqué (il ne peut pas atteindre cette machine)',
   'status.counts': 'Effectifs',

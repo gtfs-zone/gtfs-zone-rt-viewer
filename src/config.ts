@@ -25,8 +25,8 @@ export const CONFIG = {
   // deployed feed server. Fetching it directly rather than through
   // a vite proxy means gtfs-zone-rt-api's `CORS_ALLOWED_ORIGINS` has to name the dev
   // server's origin — it allows localhost:8080-8089, which covers vite's whole
-  // drift range. cors.kcfam.us is a separate whitelist with its own list
-  // (home-docker `local.cors_proxy_dev_origins`), covering localhost:8080-8091.
+  // drift range. cors.gtfs.zone is a separate whitelist with its own list
+  // (gtfs-zone-infra `tofu/locals.tf`, `cors_proxy_origins`), covering localhost:8080-8091.
   // Lives here rather than in `gtfs-zone-web-common`'s `feed-url-resolve.ts`
   // because gtfs-zone-editor has no local feed server and wants prod always.
   RT_BASE: import.meta.env.DEV

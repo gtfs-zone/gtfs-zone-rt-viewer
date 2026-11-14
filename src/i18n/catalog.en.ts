@@ -59,7 +59,7 @@ export const en = {
   'time.seconds': '{s}s',
 
   'status.notSet': 'not set',
-  'status.viaProxy': 'via cors.kcfam.us',
+  'status.viaProxy': 'via cors.gtfs.zone',
   'status.localUrl':
     'local URL: CORS proxy not applied (it cannot reach this machine)',
   'status.counts': 'Counts',
