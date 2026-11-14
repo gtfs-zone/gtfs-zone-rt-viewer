@@ -24,6 +24,7 @@ export const en = {
   'shortcut.openLoad': 'Open the load feed dialog',
   'shortcut.focusSearch': 'Focus map search',
   'shortcut.clearSearch': 'Clear the search',
+  'search.vehicles': 'Vehicles',
   'shortcut.showGuide': 'Show the guide',
 
   'load.loaded': 'Loaded {label}',

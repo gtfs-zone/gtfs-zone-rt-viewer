@@ -27,6 +27,7 @@ export const de: Translation<typeof en> = {
   'shortcut.openLoad': 'Dialog zum Laden eines Feeds öffnen',
   'shortcut.focusSearch': 'Zur Kartensuche springen',
   'shortcut.clearSearch': 'Suche leeren',
+  'search.vehicles': 'Fahrzeuge',
   'shortcut.showGuide': 'Anleitung anzeigen',
 
   'load.loaded': '{label} geladen',

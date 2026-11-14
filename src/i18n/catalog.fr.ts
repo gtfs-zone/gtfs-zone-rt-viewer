@@ -27,6 +27,7 @@ export const fr: Translation<typeof en> = {
   'shortcut.openLoad': 'Ouvrir la fenêtre de chargement de flux',
   'shortcut.focusSearch': 'Aller à la recherche sur la carte',
   'shortcut.clearSearch': 'Effacer la recherche',
+  'search.vehicles': 'Véhicules',
   'shortcut.showGuide': 'Afficher le guide',
 
   'load.loaded': '{label} chargé',
