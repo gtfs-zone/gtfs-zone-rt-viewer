@@ -173,6 +173,7 @@ export const en = {
   'vehicle.noRouteId': 'no route_id reported',
   'vehicle.trip': 'Trip',
   'vehicle.noTripId': 'No trip_id reported.',
+  'vehicle.loadingStops': "Loading the trip's stops…",
   'vehicle.at': 'at',
   'vehicle.headsign': 'Headsign',
   'vehicle.currently': 'Currently {status}',

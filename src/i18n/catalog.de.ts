@@ -186,6 +186,7 @@ export const de: Translation<typeof en> = {
   'vehicle.noRouteId': 'keine route_id angegeben',
   'vehicle.trip': 'Fahrt',
   'vehicle.noTripId': 'Keine trip_id angegeben.',
+  'vehicle.loadingStops': 'Haltestellen der Fahrt werden geladen…',
   'vehicle.at': 'bei',
   'vehicle.headsign': 'Ziel',
   'vehicle.currently': 'Derzeit {status}',

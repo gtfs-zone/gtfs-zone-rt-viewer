@@ -121,6 +121,20 @@ function renderTripSection(
     );
   }
 
+  // The panel re-renders on the feed's `dataloaded` once the stops arrive.
+  if (trip && feed && !feed.tripTimesLoaded(trip.trip_id)) {
+    feed.loadTripTimes(trip.trip_id).catch((err) => {
+      console.error(`[VehiclePage] loading trip ${trip.trip_id} failed`, err);
+    });
+    return section(
+      t('vehicle.trip'),
+      `<div class="flex items-center gap-2 text-xs opacity-70">
+        <span class="loading loading-spinner loading-xs"></span>
+        ${t('vehicle.loadingStops')}
+      </div>`
+    );
+  }
+
   const times = trip ? (feed?.stopTimesByTrip.get(trip.trip_id) ?? []) : [];
   const current = rt.stopSequenceFor(vehicle);
   const currentIndex = current

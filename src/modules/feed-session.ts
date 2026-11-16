@@ -238,6 +238,8 @@ export class FeedSession extends FeedSessionBase {
           if (!live()) {
             return;
           }
+          // Simulated vehicles carry their stop, so only the trip rows are
+          // fetched; the vehicle page loads its trip's stop_times itself.
           this.withTrips(
             'vehicles',
             vehicles.map((v) => v.tripId),
@@ -248,7 +250,8 @@ export class FeedSession extends FeedSessionBase {
               this.scheduledRunning = running;
               this.applyVehicles(vehicles);
               this.emitChange();
-            }
+            },
+            { stopTimes: false }
           );
         })
         .catch((err) => {

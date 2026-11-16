@@ -180,6 +180,7 @@ export const fr: Translation<typeof en> = {
   'vehicle.noRouteId': 'aucun route_id indiqué',
   'vehicle.trip': 'Course',
   'vehicle.noTripId': 'Aucun trip_id indiqué.',
+  'vehicle.loadingStops': 'Chargement des arrêts de la course…',
   'vehicle.at': 'à',
   'vehicle.headsign': 'Destination',
   'vehicle.currently': 'Actuellement {status}',
