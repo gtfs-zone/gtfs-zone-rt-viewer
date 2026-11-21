@@ -1,3 +1,17 @@
+## v0.26.0 (2026-11-21)
+
+### Feat
+
+- **alerts**: only the alert rows scroll under a fixed count line
+- **search**: grouped map search results
+- **feed**: simulate scheduled vehicles for static-only feeds
+- **feed**: load static-only feeds and restore stored schedules
+- **feed**: load the schedule through the web-common v5.22.0 feed store
+
+### Perf
+
+- **feed**: fetch simulated vehicles' trips without stop_times
+
 ## v0.25.2 (2026-11-14)
 
 ### Fix
