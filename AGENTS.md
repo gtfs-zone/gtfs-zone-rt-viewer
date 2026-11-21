@@ -21,7 +21,8 @@ package, a git dependency shipping raw TypeScript. Import it as
 `src/shell.ts` mounts the shell and `index.ts` must import it first.
 
 A shared change is a commit in gtfs-zone-web-common, a tag, and a bump in each
-consumer. It is not edited here. Restart the dev server after a bump: Vite does
+consumer. It is not edited here. The dev server restarts itself when
+`pnpm-lock.yaml` changes (`restartOnLockfile` in `vite.config.js`): Vite does
 not watch `node_modules`, so a stale transform can load two copies of a shared
 module (logged as `loaded twice`).
 
