@@ -15,6 +15,9 @@ export const CONFIG = {
   RT_INTERVAL_DEFAULT_MS: 15000,
   RT_INTERVAL_OPTIONS_MS: [5000, 10000, 15000, 30000, 60000],
 
+  // How often a static-only feed's scheduled vehicle positions are recomputed.
+  SCHEDULED_TICK_MS: 5000,
+
   // Prod URL of the schedule editor (gtfs-zone-editor). Hardcoded to prod on
   // purpose: dev editor URLs change often, so a shared/edit link should always
   // point at the stable public editor. It loads a scheduled GTFS via `#load=<url>`.

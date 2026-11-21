@@ -24,6 +24,7 @@ export const en = {
   'shortcut.openLoad': 'Open the load feed dialog',
   'shortcut.focusSearch': 'Focus map search',
   'shortcut.clearSearch': 'Clear the search',
+  'search.vehicles': 'Vehicles',
   'shortcut.showGuide': 'Show the guide',
 
   'load.loaded': 'Loaded {label}',
@@ -37,6 +38,10 @@ export const en = {
   'load.linkedFeed': 'Linked feed',
   'load.partialLink': 'This link names only part of a feed: {missing}.',
   'load.decodeFailed': 'Decode failed: {message}',
+  'load.restored': 'Opened {label} from the copy stored in this browser',
+  'load.reloadedUnchanged':
+    'The schedule of {label} is unchanged; restored it from the stored copy',
+  'load.storedGone': 'That stored feed is no longer in this browser.',
 
   'crumb.feed': 'Feed',
   'crumb.noFeed': 'No feed',
@@ -71,6 +76,7 @@ export const en = {
   'status.services': 'Services',
   'status.stopTimes': 'Stop times',
   'status.vehicles': 'Vehicles',
+  'status.scheduledVehicles': 'Scheduled vehicles',
   'status.tripUpdates': 'Trip updates',
   'status.alerts': 'Alerts',
   'status.never': 'never',
@@ -149,6 +155,14 @@ export const en = {
   'status.pickFeed': 'Pick a feed',
   'status.copied': 'Link copied',
   'status.copyFailed': 'Could not copy to clipboard',
+  'status.restored':
+    'Restored from the copy stored in this browser, not downloaded again. The server reported the same version, or it was opened from Your feeds.',
+  'status.noRealtime':
+    'No realtime feed is loaded; the map shows the schedule only.',
+  'status.simulating':
+    'No realtime feed is loaded. The map shows scheduled vehicles where the timetable puts them now, recomputed every {seconds}s.',
+  'status.simulatingCapped':
+    '{running} trips are running now; only the first {shown} are drawn.',
 
   'vehicle.notReported': 'not reported',
   'vehicle.seqFromStopId':
@@ -159,6 +173,7 @@ export const en = {
   'vehicle.noRouteId': 'no route_id reported',
   'vehicle.trip': 'Trip',
   'vehicle.noTripId': 'No trip_id reported.',
+  'vehicle.loadingStops': "Loading the trip's stops…",
   'vehicle.at': 'at',
   'vehicle.headsign': 'Headsign',
   'vehicle.currently': 'Currently {status}',
@@ -177,6 +192,12 @@ export const en = {
     'This instance is distinguished by trip {trip} on {date}.',
   'vehicle.gone':
     'No longer in the feed as of {time}. Everything below is the last poll that contained it.',
+  'vehicle.scheduled': 'Scheduled',
+  'vehicle.scheduledBanner':
+    'Scheduled, not live. This position is computed from the timetable, not reported by a vehicle.',
+  'vehicle.scheduledGone':
+    'Not on the road per the timetable as of {time}. Everything below is its last scheduled position.',
+  'vehicle.rawScheduled': 'Scheduled vehicle (simulated)',
   'vehicle.live': 'Live',
   'vehicle.position': 'Position',
   'vehicle.bearing': 'Bearing',

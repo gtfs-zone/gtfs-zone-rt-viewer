@@ -25,6 +25,7 @@ import { escapeHtml } from 'gtfs-zone-web-common/util/escape-html';
 import { t } from '../i18n/messages';
 
 const LIST_ID = 'alerts-list';
+const SUMMARY_ID = 'alerts-summary';
 
 export interface AlertsModalHooks {
   /** The hash a row's `<a>` should carry, for middle-click and copy-link. */
@@ -37,6 +38,7 @@ export class AlertsModal {
   private records: AlertRecord[] = [];
   private hooks: AlertsModalHooks;
   private list: HTMLElement | null = null;
+  private summary: HTMLElement | null = null;
 
   constructor(hooks: AlertsModalHooks) {
     this.hooks = hooks;
@@ -46,6 +48,9 @@ export class AlertsModal {
   setRecords(records: AlertRecord[]): void {
     this.records = records;
     this.renderBadges();
+    if (this.summary) {
+      this.summary.innerHTML = this.renderSummary();
+    }
     if (this.list) {
       this.list.innerHTML = this.renderList();
     }
@@ -55,16 +60,20 @@ export class AlertsModal {
   async show(): Promise<void> {
     await showModal({
       title: t('alerts.title'),
-      body: `<div id="${LIST_ID}" class="space-y-3">${this.renderList()}</div>`,
+      // The count line stays put; only the rows scroll.
+      body: `<p id="${SUMMARY_ID}" class="text-xs opacity-60 mb-3">${this.renderSummary()}</p>
+        <div id="${LIST_ID}" class="scroll-rows space-y-3">${this.renderList()}</div>`,
       actions: [{ label: t('alerts.close'), onClick: () => {} }],
       escapeAction: 0,
       boxClassName: 'max-w-2xl',
       onMount: () => {
         this.list = document.getElementById(LIST_ID);
+        this.summary = document.getElementById(SUMMARY_ID);
         this.list?.addEventListener('click', (e) => this.handleRowClick(e));
       },
     });
     this.list = null;
+    this.summary = null;
   }
 
   /**
@@ -106,19 +115,25 @@ export class AlertsModal {
     }
   }
 
+  /** "N active of M", or nothing when there are no alerts. */
+  private renderSummary(): string {
+    if (this.records.length === 0) {
+      return '';
+    }
+    const active = this.records.filter((r) => isActiveNow(r.alert)).length;
+    return t('alerts.activeOf', { active, total: this.records.length });
+  }
+
   private renderList(): string {
     if (this.records.length === 0) {
       return `<p class="text-sm opacity-40 text-center py-8">${t('alerts.none')}</p>`;
     }
     // Active first — the rest are scheduled or expired and can wait.
-    const active = this.records.filter((r) => isActiveNow(r.alert));
     const ordered = [
-      ...active,
+      ...this.records.filter((r) => isActiveNow(r.alert)),
       ...this.records.filter((r) => !isActiveNow(r.alert)),
     ];
-    return `
-      <p class="text-xs opacity-60">${t('alerts.activeOf', { active: active.length, total: this.records.length })}</p>
-      ${ordered.map((record) => this.renderRow(record)).join('')}`;
+    return ordered.map((record) => this.renderRow(record)).join('');
   }
 
   private renderRow(record: AlertRecord): string {

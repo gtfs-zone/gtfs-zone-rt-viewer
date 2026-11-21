@@ -33,8 +33,26 @@ const inlineIntro = {
     ),
 };
 
+// Restarts the dev server when pnpm-lock.yaml changes. A dependency bump moves
+// gtfs-zone-web-common to a new store path, and cached transforms (mainly the
+// shared stylesheet's CSS @import) keep serving the old copy until a restart.
+const restartOnLockfile = {
+  name: 'restart-on-lockfile',
+  apply: 'serve',
+  configureServer(server) {
+    const lockfile = resolve(__dirname, 'pnpm-lock.yaml');
+    server.watcher.add(lockfile);
+    server.watcher.on('change', (file) => {
+      if (file === lockfile) {
+        server.config.logger.info('[restart-on-lockfile] pnpm-lock.yaml changed, restarting');
+        void server.restart();
+      }
+    });
+  },
+};
+
 export default defineConfig({
-  plugins: [inlineIntro],
+  plugins: [inlineIntro, restartOnLockfile],
   define: {
     __APP_VERSION__: JSON.stringify(version),
   },
@@ -68,7 +86,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['maplibre-gl', 'jszip', 'papaparse'],
+    include: ['maplibre-gl', '@maplibre/geojson-vt', '@maplibre/vt-pbf', 'jszip', 'papaparse'],
     // gtfs-zone-web-common ships raw .ts; let vite transform it as source
     exclude: ['gtfs-zone-web-common'],
   },

@@ -27,6 +27,7 @@ export const de: Translation<typeof en> = {
   'shortcut.openLoad': 'Dialog zum Laden eines Feeds öffnen',
   'shortcut.focusSearch': 'Zur Kartensuche springen',
   'shortcut.clearSearch': 'Suche leeren',
+  'search.vehicles': 'Fahrzeuge',
   'shortcut.showGuide': 'Anleitung anzeigen',
 
   'load.loaded': '{label} geladen',
@@ -41,6 +42,12 @@ export const de: Translation<typeof en> = {
   'load.partialLink':
     'Dieser Link bezeichnet nur einen Teil eines Feeds: {missing}.',
   'load.decodeFailed': 'Dekodierung fehlgeschlagen: {message}',
+  'load.restored':
+    '{label} aus der in diesem Browser gespeicherten Kopie geöffnet',
+  'load.reloadedUnchanged':
+    'Der Fahrplan von {label} ist unverändert; aus der gespeicherten Kopie wiederhergestellt',
+  'load.storedGone':
+    'Dieser gespeicherte Feed ist nicht mehr in diesem Browser.',
 
   'crumb.feed': 'Feed',
   'crumb.noFeed': 'Kein Feed',
@@ -75,6 +82,7 @@ export const de: Translation<typeof en> = {
   'status.services': 'Verkehrstage',
   'status.stopTimes': 'Haltezeiten',
   'status.vehicles': 'Fahrzeuge',
+  'status.scheduledVehicles': 'Fahrzeuge laut Fahrplan',
   'status.tripUpdates': 'Fahrtaktualisierungen',
   'status.alerts': 'Meldungen',
   'status.never': 'nie',
@@ -160,6 +168,14 @@ export const de: Translation<typeof en> = {
   'status.pickFeed': 'Feed auswählen',
   'status.copied': 'Link kopiert',
   'status.copyFailed': 'Kopieren in die Zwischenablage nicht möglich',
+  'status.restored':
+    'Aus der in diesem Browser gespeicherten Kopie wiederhergestellt, nicht erneut heruntergeladen. Der Server meldete dieselbe Version, oder der Feed wurde unter Ihre Feeds geöffnet.',
+  'status.noRealtime':
+    'Kein Echtzeit-Feed geladen; die Karte zeigt nur den Fahrplan.',
+  'status.simulating':
+    'Kein Echtzeit-Feed geladen. Die Karte zeigt Fahrzeuge dort, wo der Fahrplan sie jetzt verortet, alle {seconds} s neu berechnet.',
+  'status.simulatingCapped':
+    'Gerade sind {running} Fahrten unterwegs; nur die ersten {shown} werden gezeichnet.',
 
   'vehicle.notReported': 'nicht angegeben',
   'vehicle.seqFromStopId':
@@ -170,6 +186,7 @@ export const de: Translation<typeof en> = {
   'vehicle.noRouteId': 'keine route_id angegeben',
   'vehicle.trip': 'Fahrt',
   'vehicle.noTripId': 'Keine trip_id angegeben.',
+  'vehicle.loadingStops': 'Haltestellen der Fahrt werden geladen…',
   'vehicle.at': 'bei',
   'vehicle.headsign': 'Ziel',
   'vehicle.currently': 'Derzeit {status}',
@@ -190,6 +207,12 @@ export const de: Translation<typeof en> = {
     'Diese Instanz unterscheidet sich durch die Fahrt {trip} am {date}.',
   'vehicle.gone':
     'Seit {time} nicht mehr im Feed. Alle folgenden Angaben stammen aus dem letzten Abruf, der es enthielt.',
+  'vehicle.scheduled': 'Laut Fahrplan',
+  'vehicle.scheduledBanner':
+    'Laut Fahrplan, nicht live. Diese Position ist aus dem Fahrplan berechnet, nicht von einem Fahrzeug gemeldet.',
+  'vehicle.scheduledGone':
+    'Seit {time} laut Fahrplan nicht mehr unterwegs. Alle folgenden Angaben sind die letzte Fahrplanposition.',
+  'vehicle.rawScheduled': 'Fahrzeug laut Fahrplan (simuliert)',
   'vehicle.live': 'Live',
   'vehicle.position': 'Position',
   'vehicle.bearing': 'Kurs',

@@ -132,7 +132,7 @@ function renderCounts(session: FeedSession): string {
         ${statTile(t('status.agencies'), s?.agencies ?? 0)}
         ${statTile(t('status.services'), s?.services ?? 0)}
         ${statTile(t('status.stopTimes'), s?.stopTimes ?? 0)}
-        ${statTile(t('status.vehicles'), rt.vehicles)}
+        ${statTile(t(session.simulating ? 'status.scheduledVehicles' : 'status.vehicles'), rt.vehicles)}
         ${statTile(t('status.tripUpdates'), rt.tripUpdates)}
         ${statTile(t('status.alerts'), rt.alerts)}
       </div>
@@ -256,10 +256,30 @@ function renderHeaderDump(ep: EndpointStatus): string {
     </details>`;
 }
 
+/** What stands in for the endpoints on a static-only feed. */
+function renderSimulation(session: FeedSession): string {
+  if (!session.simulating) {
+    return `<p class="text-xs opacity-60">${t('status.noRealtime')}</p>`;
+  }
+  const running = session.scheduledRunning;
+  const shown = session.rtCounts.vehicles;
+  const capped =
+    running !== null && running > shown
+      ? `<p class="text-xs text-warning">${t('status.simulatingCapped', { running: formatNumber(running), shown: formatNumber(shown) })}</p>`
+      : '';
+  return `<p class="text-xs opacity-60">${t('status.simulating', { seconds: CONFIG.SCHEDULED_TICK_MS / 1000 })}</p>
+      ${capped}`;
+}
+
 function renderEndpoints(session: FeedSession): string {
   const status = session.status;
   if (!status) {
-    return '';
+    return session.scheduledFeed
+      ? `<section class="space-y-2">
+      <h3 class="font-semibold text-sm">${t('status.endpoints')}</h3>
+      ${renderSimulation(session)}
+    </section>`
+      : '';
   }
   const rt = session.selection?.realtime;
   const rawUrls: Record<RealtimeEndpointName, string> = {
@@ -305,6 +325,8 @@ function renderScheduledSection(session: FeedSession): string {
           }
         </div>
         ${session.scheduleError ? `<p class="text-xs text-error break-words">${escHtml(session.scheduleError)}</p>` : ''}
+        ${session.scheduleRestored ? `<p class="text-xs opacity-60">${t('status.restored')}</p>` : ''}
+        ${session.storeError ? `<p class="text-xs text-error break-words">${escHtml(session.storeError)}</p>` : ''}
         ${source}
       </div>
     </section>`;

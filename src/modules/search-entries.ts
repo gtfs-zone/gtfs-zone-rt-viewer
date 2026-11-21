@@ -1,14 +1,16 @@
 /**
- * Turns the loaded session into search entries for `SearchController`.
+ * Turns the loaded session into search groups for `SearchController`.
  *
  * The payload is a `PageState`, so a selected result goes through `setFocus`
  * like any other navigation and the panel, map and hash all follow.
  *
- * Vehicles come from the session's live map, so they are as fresh as the last
- * poll — entries are rebuilt per query, which is what makes that free.
+ * Stops and routes are built once per scheduled feed, so the controller's
+ * haystack cache hits on every keystroke. Vehicles come from the session's
+ * live map and are rebuilt per query, so they are as fresh as the last poll.
  */
 
 import { VEHICLE_UNMATCHED_COLOR } from 'gtfs-zone-web-common/map/layer-manager';
+import type { GTFSScheduled } from 'gtfs-zone-web-common/gtfs/scheduled';
 import type { PageState } from '../types/page-state';
 import type { FeedSession } from './feed-session';
 import {
@@ -16,32 +18,45 @@ import {
   vehicleRouteId,
 } from 'gtfs-zone-web-common/gtfs/entity-render';
 import {
-  scheduleSearchEntries,
+  scheduleSearchGroups,
   searchHaystack,
+  type ScheduleSearchGroups,
 } from 'gtfs-zone-web-common/gtfs/search-entries';
 import {
   dotMarker,
   type SearchEntry,
+  type SearchGroup,
 } from 'gtfs-zone-web-common/ui/search-controller';
+import { t } from '../i18n/messages';
 
-export function buildSearchEntries(
+let memo: {
+  feed: GTFSScheduled | null;
+  groups: ScheduleSearchGroups;
+} | null = null;
+
+/** Stops and routes of `feed`, rebuilt only when the scheduled feed changes. */
+function scheduleGroups(feed: GTFSScheduled | null): ScheduleSearchGroups {
+  if (memo?.feed !== feed) {
+    console.log('[SearchEntries] building schedule search groups');
+    memo = { feed, groups: scheduleSearchGroups(feed) };
+  }
+  return memo.groups;
+}
+
+export function buildSearchGroups(
   session: FeedSession
-): SearchEntry<PageState>[] {
+): SearchGroup<PageState>[] {
   const feed = session.scheduledFeed;
-  // Stations outrank routes, which outrank plain stops/vehicles.
-  const entries: SearchEntry<PageState>[] = scheduleSearchEntries(feed, {
-    station: 0,
-    route: 1,
-    stop: 2,
-  });
+  const { stops, routes } = scheduleGroups(feed);
 
+  const vehicles: SearchEntry<PageState>[] = [];
   for (const vehicle of session.vehicles.values()) {
     // Same color the map paints it: the vehicle's route, or the unmatched grey.
     const routeId = vehicleRouteId(feed, vehicle);
     const color =
       (routeId ? feed?.routes.get(routeId)?.color : undefined) ??
       VEHICLE_UNMATCHED_COLOR;
-    entries.push({
+    vehicles.push({
       payload: { type: 'vehicle', vehicle_id: vehicle.key },
       icon: dotMarker(color),
       primary: vehicleDisplayName(feed, vehicle),
@@ -53,9 +68,8 @@ export function buildSearchEntries(
         vehicle.tripId,
         routeId
       ),
-      priority: 2,
     });
   }
 
-  return entries;
+  return [stops, routes, { label: t('search.vehicles'), entries: vehicles }];
 }

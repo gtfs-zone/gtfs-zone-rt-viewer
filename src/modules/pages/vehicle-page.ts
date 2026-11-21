@@ -121,6 +121,20 @@ function renderTripSection(
     );
   }
 
+  // The panel re-renders on the feed's `dataloaded` once the stops arrive.
+  if (trip && feed && !feed.tripTimesLoaded(trip.trip_id)) {
+    feed.loadTripTimes(trip.trip_id).catch((err) => {
+      console.error(`[VehiclePage] loading trip ${trip.trip_id} failed`, err);
+    });
+    return section(
+      t('vehicle.trip'),
+      `<div class="flex items-center gap-2 text-xs opacity-70">
+        <span class="loading loading-spinner loading-xs"></span>
+        ${t('vehicle.loadingStops')}
+      </div>`
+    );
+  }
+
   const times = trip ? (feed?.stopTimesByTrip.get(trip.trip_id) ?? []) : [];
   const current = rt.stopSequenceFor(vehicle);
   const currentIndex = current
@@ -156,15 +170,18 @@ function renderTripSection(
         `<span class="font-mono">${escHtml(vehicle.tripId)}</span>`
       ),
       routeProp,
-      prop(
-        'schedule_relationship',
-        vehicle.scheduleRelationship === undefined
-          ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-          : escHtml(
-              TRIP_SCHEDULE_RELATIONSHIP_LABELS[vehicle.scheduleRelationship] ??
-                String(vehicle.scheduleRelationship)
-            )
-      ),
+      vehicle.scheduled
+        ? ''
+        : prop(
+            'schedule_relationship',
+            vehicle.scheduleRelationship === undefined
+              ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
+              : escHtml(
+                  TRIP_SCHEDULE_RELATIONSHIP_LABELS[
+                    vehicle.scheduleRelationship
+                  ] ?? String(vehicle.scheduleRelationship)
+                )
+          ),
       trip?.headsign ? prop(t('vehicle.headsign'), escHtml(trip.headsign)) : '',
       currentStop
         ? prop(
@@ -196,7 +213,7 @@ function renderPredictions(
   rt: RtIndex,
   vehicle: VehiclePosition
 ): string {
-  if (!vehicle.tripId) {
+  if (!vehicle.tripId || vehicle.scheduled) {
     return '';
   }
   const predictions = rt.predictionsByTrip.get(vehicle.tripId);
@@ -246,6 +263,34 @@ function renderPredictions(
         .join('')}</tbody>
     </table>`
   );
+}
+
+/** A simulated vehicle has no wire fields to report: where it is and what it is doing. */
+function renderScheduledProps(vehicle: VehiclePosition): string {
+  return propList([
+    prop(
+      t('vehicle.position'),
+      escHtml(`${vehicle.lat.toFixed(5)}, ${vehicle.lon.toFixed(5)}`)
+    ),
+    vehicle.bearing === undefined
+      ? ''
+      : prop(t('vehicle.bearing'), `${escHtml(vehicle.bearing.toFixed(0))}°`),
+    vehicle.currentStatus === undefined
+      ? ''
+      : prop(
+          t('vehicle.status'),
+          escHtml(
+            VEHICLE_STATUS_LABELS[vehicle.currentStatus] ??
+              String(vehicle.currentStatus)
+          )
+        ),
+    vehicle.currentStopSequence === undefined
+      ? ''
+      : prop(
+          'stop_sequence',
+          `<span class="tabular-nums">${vehicle.currentStopSequence}</span>`
+        ),
+  ]);
 }
 
 export function renderVehiclePage(
@@ -305,78 +350,91 @@ export function renderVehiclePage(
   const goneBanner = live
     ? ''
     : `<div class="rounded-lg border border-warning/50 bg-warning/10 p-3 text-xs">
-         ${t('vehicle.gone', { time: escHtml(localClock(remembered!.at)) })}
+         ${t(vehicle.scheduled ? 'vehicle.scheduledGone' : 'vehicle.gone', { time: escHtml(localClock(remembered!.at)) })}
        </div>`;
+  const scheduledBanner = vehicle.scheduled
+    ? `<div class="rounded-lg border border-info/50 bg-info/10 p-3 text-xs">
+         ${t('vehicle.scheduledBanner')}
+       </div>`
+    : '';
 
   return `
     <div class="space-y-4">
       ${goneBanner}
+      ${scheduledBanner}
       ${sharedIdBanner}
       ${pageHeader(
         vehicleDisplayName(feed, vehicle),
         // The feed's own name for it, falling back to the entity that carried
         // it — the Identity props below keep the two apart.
-        vehicle.vehicleId || vehicle.entityId,
+        vehicle.scheduled
+          ? (vehicle.tripId ?? '')
+          : vehicle.vehicleId || vehicle.entityId,
         `${route ? routeBadge(ctx, route) : ''} ${tripRelationshipMark(vehicle.scheduleRelationship)}`.trim()
       )}
 
       ${section(
-        t('vehicle.live'),
-        propList([
-          prop(
-            t('vehicle.position'),
-            escHtml(`${vehicle.lat.toFixed(5)}, ${vehicle.lon.toFixed(5)}`)
-          ),
-          prop(
-            t('vehicle.bearing'),
-            vehicle.bearing === undefined
-              ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-              : `${escHtml(vehicle.bearing.toFixed(0))}°`
-          ),
-          prop(
-            t('vehicle.speed'),
-            vehicle.speed === undefined
-              ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-              : t('vehicle.speedValue', {
-                  speed: formatNumber(vehicle.speed, {
-                    minimumFractionDigits: 1,
-                    maximumFractionDigits: 1,
-                  }),
-                })
-          ),
-          prop(
-            t('vehicle.status'),
-            vehicle.currentStatus === undefined
-              ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-              : escHtml(
-                  VEHICLE_STATUS_LABELS[vehicle.currentStatus] ??
-                    String(vehicle.currentStatus)
-                )
-          ),
-          // This region reports the wire, so an omitted field still reads as
-          // omitted; the derived value is stated next to it, not in place of it.
-          prop('current_stop_sequence', renderStopSequenceValue(rt, vehicle)),
-          prop(
-            t('vehicle.occupancy'),
-            vehicle.occupancyStatus === undefined
-              ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-              : escHtml(
-                  OCCUPANCY_LABELS[vehicle.occupancyStatus] ??
-                    String(vehicle.occupancyStatus)
-                )
-          ),
-          prop(t('vehicle.timestamp'), timestampWithAge(vehicle.timestamp)),
-          prop(
-            'vehicle.id',
-            vehicle.vehicleId
-              ? `<span class="font-mono">${escHtml(vehicle.vehicleId)}</span>`
-              : `<span class="opacity-40">${t('vehicle.emptyId')}</span>`
-          ),
-          prop(
-            t('vehicle.entityId'),
-            `<span class="font-mono">${escHtml(vehicle.entityId)}</span>`
-          ),
-        ])
+        t(vehicle.scheduled ? 'vehicle.scheduled' : 'vehicle.live'),
+        vehicle.scheduled
+          ? renderScheduledProps(vehicle)
+          : propList([
+              prop(
+                t('vehicle.position'),
+                escHtml(`${vehicle.lat.toFixed(5)}, ${vehicle.lon.toFixed(5)}`)
+              ),
+              prop(
+                t('vehicle.bearing'),
+                vehicle.bearing === undefined
+                  ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
+                  : `${escHtml(vehicle.bearing.toFixed(0))}°`
+              ),
+              prop(
+                t('vehicle.speed'),
+                vehicle.speed === undefined
+                  ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
+                  : t('vehicle.speedValue', {
+                      speed: formatNumber(vehicle.speed, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      }),
+                    })
+              ),
+              prop(
+                t('vehicle.status'),
+                vehicle.currentStatus === undefined
+                  ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
+                  : escHtml(
+                      VEHICLE_STATUS_LABELS[vehicle.currentStatus] ??
+                        String(vehicle.currentStatus)
+                    )
+              ),
+              // This region reports the wire, so an omitted field still reads as
+              // omitted; the derived value is stated next to it, not in place of it.
+              prop(
+                'current_stop_sequence',
+                renderStopSequenceValue(rt, vehicle)
+              ),
+              prop(
+                t('vehicle.occupancy'),
+                vehicle.occupancyStatus === undefined
+                  ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
+                  : escHtml(
+                      OCCUPANCY_LABELS[vehicle.occupancyStatus] ??
+                        String(vehicle.occupancyStatus)
+                    )
+              ),
+              prop(t('vehicle.timestamp'), timestampWithAge(vehicle.timestamp)),
+              prop(
+                'vehicle.id',
+                vehicle.vehicleId
+                  ? `<span class="font-mono">${escHtml(vehicle.vehicleId)}</span>`
+                  : `<span class="opacity-40">${t('vehicle.emptyId')}</span>`
+              ),
+              prop(
+                t('vehicle.entityId'),
+                `<span class="font-mono">${escHtml(vehicle.entityId)}</span>`
+              ),
+            ])
       )}
 
       ${renderTripSection(ctx, rt, vehicle)}
@@ -393,6 +451,6 @@ export function renderVehiclePage(
         t('vehicle.alerts')
       )}
 
-      ${renderRawJson(t('vehicle.raw'), vehicle.raw)}
+      ${renderRawJson(t(vehicle.scheduled ? 'vehicle.rawScheduled' : 'vehicle.raw'), vehicle.raw)}
     </div>`;
 }

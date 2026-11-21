@@ -27,6 +27,7 @@ export const fr: Translation<typeof en> = {
   'shortcut.openLoad': 'Ouvrir la fenêtre de chargement de flux',
   'shortcut.focusSearch': 'Aller à la recherche sur la carte',
   'shortcut.clearSearch': 'Effacer la recherche',
+  'search.vehicles': 'Véhicules',
   'shortcut.showGuide': 'Afficher le guide',
 
   'load.loaded': '{label} chargé',
@@ -40,6 +41,11 @@ export const fr: Translation<typeof en> = {
   'load.linkedFeed': 'Flux du lien',
   'load.partialLink': "Ce lien ne désigne qu'une partie d'un flux : {missing}.",
   'load.decodeFailed': 'Échec du décodage : {message}',
+  'load.restored':
+    '{label} ouvert depuis la copie enregistrée dans ce navigateur',
+  'load.reloadedUnchanged':
+    "L'horaire de {label} n'a pas changé ; restauré depuis la copie enregistrée",
+  'load.storedGone': "Ce flux enregistré n'est plus dans ce navigateur.",
 
   'crumb.feed': 'Flux',
   'crumb.noFeed': 'Aucun flux',
@@ -74,6 +80,7 @@ export const fr: Translation<typeof en> = {
   'status.services': 'Services',
   'status.stopTimes': 'Horaires de passage',
   'status.vehicles': 'Véhicules',
+  'status.scheduledVehicles': 'Véhicules théoriques',
   'status.tripUpdates': 'Mises à jour de courses',
   'status.alerts': 'Alertes',
   'status.never': 'jamais',
@@ -155,6 +162,14 @@ export const fr: Translation<typeof en> = {
   'status.pickFeed': 'Choisir un flux',
   'status.copied': 'Lien copié',
   'status.copyFailed': 'Impossible de copier dans le presse-papiers',
+  'status.restored':
+    'Restauré depuis la copie enregistrée dans ce navigateur, sans nouveau téléchargement. Le serveur a indiqué la même version, ou le flux a été ouvert depuis Vos flux.',
+  'status.noRealtime':
+    "Aucun flux temps réel n'est chargé ; la carte affiche seulement l'horaire.",
+  'status.simulating':
+    "Aucun flux temps réel n'est chargé. La carte affiche les véhicules théoriques là où l'horaire les place maintenant, recalculés toutes les {seconds} s.",
+  'status.simulatingCapped':
+    '{running} courses circulent maintenant ; seules les {shown} premières sont affichées.',
 
   'vehicle.notReported': 'non indiqué',
   'vehicle.seqFromStopId':
@@ -165,6 +180,7 @@ export const fr: Translation<typeof en> = {
   'vehicle.noRouteId': 'aucun route_id indiqué',
   'vehicle.trip': 'Course',
   'vehicle.noTripId': 'Aucun trip_id indiqué.',
+  'vehicle.loadingStops': 'Chargement des arrêts de la course…',
   'vehicle.at': 'à',
   'vehicle.headsign': 'Destination',
   'vehicle.currently': 'Actuellement {status}',
@@ -185,6 +201,12 @@ export const fr: Translation<typeof en> = {
     'Cette instance se distingue par la course {trip} du {date}.',
   'vehicle.gone':
     "N'est plus dans le flux depuis {time}. Tout ce qui suit provient du dernier relevé qui le contenait.",
+  'vehicle.scheduled': 'Théorique',
+  'vehicle.scheduledBanner':
+    "Théorique, pas en direct. Cette position est calculée à partir de l'horaire, elle n'est pas transmise par un véhicule.",
+  'vehicle.scheduledGone':
+    "Ne circule plus selon l'horaire depuis {time}. Tout ce qui suit est sa dernière position théorique.",
+  'vehicle.rawScheduled': 'Véhicule théorique (simulé)',
   'vehicle.live': 'En direct',
   'vehicle.position': 'Position',
   'vehicle.bearing': 'Cap',
