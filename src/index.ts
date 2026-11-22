@@ -140,8 +140,6 @@ session.addEventListener('scheduleloaded', (e) => {
 session.addEventListener('vehicles', (e) => {
   mapCtrl.showVehicles((e as CustomEvent<VehiclePosition[]>).detail);
 });
-// Trip updates are collected by the state store in a later plan; the panel
-// has no consumer for them yet.
 session.addEventListener('alerts', (e) => {
   alertsModal.setRecords((e as CustomEvent<AlertRecord[]>).detail);
 });

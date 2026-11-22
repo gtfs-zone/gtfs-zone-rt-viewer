@@ -150,8 +150,6 @@ export const en = {
     'The link carries both feed URLs and whatever is focused.',
   'status.shareFile':
     'This session loaded a scheduled feed from an uploaded file, which a link cannot reproduce.',
-  'status.emptyNote':
-    'A session needs a scheduled GTFS feed for the routes and stops, and at least one realtime endpoint for what is happening on them now.',
   'status.pickFeed': 'Pick a feed',
   'status.copied': 'Link copied',
   'status.copyFailed': 'Could not copy to clipboard',

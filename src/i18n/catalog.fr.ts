@@ -157,8 +157,6 @@ export const fr: Translation<typeof en> = {
     "Le lien contient les URL des deux flux et l'élément sélectionné.",
   'status.shareFile':
     "Cette session a chargé un flux horaire depuis un fichier envoyé, qu'un lien ne peut pas reproduire.",
-  'status.emptyNote':
-    "Une session nécessite un flux GTFS horaire pour les lignes et les arrêts, et au moins un point de terminaison temps réel pour ce qui s'y passe en ce moment.",
   'status.pickFeed': 'Choisir un flux',
   'status.copied': 'Lien copié',
   'status.copyFailed': 'Impossible de copier dans le presse-papiers',

@@ -631,7 +631,6 @@ function renderEmpty(): string {
     <div class="flex flex-col gap-6 py-4">
       ${introHtml()}
       <div class="flex flex-col items-center text-center gap-3">
-        <p class="text-xs opacity-40 max-w-xs">${t('status.emptyNote')}</p>
         <button type="button" id="status-empty-load" class="btn btn-primary btn-sm">
           ${t('status.pickFeed')}
         </button>

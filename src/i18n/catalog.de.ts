@@ -163,8 +163,6 @@ export const de: Translation<typeof en> = {
     'Der Link enthält die URLs beider Feeds und das ausgewählte Element.',
   'status.shareFile':
     'In dieser Sitzung wurde ein Fahrplanfeed aus einer hochgeladenen Datei geladen, die ein Link nicht reproduzieren kann.',
-  'status.emptyNote':
-    'Eine Sitzung benötigt einen GTFS-Fahrplanfeed für Linien und Haltestellen und mindestens einen Echtzeit-Endpunkt für das, was dort gerade geschieht.',
   'status.pickFeed': 'Feed auswählen',
   'status.copied': 'Link kopiert',
   'status.copyFailed': 'Kopieren in die Zwischenablage nicht möglich',
