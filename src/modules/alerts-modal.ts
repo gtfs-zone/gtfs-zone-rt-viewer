@@ -20,7 +20,11 @@ import {
   isActiveNow,
   preferredText,
 } from 'gtfs-zone-web-common/gtfs/alerts';
-import { showModal } from 'gtfs-zone-web-common/ui/modal-utils';
+import {
+  closeModalsAbove,
+  modalStackDepth,
+  showModal,
+} from 'gtfs-zone-web-common/ui/modal-utils';
 import { escapeHtml } from 'gtfs-zone-web-common/util/escape-html';
 import { t } from '../i18n/messages';
 
@@ -39,6 +43,8 @@ export class AlertsModal {
   private hooks: AlertsModalHooks;
   private list: HTMLElement | null = null;
   private summary: HTMLElement | null = null;
+  /** The modal stack depth under this modal while it is open. */
+  private depth: number | null = null;
 
   constructor(hooks: AlertsModalHooks) {
     this.hooks = hooks;
@@ -58,6 +64,10 @@ export class AlertsModal {
 
   /** Resolves when the modal closes, however it was closed. */
   async show(): Promise<void> {
+    if (this.depth !== null) {
+      return;
+    }
+    this.depth = modalStackDepth();
     await showModal({
       title: t('alerts.title'),
       // The count line stays put; only the rows scroll.
@@ -74,13 +84,10 @@ export class AlertsModal {
     });
     this.list = null;
     this.summary = null;
+    this.depth = null;
   }
 
-  /**
-   * The row navigates and nothing here closes the modal: the new page state
-   * carries no modal, so the router takes this one down. One path, whether the
-   * alert was reached from a row, the back button or a pasted link.
-   */
+  /** The row navigates to its alert and closes the modal. */
   private handleRowClick(e: MouseEvent): void {
     const row = (e.target as HTMLElement | null)?.closest<HTMLElement>(
       '[data-alert-id]'
@@ -95,6 +102,9 @@ export class AlertsModal {
     }
     e.preventDefault();
     this.hooks.navigate({ type: 'alert', alert_id: row.dataset.alertId! });
+    if (this.depth !== null) {
+      closeModalsAbove(this.depth);
+    }
   }
 
   /**

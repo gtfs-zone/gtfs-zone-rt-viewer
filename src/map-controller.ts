@@ -23,7 +23,7 @@ export class MapController extends RtMapController<PageState> {
       case 'route':
         return { type: 'route', route_id: target.id };
       case 'vehicle':
-        return { type: 'vehicle', vehicle_id: target.id };
+        return { type: 'vehicle', vehicle_key: target.id };
     }
   }
 
@@ -32,8 +32,16 @@ export class MapController extends RtMapController<PageState> {
       case 'home':
         this.focusHome();
         return;
+      // Alerts have no geometry of their own; nothing to highlight or fly to.
+      // The other pages here do not validate until they have a page.
       case 'alert':
-        // Alerts have no geometry of their own; nothing to highlight or fly to.
+      case 'schedule':
+      case 'feed_info':
+      case 'agency':
+      case 'trip':
+      case 'vehicle_positions':
+      case 'trip_updates':
+      case 'service_alerts':
         this.focusNone();
         return;
       case 'route':
@@ -44,8 +52,8 @@ export class MapController extends RtMapController<PageState> {
         return;
       case 'vehicle':
         this.focusVehicle(
-          (positions) => positions.find((p) => p.key === state.vehicle_id),
-          state.vehicle_id
+          (positions) => positions.find((p) => p.key === state.vehicle_key),
+          state.vehicle_key
         );
         return;
     }

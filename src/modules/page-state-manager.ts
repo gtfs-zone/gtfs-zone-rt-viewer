@@ -1,20 +1,30 @@
 import { PageStateManager } from 'gtfs-zone-web-common/ui/page-state-manager';
 import { createPageStateCodec } from 'gtfs-zone-web-common/ui/page-state-schema';
 import type { BreadcrumbItem } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
+import { TREE_PAGE_SPECS } from 'gtfs-zone-web-common/gtfs/tree-location';
 import type { ModalState, PageLocation, PageState } from '../types/page-state';
 
-/** No type param: the page is read from which key is present, in this order. */
+/** The retired alerts modal is now the Service alerts page. */
+function migrate(params: URLSearchParams): URLSearchParams {
+  if (params.get('modal') === 'alerts') {
+    params.delete('modal');
+    params.set('type', 'service_alerts');
+  }
+  return params;
+}
+
+/**
+ * The page is named by `type=`. Links from before it are read from which key
+ * is present, in `untypedPages` order, and rewritten with `type=`.
+ */
 const pageStateCodec = createPageStateCodec<PageLocation, ModalState>({
-  pages: {
-    stop: { stop_id: 'stop' },
-    vehicle: { vehicle_id: 'vehicle' },
-    alert: { alert_id: 'alert' },
-    route: { route_id: 'route' },
-  },
+  pages: TREE_PAGE_SPECS,
   modals: {
-    alerts: {},
     help: { page: { param: 'modal_page', optional: true } },
   },
+  typeParam: 'type',
+  untypedPages: ['stop', 'vehicle', 'alert', 'route'],
+  migrate,
 });
 
 export type AppPageStateManager = PageStateManager<

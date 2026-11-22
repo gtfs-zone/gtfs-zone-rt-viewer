@@ -298,14 +298,14 @@ export function renderVehiclePage(
   rt: RtIndex,
   state: Extract<PageState, { type: 'vehicle' }>
 ): string {
-  const live = ctx.session.vehicles.get(state.vehicle_id);
+  const live = ctx.session.vehicles.get(state.vehicle_key);
   if (live) {
-    lastSeen.set(state.vehicle_id, { vehicle: live, at: Date.now() });
+    lastSeen.set(state.vehicle_key, { vehicle: live, at: Date.now() });
   }
 
-  const remembered = lastSeen.get(state.vehicle_id);
+  const remembered = lastSeen.get(state.vehicle_key);
   if (!live && !remembered) {
-    return `<p class="text-sm opacity-60">${t('vehicle.missing', { id: escHtml(state.vehicle_id) })}</p>`;
+    return `<p class="text-sm opacity-60">${t('vehicle.missing', { id: escHtml(state.vehicle_key) })}</p>`;
   }
 
   const vehicle = live ?? remembered!.vehicle;

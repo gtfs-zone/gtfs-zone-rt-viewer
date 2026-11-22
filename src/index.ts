@@ -112,7 +112,7 @@ const bottomSheet = new BottomSheetController(rightPanel, [
   {
     id: 'dock-alerts',
     snap: null,
-    onSelect: () => appState.openModal({ type: 'alerts' }),
+    onSelect: () => void alertsModal.show(),
   },
   {
     id: 'dock-help',
@@ -195,15 +195,13 @@ const appState = new AppState(session, {
 });
 
 // ─── Modals ───────────────────────────────────────────────────────────────────
-// The two modals worth linking to live in the hash, so the router is what opens
-// and closes them: every other path — a button, the dock, a shortcut, Escape,
+// Help lives in the hash, so the router is what opens and closes it: every other path — a button, the dock, a shortcut, Escape,
 // the back button — goes through a page state rather than calling `showModal`.
 const alertsModal = new AlertsModal({
   href: (state) => appState.hrefFor(state),
   navigate: (state) => appState.setFocus(state),
 });
 const modalRouter = createModalRouter<ModalState>(appState.pages);
-modalRouter.register('alerts', () => alertsModal.show());
 modalRouter.register('help', (modal) =>
   showRoutedHelpModal(appState.pages, modal.page)
 );
@@ -370,7 +368,7 @@ void boot();
 // ─── Alerts button ────────────────────────────────────────────────────────────
 document
   .getElementById('alerts-btn')!
-  .addEventListener('click', () => appState.openModal({ type: 'alerts' }));
+  .addEventListener('click', () => void alertsModal.show());
 
 // ─── Help button ──────────────────────────────────────────────────────────────
 document.getElementById('app-version')!.textContent = __APP_VERSION__;

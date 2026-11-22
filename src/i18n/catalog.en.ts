@@ -46,8 +46,6 @@ export const en = {
   'crumb.feed': 'Feed',
   'crumb.noFeed': 'No feed',
   'crumb.more': '{name} +{count} more',
-  'crumb.vehicle': 'Vehicle',
-  'crumb.alert': 'Service alert',
 
   'alerts.title': 'Service Alerts',
   'alerts.close': 'Close',

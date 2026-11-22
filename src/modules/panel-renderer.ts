@@ -42,7 +42,7 @@ export class PanelRenderer extends RtPanel<PageState> {
 }
 
 const PAGE_HOOKS: RtPageHooks<PageState, VehiclePosition> = {
-  vehicleLink: (v) => ({ type: 'vehicle', vehicle_id: v.key }),
+  vehicleLink: (v) => ({ type: 'vehicle', vehicle_key: v.key }),
   vehicleNoun: 'vehicle',
 };
 
@@ -62,5 +62,8 @@ function renderPage(
       return renderVehiclePage(ctx, index, state);
     case 'alert':
       return renderAlertPage(ctx, state.alert_id);
+    default:
+      // Not on the tree yet; these states do not validate.
+      return '';
   }
 }

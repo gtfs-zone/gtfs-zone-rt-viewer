@@ -1,12 +1,12 @@
 import type { PageState } from '../types/page-state';
 import type { BreadcrumbItem } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
 import {
-  alertParentCrumb,
-  routeCrumb,
   rtAlertHeader,
-  rtAlertParent,
-  stopCrumbs,
+  rtTreeCrumbs,
+  scheduledCrumbSource,
   truncateCrumb,
+  validateTreeLocation,
+  type RtTreeSource,
 } from 'gtfs-zone-web-common/gtfs/breadcrumbs';
 import { feedByUrl } from 'gtfs-zone-web-common/gtfs/feed-catalog';
 import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
@@ -80,79 +80,58 @@ function home(session: FeedSession): BreadcrumbItem<PageState> {
   };
 }
 
-export function vehicleLabel(session: FeedSession, vehicleId: string): string {
-  const vehicle = session.vehicles.get(vehicleId);
-  return vehicle
-    ? vehicleDisplayName(session.scheduledFeed, vehicle)
-    : vehicleId;
-}
-
 export function alertLabel(session: FeedSession, alertId: string): string {
   // The crumb's eyebrow already says "Service alert", so the fallback is the
   // bare id rather than a second "Alert".
   return rtAlertHeader(session.alerts, alertId) ?? alertId;
 }
 
-/**
- * The route a vehicle is on: its trip's route when the trip resolves against
- * the schedule, otherwise whatever `route_id` the feed asserted.
- */
-function vehicleRouteId(
-  session: FeedSession,
-  vehicleId: string
-): string | null {
-  const vehicle = session.vehicles.get(vehicleId);
-  if (!vehicle) {
-    return null;
-  }
-  const fromTrip = vehicle.tripId
-    ? session.scheduledFeed?.trips.get(vehicle.tripId)?.route_id
-    : undefined;
-  return fromTrip ?? vehicle.routeId ?? null;
+/** The loaded schedule and the last poll, as the shared tree reads them. */
+function treeSource(session: FeedSession): RtTreeSource {
+  const feed = session.scheduledFeed;
+  return {
+    ...scheduledCrumbSource(feed),
+    hasFeedInfo: () => (feed?.feedInfo.length ?? 0) > 0,
+    vehicle(key) {
+      const vehicle = session.vehicles.get(key);
+      return vehicle ? { label: vehicleDisplayName(feed, vehicle) } : null;
+    },
+    alert(alertId) {
+      return session.alerts.has(alertId)
+        ? { label: alertLabel(session, alertId) }
+        : null;
+    },
+    realtimeTrip(loc) {
+      const tripId = loc.trip_id;
+      if (!tripId) {
+        return false;
+      }
+      return (
+        session.tripUpdates.some((u) => u.trip?.tripId === tripId) ||
+        [...session.vehicles.values()].some((v) => v.tripId === tripId)
+      );
+    },
+  };
 }
 
 export function buildBreadcrumbs(
   session: FeedSession,
   state: PageState
 ): BreadcrumbItem<PageState>[] {
-  const feed = session.scheduledFeed;
-  switch (state.type) {
-    case 'home':
-      return [];
-
-    case 'route':
-      return [home(session), routeCrumb(feed, state.route_id)];
-
-    case 'stop':
-      return [home(session), ...stopCrumbs(feed, state.stop_id)];
-
-    case 'vehicle': {
-      const routeId = vehicleRouteId(session, state.vehicle_id);
-      return [
-        home(session),
-        ...(routeId ? [routeCrumb(feed, routeId)] : []),
-        {
-          typeLabel: t('crumb.vehicle'),
-          label: truncateCrumb(vehicleLabel(session, state.vehicle_id)),
-          pageState: state,
-        },
-      ];
-    }
-
-    case 'alert': {
-      const parent = rtAlertParent(session.alerts, state.alert_id);
-      return [
-        home(session),
-        ...(parent ? [alertParentCrumb(feed, parent)] : []),
-        {
-          typeLabel: t('crumb.alert'),
-          label: truncateCrumb(alertLabel(session, state.alert_id)),
-          pageState: state,
-        },
-      ];
-    }
+  if (state.type === 'home') {
+    return [];
   }
+  return [home(session), ...rtTreeCrumbs(treeSource(session), state)];
 }
+
+/** The pages the viewer renders; the rest of the tree is not built yet. */
+const RENDERED: ReadonlySet<PageState['type']> = new Set([
+  'home',
+  'route',
+  'stop',
+  'vehicle',
+  'alert',
+]);
 
 /**
  * Whether a focus still names something in the loaded feed.
@@ -162,16 +141,7 @@ export function buildBreadcrumbs(
  * caller reports it rather than hiding it.
  */
 export function validateState(session: FeedSession, state: PageState): boolean {
-  switch (state.type) {
-    case 'home':
-      return true;
-    case 'route':
-      return session.scheduledFeed?.routes.has(state.route_id) ?? false;
-    case 'stop':
-      return session.scheduledFeed?.stops.has(state.stop_id) ?? false;
-    case 'vehicle':
-      return session.vehicles.has(state.vehicle_id);
-    case 'alert':
-      return session.alerts.has(state.alert_id);
-  }
+  return (
+    RENDERED.has(state.type) && validateTreeLocation(treeSource(session), state)
+  );
 }

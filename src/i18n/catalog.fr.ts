@@ -50,8 +50,6 @@ export const fr: Translation<typeof en> = {
   'crumb.feed': 'Flux',
   'crumb.noFeed': 'Aucun flux',
   'crumb.more': '{name} +{count} autres',
-  'crumb.vehicle': 'Véhicule',
-  'crumb.alert': 'Alerte de service',
 
   'alerts.title': 'Alertes de service',
   'alerts.close': 'Fermer',

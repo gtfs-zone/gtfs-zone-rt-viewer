@@ -52,8 +52,6 @@ export const de: Translation<typeof en> = {
   'crumb.feed': 'Feed',
   'crumb.noFeed': 'Kein Feed',
   'crumb.more': '{name} +{count} weitere',
-  'crumb.vehicle': 'Fahrzeug',
-  'crumb.alert': 'Betriebsmeldung',
 
   'alerts.title': 'Betriebsmeldungen',
   'alerts.close': 'Schließen',
