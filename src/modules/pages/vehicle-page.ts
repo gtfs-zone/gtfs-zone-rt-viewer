@@ -43,7 +43,7 @@ import { t } from '../../i18n/messages';
 const lastSeen = new Map<string, { vehicle: VehiclePosition; at: number }>();
 
 /** Relationship values under which a trip legitimately has no static-schedule entry. */
-const ADDED_LIKE_RELATIONSHIPS = new Set([1, 2, 4, 5]);
+const ADDED_LIKE_RELATIONSHIPS = new Set([1, 2, 5, 6, 8]);
 
 /**
  * The `current_stop_sequence` row of the raw property region: exactly what the
