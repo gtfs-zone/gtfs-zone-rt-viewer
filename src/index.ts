@@ -344,6 +344,7 @@ async function boot(): Promise<void> {
       notice: notice ?? undefined,
       linkedWith,
       library,
+      realtimeOnly: true,
     });
     linkedWith = undefined;
     seed = null;
@@ -454,6 +455,7 @@ async function loadModalResult(
 async function openLoadModal(): Promise<void> {
   const result = await showLoadModal(session.selection, {
     library: session.library(),
+    realtimeOnly: true,
   });
   if (result && !(await loadModalResult(result))) {
     showFeedControls();
