@@ -86,7 +86,16 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['maplibre-gl', '@maplibre/geojson-vt', '@maplibre/vt-pbf', 'jszip', 'papaparse'],
+    // Deps imported only from gtfs-zone-web-common, which the scan skips.
+    // gtfs-realtime-bindings is CommonJS and fails unbundled.
+    include: [
+      'maplibre-gl',
+      '@maplibre/geojson-vt',
+      '@maplibre/vt-pbf',
+      'jszip',
+      'papaparse',
+      'gtfs-realtime-bindings',
+    ],
     // gtfs-zone-web-common ships raw .ts; let vite transform it as source
     exclude: ['gtfs-zone-web-common'],
   },
