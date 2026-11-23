@@ -3,7 +3,8 @@
  *
  * The host, the realtime index, the live relative times and the route-strip
  * hover are `gtfs-zone-web-common`'s `RtPanel`. The panel re-renders on every
- * realtime poll, which is every 15 seconds.
+ * realtime poll, which is every 15 seconds; only pages that read realtime
+ * data build the index.
  */
 
 import type { PageState } from '../types/page-state';
@@ -60,13 +61,8 @@ export class PanelRenderer extends RtPanel<PageState> {
     // the realtime nodes.
     super(host, session, ['vehicles', 'tripUpdates', 'alerts', 'change'], {
       ...hooks,
-      renderPage: (state, index) =>
-        renderPage(
-          { session, href: hooks.href },
-          index,
-          state,
-          hooks.mapIssues
-        ),
+      renderPage: (state, rt) =>
+        renderPage({ session, href: hooks.href }, rt, state, hooks.mapIssues),
     });
   }
 }
@@ -134,9 +130,10 @@ function scheduleSource(session: FeedSession): ScheduleSourceStatus | null {
   };
 }
 
+/** `rt` builds the realtime index; only the cases that read it call it. */
 function renderPage(
   ctx: RenderContext,
-  index: RtIndex,
+  rt: () => RtIndex,
   state: PageState,
   mapIssues: () => MapDataIssues | null
 ): TreePage | string {
@@ -153,13 +150,13 @@ function renderPage(
     case 'agency':
       return agencyPage(ctx, state.agency_id);
     case 'vehicle_positions':
-      return vehiclePositionsPage(ctx, index, {
+      return vehiclePositionsPage(ctx, rt(), {
         endpoint: endpoint(ctx.session, 'vehicles'),
         noEndpoint: simulationNote(ctx.session),
         vehicleLink: PAGE_HOOKS.vehicleLink,
       });
     case 'trip_updates':
-      return tripUpdatesPage(ctx, index, {
+      return tripUpdatesPage(ctx, rt(), {
         endpoint: endpoint(ctx.session, 'tripUpdates'),
       });
     case 'service_alerts':
@@ -167,11 +164,11 @@ function renderPage(
         endpoint: endpoint(ctx.session, 'alerts'),
       });
     case 'route':
-      return renderRoutePage(ctx, index, state.route_id, PAGE_HOOKS);
+      return renderRoutePage(ctx, rt(), state.route_id, PAGE_HOOKS);
     case 'stop':
-      return renderStopPage(ctx, index, state.stop_id, PAGE_HOOKS);
+      return renderStopPage(ctx, rt(), state.stop_id, PAGE_HOOKS);
     case 'vehicle':
-      return vehiclePage(ctx, index, state.vehicle_key);
+      return vehiclePage(ctx, rt(), state.vehicle_key);
     case 'alert':
       return alertPage(ctx, state.alert_id);
     default:
