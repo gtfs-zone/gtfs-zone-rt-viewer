@@ -46,89 +46,6 @@ export const de: Translation<typeof en> = {
   'crumb.noFeed': 'Kein Feed',
   'crumb.more': '{name} +{count} weitere',
 
-  'alerts.title': 'Betriebsmeldungen',
-  'alerts.close': 'Schließen',
-  'alerts.none': 'Keine Betriebsmeldungen.',
-  'alerts.activeOf': '{active} von {total} im Feed aktiv.',
-  'alerts.fallback': 'Meldung {id}',
-  'alerts.active': 'aktiv',
-  'alerts.notActive': 'inaktiv',
-
-  'status.counts': 'Anzahlen',
-  'status.stops': 'Haltestellen',
-  'status.routes': 'Linien',
-  'status.trips': 'Fahrten',
-  'status.shapes': 'Linienverläufe',
-  'status.agencies': 'Verkehrsunternehmen',
-  'status.services': 'Verkehrstage',
-  'status.stopTimes': 'Haltezeiten',
-  'status.vehicles': 'Fahrzeuge',
-  'status.scheduledVehicles': 'Fahrzeuge laut Fahrplan',
-  'status.tripUpdates': 'Fahrtaktualisierungen',
-  'status.alerts': 'Meldungen',
-  'status.idTrip': 'abgeleitet aus vehicle.id + trip_id + start_date',
-  'status.idEntity': 'abgeleitet aus vehicle.id + trip + entity.id',
-  'status.idIndex':
-    'keine brauchbare Kennung: abgeleitet aus dem Index der Entität',
-  'status.empty': '(leer)',
-  'status.dupVehicles_one': '{count} Fahrzeug',
-  'status.dupVehicles_other': '{count} Fahrzeuge',
-  'status.idNotUnique': 'vehicle.id ist nicht je Fahrzeug eindeutig',
-  'status.idNotUniqueText':
-    'GTFS-RT legt fest, dass {field} „should be unique per vehicle, and is used for tracking the vehicle as it proceeds through the system“. Dieser Feed verwendet es mehrfach, daher wurde ein Instanzschlüssel ({strategy}) abgeleitet, um die Fahrzeuge zu unterscheiden.',
-  'status.endpoints': 'Echtzeit-Endpunkte',
-  'status.uploaded':
-    'Aus der hochgeladenen Datei {name} geladen: nicht per Link reproduzierbar.',
-  'status.scheduled': 'Fahrplanfeed',
-  'status.gapsOptional':
-    'GTFS-RT macht dieses Feld optional: {missing} von {total} Fahrzeugen geben es nicht an.',
-  'status.gapsStopId':
-    '{count} haben die Haltestelle stattdessen über {field} angegeben, was die Spezifikation ebenso erlaubt; ihre Position ergibt sich daraus.',
-  'status.gapsDerived':
-    '{count} haben keine Haltestelle angegeben: Verwendet wurde die nächste noch ausstehende {field} derselben Fahrt; sie sind überall, wo sie erscheinen, als „abgeleitet“ markiert.',
-  'status.gapsUnplaced':
-    '{count} konnten auf keine dieser Arten platziert werden und bleiben in der Liste der nicht platzierten Fahrzeuge im Linienbanner.',
-  'status.gaps': 'Lücken in den Feed-Daten',
-  'status.gapsNeutral': 'Wie dieser Feed die Position angibt',
-  'status.gapsRow': 'Fahrzeuge ohne {field}',
-  'status.relVehicles_one': '{count} Fahrzeug meldet die Fahrt als {label}',
-  'status.relVehicles_other': '{count} Fahrzeuge melden die Fahrt als {label}',
-  'status.relUpdates_one':
-    '{count} Fahrtaktualisierung meldet die Fahrt als {label}',
-  'status.relUpdates_other':
-    '{count} Fahrtaktualisierungen melden die Fahrt als {label}',
-  'status.relStopTimes_one': '{count} Haltezeit meldet {label}',
-  'status.relStopTimes_other': '{count} Haltezeiten melden {label}',
-  'status.relTitle': 'Fahrten außerhalb des Fahrplans',
-  'status.relNote':
-    'Dies sind Angaben des Feeds zu bestimmten Fahrten, keine Lücken in dem, was er übermittelt hat. CANCELED und SKIPPED bedeuten, dass die angezeigten Fahrplanzeiten von niemandem genutzt werden können.',
-  'status.mapIssues': 'Probleme mit den Kartendaten',
-  'status.stopsNoId': 'Verworfene Haltestellen (ohne stop_id)',
-  'status.stopsNoIdNote': 'Können weder gezeichnet noch verknüpft werden.',
-  'status.stopsNoCoords': 'Verworfene Haltestellen (ohne Koordinaten)',
-  'status.stopsNoCoordsNote': 'stop_lat / stop_lon fehlen oder sind unlesbar.',
-  'status.vehiclesUnmatched': 'Fahrzeuge ohne passende Linie',
-  'status.vehiclesUnmatchedNote':
-    'In der neutralen Farbe statt in einer Linienfarbe gezeichnet.',
-  'status.vehiclesCollapsed':
-    'Zu einem Kartenobjekt zusammengefasste Fahrzeuge',
-  'status.vehiclesCollapsedNote':
-    'Sollte 0 sein; ein Wert ungleich null bedeutet, dass die Ableitung des Fahrzeugschlüssels fehlerhaft ist.',
-  'status.stationIssues': 'Probleme in der Stationshierarchie',
-  'status.danglingParent':
-    'parent_station verweist auf eine fehlende Haltestelle',
-  'status.danglingParentNote':
-    'Die angegebene übergeordnete Station ist nicht in stops.txt enthalten.',
-  'status.wrongParent': 'parent_station verweist auf einen falschen Typ',
-  'status.wrongParentNote':
-    'Ein Bahnsteig, Zugang oder Knoten muss auf eine Station verweisen, ein Einstiegsbereich auf einen Bahnsteig.',
-  'status.cycle': 'Haltestellen in einem parent_station-Zyklus',
-  'status.cycleNote':
-    'Die Verfolgung wird abgebrochen, um eine Endlosschleife zu vermeiden.',
-  'status.padded': 'Von Leerzeichen umgebene Spalten',
-  'status.paddedNote':
-    '{rows} Zeilen hatten Leerzeichen am Anfang oder Ende. Die GTFS-Referenz verbietet das; sie wurden entfernt. Andernfalls würde keine Echtzeit-{column} zu diesem Feed passen.',
-  'status.metadata': 'Metadaten des Feeds',
   'status.share': 'Teilen',
   'status.copyLink': 'Link zum Teilen kopieren',
   'status.shareNote':
@@ -138,54 +55,12 @@ export const de: Translation<typeof en> = {
   'status.pickFeed': 'Feed auswählen',
   'status.copied': 'Link kopiert',
   'status.copyFailed': 'Kopieren in die Zwischenablage nicht möglich',
-  'status.restored':
-    'Aus der in diesem Browser gespeicherten Kopie wiederhergestellt, nicht erneut heruntergeladen. Der Server meldete dieselbe Version, oder der Feed wurde unter Ihre Feeds geöffnet.',
   'status.noRealtime':
     'Kein Echtzeit-Feed geladen; die Karte zeigt nur den Fahrplan.',
   'status.simulating':
     'Kein Echtzeit-Feed geladen. Die Karte zeigt Fahrzeuge dort, wo der Fahrplan sie jetzt verortet, alle {seconds} s neu berechnet.',
   'status.simulatingCapped':
     'Gerade sind {running} Fahrten unterwegs; nur die ersten {shown} werden gezeichnet.',
-
-  'vehicle.notReported': 'nicht angegeben',
-  'vehicle.seqFromStopId':
-    'stop_id {stop} ist die stop_sequence {sequence} dieser Fahrt',
-  'vehicle.seqDerived': '{sequence} aus den Fahrtaktualisierungen abgeleitet',
-  'vehicle.route': 'Linie',
-  'vehicle.notInSchedule': 'Fahrt nicht im Fahrplan',
-  'vehicle.noRouteId': 'keine route_id angegeben',
-  'vehicle.trip': 'Fahrt',
-  'vehicle.noTripId': 'Keine trip_id angegeben.',
-  'vehicle.loadingStops': 'Haltestellen der Fahrt werden geladen…',
-  'vehicle.at': 'bei',
-  'vehicle.headsign': 'Ziel',
-  'vehicle.currently': 'Derzeit {status}',
-  'vehicle.progress': 'Fortschritt',
-  'vehicle.progressValue': '{n} von {total} Haltestellen',
-  'vehicle.tripStart': 'Beginn der Fahrt',
-  'vehicle.predictions': 'Prognosen',
-  'vehicle.noPredictions':
-    'Keine Fahrtaktualisierung im Feed passt zu dieser Fahrt.',
-  'vehicle.missing': 'Fahrzeug {id} ist nicht im aktuellen Echtzeit-Feed.',
-  'vehicle.sharedId':
-    'Im Feed bezeichnet {field} {id} {count} Fahrzeuge. GTFS-RT legt fest, dass {descriptor} „should be unique per vehicle“; dieser Feed verwendet sie mehrfach.',
-  'vehicle.sharedIdTrip':
-    'Diese Instanz unterscheidet sich durch die Fahrt {trip}.',
-  'vehicle.sharedIdTripDate':
-    'Diese Instanz unterscheidet sich durch die Fahrt {trip} am {date}.',
-  'vehicle.gone':
-    'Seit {time} nicht mehr im Feed. Alle folgenden Angaben stammen aus dem letzten Abruf, der es enthielt.',
-  'vehicle.scheduled': 'Laut Fahrplan',
-  'vehicle.scheduledBanner':
-    'Laut Fahrplan, nicht live. Diese Position ist aus dem Fahrplan berechnet, nicht von einem Fahrzeug gemeldet.',
-  'vehicle.scheduledGone':
-    'Seit {time} laut Fahrplan nicht mehr unterwegs. Alle folgenden Angaben sind die letzte Fahrplanposition.',
-  'vehicle.rawScheduled': 'Fahrzeug laut Fahrplan (simuliert)',
-  'vehicle.live': 'Live',
-  'vehicle.emptyId': 'leer im Feed',
-  'vehicle.entityId': 'Entitäts-ID im Feed',
-  'vehicle.alerts': 'Meldungen',
-  'vehicle.raw': 'VehiclePosition (dekodiert)',
 
   'help.welcome.label': 'Willkommen',
   'help.welcome.title': 'Willkommen bei viz.rt.gtfs.zone',
@@ -230,4 +105,10 @@ export const de: Translation<typeof en> = {
   'help.mapKey.heading': 'Fahrzeug mit bekanntem Kurs',
   'help.mapKey.unmatched':
     'Fahrzeug, dessen Linie nicht ermittelt werden konnte',
+
+  'home.scheduleLoaded': 'Geladen',
+  'home.scheduleLoading': 'Wird geladen…',
+  'home.scheduleError': 'Laden fehlgeschlagen: {message}',
+  'home.noSchedule': 'Kein Fahrplan geladen',
+  'home.simulated': 'Aus dem Fahrplan simuliert',
 };

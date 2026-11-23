@@ -45,8 +45,8 @@ export class AppState extends ValidatedFocusController<
       validate: (state) => validateState(session, state),
     });
 
-    // The selection is half of the hash, so any change to it — a modal load, an
-    // inline URL edit on the status page — has to be reflected there too.
+    // The selection is half of the hash, so any change to it, a modal load or a
+    // reload, has to be reflected there too.
     session.addEventListener('change', () => {
       this.pages.setFeedParams(selectionToParams(session.selection));
     });

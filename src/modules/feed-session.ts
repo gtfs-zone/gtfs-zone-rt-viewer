@@ -62,10 +62,10 @@ export interface RealtimeCounts {
  * Owns the loaded feeds: the scheduled dataset, the RT poller when the
  * selection has realtime, and the selection they came from. Schedules load
  * through the parse cache, which keeps only the feed in use. Everything that loads a feed goes through here so there is a
- * single place that reports progress and a single place the status page reads.
+ * single place that reports progress and a single place the panel reads.
  *
- * Re-dispatches the poller's payload events, so consumers (map, alerts modal,
- * status page) never have to re-subscribe when the poller is replaced.
+ * Re-dispatches the poller's payload events, so consumers (map, alert badges,
+ * panel) never have to re-subscribe when the poller is replaced.
  */
 export class FeedSession extends FeedSessionBase {
   selection: FeedSelection | null = null;

@@ -38,7 +38,7 @@ function catalogName(selection: FeedSelection | null): string | null {
  * host — a URL where a name belongs. Once the schedule parses, the feed names
  * itself, so ask it first and only walk back towards the URL from there.
  */
-function feedName(session: FeedSession): string | null {
+export function feedName(session: FeedSession): string | null {
   const feed = session.scheduledFeed;
 
   const publisher = feed?.feedInfo[0]?.publisher_name.trim();
@@ -127,6 +127,12 @@ export function buildBreadcrumbs(
 /** The pages the viewer renders; the rest of the tree is not built yet. */
 const RENDERED: ReadonlySet<PageState['type']> = new Set([
   'home',
+  'schedule',
+  'feed_info',
+  'agency',
+  'vehicle_positions',
+  'trip_updates',
+  'service_alerts',
   'route',
   'stop',
   'vehicle',

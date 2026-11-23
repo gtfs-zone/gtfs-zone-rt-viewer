@@ -26,7 +26,6 @@ import {
 } from 'gtfs-zone-web-common/ui/keyboard-shortcuts';
 import { viewerShortcuts } from './modules/shortcut-list';
 import { createModalRouter } from 'gtfs-zone-web-common/ui/modal-router';
-import { AlertsModal } from './modules/alerts-modal';
 import { initFieldTooltipPortal } from 'gtfs-zone-web-common/util/tooltip-position';
 import type {
   LinkedOffer,
@@ -52,10 +51,11 @@ import {
   hasAnyRealtimeUrl,
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { FeedSession } from './modules/feed-session';
-import { StatusPage } from './modules/status-page';
 import { AppState } from './modules/app-state';
 import { PanelRenderer } from './modules/panel-renderer';
 import { pageTitle } from 'gtfs-zone-web-common/ui/breadcrumb-trail';
+import { isActiveNow } from 'gtfs-zone-web-common/gtfs/alerts';
+import { HOME_ACTIONS } from './modules/home-page';
 import { alertLabel } from './modules/breadcrumbs';
 import { SearchController } from 'gtfs-zone-web-common/ui/search-controller';
 import { searchPlaces } from 'gtfs-zone-web-common/map/place-search';
@@ -106,13 +106,13 @@ wireAutoZoomControl(mapCtrl.getAutoZoom());
 
 const rightPanel = document.getElementById('right-panel')!;
 // The dock is the mobile-only nav. Browse snaps the sheet open over the map;
-// Alerts and Help open their own modals and leave the sheet where it is.
+// Alerts opens the Service alerts page, Help its modal.
 const bottomSheet = new BottomSheetController(rightPanel, [
   { id: 'dock-browse' },
   {
     id: 'dock-alerts',
     snap: null,
-    onSelect: () => void alertsModal.show(),
+    onSelect: () => appState.setFocus({ type: 'service_alerts' }),
   },
   {
     id: 'dock-help',
@@ -141,17 +141,53 @@ session.addEventListener('vehicles', (e) => {
   mapCtrl.showVehicles((e as CustomEvent<VehiclePosition[]>).detail);
 });
 session.addEventListener('alerts', (e) => {
-  alertsModal.setRecords((e as CustomEvent<AlertRecord[]>).detail);
+  renderAlertBadges((e as CustomEvent<AlertRecord[]>).detail);
 });
+
+/**
+ * The navbar and dock badges count only alerts active now: a feed routinely
+ * carries next month's alerts, and counting them makes the badge useless.
+ */
+function renderAlertBadges(records: AlertRecord[]): void {
+  const active = records.filter((r) => isActiveNow(r.alert)).length;
+  for (const id of ['alerts-badge', 'dock-alerts-badge']) {
+    const badge = document.getElementById(id);
+    if (!badge) {
+      continue;
+    }
+    badge.textContent = active === 0 ? '' : String(active);
+    badge.classList.toggle('hidden', active === 0);
+  }
+}
 
 // ─── Focus state ──────────────────────────────────────────────────────────────
 const panelContent = document.getElementById('panel-content')!;
-const statusPage = new StatusPage(panelContent, session);
 const panelRenderer = new PanelRenderer(panelContent, session, {
   navigate: (state) => appState.setFocus(state),
   href: (state) => appState.hrefFor(state),
   hoverStop: (stopId) => mapCtrl.hoverStop(stopId),
+  action: (action, arg) => runPanelAction(action, arg),
+  mapIssues: () => mapCtrl.issues,
 });
+
+/** Home's buttons. */
+function runPanelAction(action: string, arg: string): void {
+  switch (action) {
+    case HOME_ACTIONS.openLoad:
+      void openLoadModal();
+      return;
+    case HOME_ACTIONS.copyLink:
+      void navigator.clipboard
+        .writeText(appState.shareableUrl())
+        .then(() => notify.success(t('status.copied')))
+        .catch(() => notify.error(t('status.copyFailed')));
+      return;
+    case HOME_ACTIONS.interval:
+      session.setPollIntervalMs(Number(arg));
+      renderIntervalMenu();
+      return;
+  }
+}
 panelRenderer.initialize();
 
 /** The tab title, set on navigation only — the panel re-renders every poll. */
@@ -177,16 +213,10 @@ const appState = new AppState(session, {
   onStateChange: (state) => modalRouter.sync(state),
   onFocusChange: (state) => {
     setDocumentTitle(state);
-    const atHome = state.type === 'home';
-    // The status page is the panel's home content; anything else takes it over.
-    // Exactly one of the two owns `#panel-content` at a time, so neither can
-    // paint over the other on a poll.
-    statusPage.setActive(atHome);
-    if (atHome) {
-      panelRenderer.hide();
+    panelRenderer.show(state, appState.breadcrumbs);
+    if (state.type === 'home') {
       bottomSheet.close();
     } else {
-      panelRenderer.show(state, appState.breadcrumbs);
       bottomSheet.open('half');
     }
     // After the sheet moves, so the camera knows how much of the map is covered.
@@ -197,10 +227,6 @@ const appState = new AppState(session, {
 // ─── Modals ───────────────────────────────────────────────────────────────────
 // Help lives in the hash, so the router is what opens and closes it: every other path — a button, the dock, a shortcut, Escape,
 // the back button — goes through a page state rather than calling `showModal`.
-const alertsModal = new AlertsModal({
-  href: (state) => appState.hrefFor(state),
-  navigate: (state) => appState.setFocus(state),
-});
 const modalRouter = createModalRouter<ModalState>(appState.pages);
 modalRouter.register('help', (modal) =>
   showRoutedHelpModal(appState.pages, modal.page)
@@ -222,15 +248,6 @@ const searchController = new SearchController<PageState | PlacePayload>({
   },
 });
 searchController.initialize();
-
-statusPage.setShareUrlProvider(() => appState.shareableUrl());
-statusPage.setOpenLoadHandler(() => void openLoadModal());
-statusPage.setMapIssuesProvider(() => mapCtrl.issues);
-statusPage.setFeedGapsProvider(() => panelRenderer.rtIndex.gaps);
-statusPage.setScheduleRelationshipsProvider(
-  () => panelRenderer.rtIndex.relationships
-);
-statusPage.initialize();
 
 // Clicking a stop, route, or vehicle on the map focuses it in the panel; the
 // reverse direction runs through onFocusChange above.
@@ -298,7 +315,7 @@ function linkedOffer(selection: FeedSelection): LinkedOffer {
  * whose feed would not load. The last two keep the link: the modal opens seeded
  * with its URLs, with a card printing them and a notice saying what went wrong,
  * so the way forward is one click rather than a retype. Dismissing it is still
- * allowed: the empty status page is the fallback.
+ * allowed: the empty Home page is the fallback.
  */
 async function boot(): Promise<void> {
   const req = appState.bootRequest();
@@ -368,7 +385,9 @@ void boot();
 // ─── Alerts button ────────────────────────────────────────────────────────────
 document
   .getElementById('alerts-btn')!
-  .addEventListener('click', () => void alertsModal.show());
+  .addEventListener('click', () =>
+    appState.setFocus({ type: 'service_alerts' })
+  );
 
 // ─── Help button ──────────────────────────────────────────────────────────────
 document.getElementById('app-version')!.textContent = __APP_VERSION__;
