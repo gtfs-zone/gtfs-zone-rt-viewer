@@ -19,16 +19,10 @@ export const de: Translation<typeof en> = {
 
   'nav.reload': 'Feed neu laden',
   'nav.edit': 'Fahrplan in edit.gtfs.zone bearbeiten',
-  'nav.alerts': 'Betriebsmeldungen',
-  'nav.theme': 'Design wechseln',
-  'nav.guide': 'Anleitung',
   'nav.load': 'Laden',
 
   'shortcut.openLoad': 'Dialog zum Laden eines Feeds öffnen',
-  'shortcut.focusSearch': 'Zur Kartensuche springen',
-  'shortcut.clearSearch': 'Suche leeren',
   'search.vehicles': 'Fahrzeuge',
-  'shortcut.showGuide': 'Anleitung anzeigen',
 
   'load.loaded': '{label} geladen',
   'load.reloaded': '{label} neu geladen',
@@ -41,7 +35,6 @@ export const de: Translation<typeof en> = {
   'load.linkedFeed': 'Verlinkter Feed',
   'load.partialLink':
     'Dieser Link bezeichnet nur einen Teil eines Feeds: {missing}.',
-  'load.decodeFailed': 'Dekodierung fehlgeschlagen: {message}',
   'load.restored':
     '{label} aus der in diesem Browser gespeicherten Kopie geöffnet',
   'load.reloadedUnchanged':
@@ -61,16 +54,6 @@ export const de: Translation<typeof en> = {
   'alerts.active': 'aktiv',
   'alerts.notActive': 'inaktiv',
 
-  'time.secondsAgo': 'vor {s} s',
-  'time.minutesAgo': 'vor {m} min {s} s',
-  'time.hoursAgo': 'vor {h} h {m} min',
-  'time.now': 'jetzt',
-  'time.seconds': '{s} s',
-
-  'status.notSet': 'nicht gesetzt',
-  'status.viaProxy': 'über cors.gtfs.zone',
-  'status.localUrl':
-    'Lokale URL: CORS-Proxy nicht verwendet (er kann diesen Rechner nicht erreichen)',
   'status.counts': 'Anzahlen',
   'status.stops': 'Haltestellen',
   'status.routes': 'Linien',
@@ -83,15 +66,6 @@ export const de: Translation<typeof en> = {
   'status.scheduledVehicles': 'Fahrzeuge laut Fahrplan',
   'status.tripUpdates': 'Fahrtaktualisierungen',
   'status.alerts': 'Meldungen',
-  'status.never': 'nie',
-  'status.notReported': 'nicht angegeben',
-  'status.error': 'Fehler',
-  'status.lastFetched': 'Zuletzt abgerufen',
-  'status.feedTimestamp': 'Zeitstempel des Feeds',
-  'status.dataAge': '(Alter der Daten)',
-  'status.entities': 'Entitäten',
-  'status.nextRefresh': 'Nächste Aktualisierung',
-  'status.errorAt': 'um {time}',
   'status.idTrip': 'abgeleitet aus vehicle.id + trip_id + start_date',
   'status.idEntity': 'abgeleitet aus vehicle.id + trip + entity.id',
   'status.idIndex':
@@ -192,8 +166,6 @@ export const de: Translation<typeof en> = {
   'vehicle.predictions': 'Prognosen',
   'vehicle.noPredictions':
     'Keine Fahrtaktualisierung im Feed passt zu dieser Fahrt.',
-  'vehicle.seq': 'Nr.',
-  'vehicle.stop': 'Haltestelle',
   'vehicle.missing': 'Fahrzeug {id} ist nicht im aktuellen Echtzeit-Feed.',
   'vehicle.sharedId':
     'Im Feed bezeichnet {field} {id} {count} Fahrzeuge. GTFS-RT legt fest, dass {descriptor} „should be unique per vehicle“; dieser Feed verwendet sie mehrfach.',
@@ -210,13 +182,6 @@ export const de: Translation<typeof en> = {
     'Seit {time} laut Fahrplan nicht mehr unterwegs. Alle folgenden Angaben sind die letzte Fahrplanposition.',
   'vehicle.rawScheduled': 'Fahrzeug laut Fahrplan (simuliert)',
   'vehicle.live': 'Live',
-  'vehicle.position': 'Position',
-  'vehicle.bearing': 'Kurs',
-  'vehicle.speed': 'Geschwindigkeit',
-  'vehicle.speedValue': '{speed} m/s',
-  'vehicle.status': 'Status',
-  'vehicle.occupancy': 'Auslastung',
-  'vehicle.timestamp': 'Zeitstempel',
   'vehicle.emptyId': 'leer im Feed',
   'vehicle.entityId': 'Entitäts-ID im Feed',
   'vehicle.alerts': 'Meldungen',

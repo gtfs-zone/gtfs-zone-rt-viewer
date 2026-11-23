@@ -19,16 +19,10 @@ export const fr: Translation<typeof en> = {
 
   'nav.reload': 'Recharger le flux',
   'nav.edit': 'Modifier les horaires dans edit.gtfs.zone',
-  'nav.alerts': 'Alertes de service',
-  'nav.theme': 'Changer de thème',
-  'nav.guide': 'Guide',
   'nav.load': 'Charger',
 
   'shortcut.openLoad': 'Ouvrir la fenêtre de chargement de flux',
-  'shortcut.focusSearch': 'Aller à la recherche sur la carte',
-  'shortcut.clearSearch': 'Effacer la recherche',
   'search.vehicles': 'Véhicules',
-  'shortcut.showGuide': 'Afficher le guide',
 
   'load.loaded': '{label} chargé',
   'load.reloaded': '{label} rechargé',
@@ -40,7 +34,6 @@ export const fr: Translation<typeof en> = {
   'load.incomplete': 'La sélection est incomplète',
   'load.linkedFeed': 'Flux du lien',
   'load.partialLink': "Ce lien ne désigne qu'une partie d'un flux : {missing}.",
-  'load.decodeFailed': 'Échec du décodage : {message}',
   'load.restored':
     '{label} ouvert depuis la copie enregistrée dans ce navigateur',
   'load.reloadedUnchanged':
@@ -59,16 +52,6 @@ export const fr: Translation<typeof en> = {
   'alerts.active': 'active',
   'alerts.notActive': 'inactive',
 
-  'time.secondsAgo': 'il y a {s} s',
-  'time.minutesAgo': 'il y a {m} min {s} s',
-  'time.hoursAgo': 'il y a {h} h {m} min',
-  'time.now': 'maintenant',
-  'time.seconds': '{s} s',
-
-  'status.notSet': 'non défini',
-  'status.viaProxy': 'via cors.gtfs.zone',
-  'status.localUrl':
-    'URL locale : proxy CORS non appliqué (il ne peut pas atteindre cette machine)',
   'status.counts': 'Effectifs',
   'status.stops': 'Arrêts',
   'status.routes': 'Lignes',
@@ -81,15 +64,6 @@ export const fr: Translation<typeof en> = {
   'status.scheduledVehicles': 'Véhicules théoriques',
   'status.tripUpdates': 'Mises à jour de courses',
   'status.alerts': 'Alertes',
-  'status.never': 'jamais',
-  'status.notReported': 'non indiqué',
-  'status.error': 'erreur',
-  'status.lastFetched': 'Dernière récupération',
-  'status.feedTimestamp': 'Horodatage du flux',
-  'status.dataAge': '(âge des données)',
-  'status.entities': 'Entités',
-  'status.nextRefresh': 'Prochain rafraîchissement',
-  'status.errorAt': 'à {time}',
   'status.idTrip': 'dérivée de vehicle.id + trip_id + start_date',
   'status.idEntity': 'dérivée de vehicle.id + trip + entity.id',
   'status.idIndex':
@@ -186,8 +160,6 @@ export const fr: Translation<typeof en> = {
   'vehicle.predictions': 'Prévisions',
   'vehicle.noPredictions':
     'Aucune mise à jour de course du flux ne correspond à cette course.',
-  'vehicle.seq': 'Séq.',
-  'vehicle.stop': 'Arrêt',
   'vehicle.missing':
     "Le véhicule {id} n'est pas dans le flux temps réel actuel.",
   'vehicle.sharedId':
@@ -204,13 +176,6 @@ export const fr: Translation<typeof en> = {
     "Ne circule plus selon l'horaire depuis {time}. Tout ce qui suit est sa dernière position théorique.",
   'vehicle.rawScheduled': 'Véhicule théorique (simulé)',
   'vehicle.live': 'En direct',
-  'vehicle.position': 'Position',
-  'vehicle.bearing': 'Cap',
-  'vehicle.speed': 'Vitesse',
-  'vehicle.speedValue': '{speed} m/s',
-  'vehicle.status': 'Statut',
-  'vehicle.occupancy': 'Affluence',
-  'vehicle.timestamp': 'Horodatage',
   'vehicle.emptyId': 'vide dans le flux',
   'vehicle.entityId': "Identifiant d'entité du flux",
   'vehicle.alerts': 'Alertes',

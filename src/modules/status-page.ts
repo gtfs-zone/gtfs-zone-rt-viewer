@@ -1,4 +1,4 @@
-import type { EndpointStatus } from '../gtfs-rt';
+import type { EndpointStatus } from 'gtfs-zone-web-common/gtfs/rt-poller';
 import type { FeedSession } from './feed-session';
 import type { MapDataIssues } from 'gtfs-zone-web-common/map/layer-manager';
 import type {
@@ -6,20 +6,17 @@ import type {
   ScheduleRelationshipCounts,
 } from 'gtfs-zone-web-common/gtfs/rt-index';
 import type { RealtimeEndpointName } from 'gtfs-zone-web-common/gtfs/feed-selection';
-import {
-  REALTIME_ENDPOINTS,
-  REALTIME_ENDPOINT_LABELS,
-} from 'gtfs-zone-web-common/gtfs/feed-selection';
+import { REALTIME_ENDPOINTS } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   TRIP_SCHEDULE_RELATIONSHIP_LABELS,
   STOP_TIME_SCHEDULE_RELATIONSHIP_LABELS,
+  formatRelative,
 } from 'gtfs-zone-web-common/gtfs/entity-render';
-import { localClock } from 'gtfs-zone-web-common/gtfs/feed-time';
 import { isReproducible } from './feed-url';
 import {
-  isLocalUrl,
-  resolveRealtimeUrl,
-} from 'gtfs-zone-web-common/gtfs/feed-url-resolve';
+  renderEndpointStatus,
+  renderEndpointUrl,
+} from 'gtfs-zone-web-common/gtfs/endpoint-status';
 import { CONFIG } from '../config';
 import { notify } from 'gtfs-zone-web-common/ui/notification-system';
 import { renderIssueCard } from 'gtfs-zone-web-common/ui/issue-card';
@@ -45,69 +42,6 @@ function escHtml(s: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-}
-
-/**
- * Poll times are facts about this browser, not about the railroad, so they stay
- * in the reader's zone — labelled, so they read as distinct from the feed clock
- * used on the object pages.
- */
-function formatClock(ms: number | null): string {
-  if (!ms) {
-    return '—';
-  }
-  return localClock(ms);
-}
-
-/** "12s ago" / "3m ago" — rendered by the shared ticker, not per-row timers. */
-function formatRelative(ms: number): string {
-  const secs = Math.max(0, Math.round((Date.now() - ms) / 1000));
-  if (secs < 60) {
-    return t('time.secondsAgo', { s: secs });
-  }
-  if (secs < 3600) {
-    return t('time.minutesAgo', { m: Math.floor(secs / 60), s: secs % 60 });
-  }
-  return t('time.hoursAgo', {
-    h: Math.floor(secs / 3600),
-    m: Math.floor((secs % 3600) / 60),
-  });
-}
-
-function formatCountdown(target: number): string {
-  const secs = Math.round((target - Date.now()) / 1000);
-  return secs <= 0 ? t('time.now') : t('time.seconds', { s: secs });
-}
-
-/**
- * One URL as configured, plus whatever the selection does to it on the way to
- * the network: RT base resolution for a bare path, the CORS proxy, or neither.
- * Both are worth stating — "it is fetching a different URL than the one I typed"
- * is the question this panel exists to answer.
- */
-function renderUrl(url: string, useCors: boolean, isRealtime: boolean): string {
-  if (!url) {
-    return `<p class="text-xs opacity-40">${t('status.notSet')}</p>`;
-  }
-
-  const resolved = isRealtime ? resolveRealtimeUrl(url, CONFIG.RT_BASE) : url;
-  // A local URL ignores the proxy setting (see `maybeProxy`); say so, but only
-  // when the checkbox is on and therefore looks like it is doing something.
-  const proxyBypassed = useCors && isLocalUrl(resolved);
-
-  return `
-    <p class="text-xs font-mono break-all opacity-70">${escHtml(url)}</p>
-    ${
-      resolved !== url
-        ? `<p class="text-xs font-mono break-all opacity-40">-&gt; ${escHtml(resolved)}</p>`
-        : ''
-    }
-    ${useCors && !proxyBypassed ? `<p class="text-xs opacity-50">${t('status.viaProxy')}</p>` : ''}
-    ${
-      proxyBypassed
-        ? `<p class="text-xs opacity-50">${t('status.localUrl')}</p>`
-        : ''
-    }`;
 }
 
 function statTile(label: string, value: number | string): string {
@@ -140,66 +74,6 @@ function renderCounts(session: FeedSession): string {
 }
 
 /** `data-since` / `data-until` are driven by the single shared ticker below. */
-function renderEndpoint(
-  ep: EndpointStatus,
-  rawUrl: string,
-  useCors: boolean,
-  nextPollAt: number | null
-): string {
-  const label = REALTIME_ENDPOINT_LABELS[ep.name];
-
-  const fetched = ep.lastFetchedAt
-    ? `${formatClock(ep.lastFetchedAt)} <span class="opacity-60" data-since="${ep.lastFetchedAt}">${formatRelative(ep.lastFetchedAt)}</span>`
-    : `<span class="opacity-40">${t('status.never')}</span>`;
-
-  const dataAge = ep.feedTimestamp
-    ? `${formatClock(ep.feedTimestamp * 1000)} <span class="opacity-60" data-since="${ep.feedTimestamp * 1000}">${formatRelative(ep.feedTimestamp * 1000)}</span>`
-    : `<span class="opacity-40">${t('status.notReported')}</span>`;
-
-  return `
-    <div class="rounded-lg border border-base-300 p-3 space-y-2">
-      <div class="flex items-center gap-2">
-        <h4 class="font-medium text-sm flex-1">${escHtml(label)}</h4>
-        ${ep.inFlight ? '<span class="loading loading-spinner loading-xs"></span>' : ''}
-        ${ep.lastError ? `<span class="badge badge-error badge-xs">${t('status.error')}</span>` : ''}
-        ${!ep.url ? `<span class="badge badge-ghost badge-xs">${t('status.notSet')}</span>` : ''}
-      </div>
-
-      <dl class="text-xs space-y-1">
-        <div class="flex justify-between gap-2">
-          <dt class="opacity-60">${t('status.lastFetched')}</dt><dd class="text-right">${fetched}</dd>
-        </div>
-        <div class="flex justify-between gap-2">
-          <dt class="opacity-60">${t('status.feedTimestamp')} <span class="opacity-50">${t('status.dataAge')}</span></dt>
-          <dd class="text-right">${dataAge}</dd>
-        </div>
-        <div class="flex justify-between gap-2">
-          <dt class="opacity-60">${t('status.entities')}</dt>
-          <dd class="text-right tabular-nums">${ep.entityCount === null || ep.entityCount === undefined ? '—' : formatNumber(ep.entityCount)}</dd>
-        </div>
-        <div class="flex justify-between gap-2">
-          <dt class="opacity-60">${t('status.nextRefresh')}</dt>
-          <dd class="text-right">${
-            nextPollAt
-              ? `<span data-until="${nextPollAt}">${formatCountdown(nextPollAt)}</span>`
-              : '—'
-          }</dd>
-        </div>
-      </dl>
-
-      ${
-        ep.lastError
-          ? `<p class="text-xs text-error break-words">${escHtml(ep.lastError)} <span class="opacity-60">${t('status.errorAt', { time: formatClock(ep.lastErrorAt) })}</span></p>`
-          : ''
-      }
-
-      ${renderUrl(rawUrl, useCors, true)}
-
-      ${ep.header ? renderHeaderDump(ep) : ''}
-      ${renderVehicleIdReport(ep)}
-    </div>`;
-}
-
 const VEHICLE_ID_STRATEGY_NOTE: Record<string, string> = {
   trip: t('status.idTrip'),
   entity: t('status.idEntity'),
@@ -241,21 +115,6 @@ function renderVehicleIdReport(ep: EndpointStatus): string {
     </div>`;
 }
 
-function renderHeaderDump(ep: EndpointStatus): string {
-  const h = ep.header!;
-  return `
-    <details class="text-xs">
-      <summary class="cursor-pointer opacity-60">FeedHeader</summary>
-      <table class="table table-xs mt-1">
-        <tbody>
-          <tr><td class="opacity-60">gtfs_realtime_version</td><td>${escHtml(h.gtfsRealtimeVersion || '—')}</td></tr>
-          <tr><td class="opacity-60">incrementality</td><td>${escHtml(h.incrementality || '—')}</td></tr>
-          <tr><td class="opacity-60">timestamp</td><td>${h.timestamp ?? '—'}</td></tr>
-        </tbody>
-      </table>
-    </details>`;
-}
-
 /** What stands in for the endpoints on a static-only feed. */
 function renderSimulation(session: FeedSession): string {
   if (!session.simulating) {
@@ -291,12 +150,13 @@ function renderEndpoints(session: FeedSession): string {
     <section class="space-y-2">
       <h3 class="font-semibold text-sm">${t('status.endpoints')}</h3>
       ${REALTIME_ENDPOINTS.map((n) =>
-        renderEndpoint(
-          status.endpoints[n],
-          rawUrls[n],
-          rt?.useCors ?? false,
-          status.nextPollAt
-        )
+        renderEndpointStatus(status.endpoints[n], {
+          rawUrl: rawUrls[n],
+          rtBase: CONFIG.RT_BASE,
+          useCors: rt?.useCors ?? false,
+          nextPollAt: status.nextPollAt,
+          footer: renderVehicleIdReport(status.endpoints[n]),
+        })
       ).join('')}
     </section>`;
 }
@@ -310,7 +170,7 @@ function renderScheduledSection(session: FeedSession): string {
   const source =
     src.kind === 'file'
       ? `<p class="text-xs opacity-60">${t('status.uploaded', { name: `<span class="font-mono">${escHtml(src.label)}</span>` })}</p>`
-      : renderUrl(src.url, src.useCors, false);
+      : renderEndpointUrl(src.url, { useCors: src.useCors });
 
   return `
     <section class="space-y-2">
@@ -726,7 +586,7 @@ export class StatusPage {
       el.textContent = formatRelative(Number(el.dataset.since));
     });
     this.host.querySelectorAll<HTMLElement>('[data-until]').forEach((el) => {
-      el.textContent = formatCountdown(Number(el.dataset.until));
+      el.textContent = formatRelative(Number(el.dataset.until));
     });
   }
 

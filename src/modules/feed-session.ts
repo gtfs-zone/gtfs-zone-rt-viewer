@@ -1,7 +1,10 @@
 import { CONFIG } from '../config';
 import { t } from '../i18n/messages';
-import { GTFSRealtime } from '../gtfs-rt';
-import type { FeedStatus, FetchStartDetail } from '../gtfs-rt';
+import { GTFSRealtime } from 'gtfs-zone-web-common/gtfs/rt-poller';
+import type {
+  FeedStatus,
+  FetchStartDetail,
+} from 'gtfs-zone-web-common/gtfs/rt-poller';
 import type {
   AlertRecord,
   TripUpdate,

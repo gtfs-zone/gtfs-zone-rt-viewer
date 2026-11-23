@@ -14,7 +14,7 @@ import {
   setHelpPages,
   showHelpPageOnce,
 } from 'gtfs-zone-web-common/ui/help-modal';
-import { showRoutedHelpModal } from './modules/routed-help';
+import { showRoutedHelpModal } from 'gtfs-zone-web-common/ui/routed-help';
 import {
   HELP_GROUP_ORDER,
   setHelpRuntimeData,

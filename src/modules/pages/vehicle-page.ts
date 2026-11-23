@@ -10,26 +10,23 @@ import { alertsForTrip } from 'gtfs-zone-web-common/gtfs/alerts';
 import type { RtIndex } from 'gtfs-zone-web-common/gtfs/rt-index';
 import type { RenderContext } from '../render-context';
 import {
-  OCCUPANCY_LABELS,
   TRIP_SCHEDULE_RELATIONSHIP_LABELS,
   VEHICLE_STATUS_LABELS,
   entityLink,
   escHtml,
   pageHeader,
-  predictionCells,
-  predictionHeaders,
   prop,
   propList,
   renderRawJson,
   routeBadge,
   section,
   stopSequenceMark,
-  timestampWithAge,
   tripRelationshipMark,
   vehicleDisplayName,
 } from 'gtfs-zone-web-common/gtfs/entity-render';
 import { localClock } from 'gtfs-zone-web-common/gtfs/feed-time';
-import { formatNumber } from 'gtfs-zone-web-common/i18n/fmt';
+import { renderPredictionTable } from 'gtfs-zone-web-common/gtfs/prediction-table';
+import { vehicleProps } from 'gtfs-zone-web-common/gtfs/vehicle-props';
 import { renderAlertList } from 'gtfs-zone-web-common/gtfs/alert-page';
 import { t } from '../../i18n/messages';
 
@@ -228,62 +225,31 @@ function renderPredictions(
 
   return section(
     t('vehicle.predictions'),
-    `<table class="table table-xs table-fixed">
-      <colgroup>
-        <col style="width: 9%" />
-        <col style="width: 37%" />
-        <col style="width: 18%" />
-        <col style="width: 18%" />
-        <col style="width: 18%" />
-      </colgroup>
-      <thead><tr>
-        <th class="text-right">${t('vehicle.seq')}</th><th>${t('vehicle.stop')}</th>
-        ${predictionHeaders()}
-      </tr></thead>
-      <tbody>${predictions
-        .map((p) => {
-          const stop = feed?.stops.get(p.stop_id);
-          const isCurrent =
-            current !== undefined && p.stop_sequence === current.sequence;
-          const skipped = p.scheduleRelationship === 1;
-          return `<tr class="${isCurrent ? 'bg-base-200' : ''}">
-            <td class="text-right tabular-nums opacity-60 align-top">${escHtml(String(p.stop_sequence ?? '—'))}</td>
-            <td class="max-w-0 truncate align-top${skipped ? ' opacity-50 line-through' : ''}">${
-              stop
-                ? entityLink(
-                    ctx,
-                    { type: 'stop', stop_id: stop.id },
-                    stop.name || stop.id
-                  )
-                : escHtml(p.stop_id)
-            }</td>
-            ${predictionCells(p)}
-          </tr>`;
-        })
-        .join('')}</tbody>
-    </table>`
+    renderPredictionTable(
+      predictions.map((p) => {
+        const stop = feed?.stops.get(p.stop_id);
+        return {
+          sequence: p.stop_sequence,
+          stopHtml: stop
+            ? entityLink(
+                ctx,
+                { type: 'stop', stop_id: stop.id },
+                stop.name || stop.id
+              )
+            : escHtml(p.stop_id),
+          prediction: p,
+          current:
+            current !== undefined && p.stop_sequence === current.sequence,
+        };
+      })
+    )
   );
 }
 
 /** A simulated vehicle has no wire fields to report: where it is and what it is doing. */
 function renderScheduledProps(vehicle: VehiclePosition): string {
   return propList([
-    prop(
-      t('vehicle.position'),
-      escHtml(`${vehicle.lat.toFixed(5)}, ${vehicle.lon.toFixed(5)}`)
-    ),
-    vehicle.bearing === undefined
-      ? ''
-      : prop(t('vehicle.bearing'), `${escHtml(vehicle.bearing.toFixed(0))}°`),
-    vehicle.currentStatus === undefined
-      ? ''
-      : prop(
-          t('vehicle.status'),
-          escHtml(
-            VEHICLE_STATUS_LABELS[vehicle.currentStatus] ??
-              String(vehicle.currentStatus)
-          )
-        ),
+    ...vehicleProps(vehicle),
     vehicle.currentStopSequence === undefined
       ? ''
       : prop(
@@ -378,52 +344,13 @@ export function renderVehiclePage(
         vehicle.scheduled
           ? renderScheduledProps(vehicle)
           : propList([
-              prop(
-                t('vehicle.position'),
-                escHtml(`${vehicle.lat.toFixed(5)}, ${vehicle.lon.toFixed(5)}`)
-              ),
-              prop(
-                t('vehicle.bearing'),
-                vehicle.bearing === undefined
-                  ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-                  : `${escHtml(vehicle.bearing.toFixed(0))}°`
-              ),
-              prop(
-                t('vehicle.speed'),
-                vehicle.speed === undefined
-                  ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-                  : t('vehicle.speedValue', {
-                      speed: formatNumber(vehicle.speed, {
-                        minimumFractionDigits: 1,
-                        maximumFractionDigits: 1,
-                      }),
-                    })
-              ),
-              prop(
-                t('vehicle.status'),
-                vehicle.currentStatus === undefined
-                  ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-                  : escHtml(
-                      VEHICLE_STATUS_LABELS[vehicle.currentStatus] ??
-                        String(vehicle.currentStatus)
-                    )
-              ),
+              ...vehicleProps(vehicle, { showMissing: true }),
               // This region reports the wire, so an omitted field still reads as
               // omitted; the derived value is stated next to it, not in place of it.
               prop(
                 'current_stop_sequence',
                 renderStopSequenceValue(rt, vehicle)
               ),
-              prop(
-                t('vehicle.occupancy'),
-                vehicle.occupancyStatus === undefined
-                  ? `<span class="opacity-40">${t('vehicle.notReported')}</span>`
-                  : escHtml(
-                      OCCUPANCY_LABELS[vehicle.occupancyStatus] ??
-                        String(vehicle.occupancyStatus)
-                    )
-              ),
-              prop(t('vehicle.timestamp'), timestampWithAge(vehicle.timestamp)),
               prop(
                 'vehicle.id',
                 vehicle.vehicleId
