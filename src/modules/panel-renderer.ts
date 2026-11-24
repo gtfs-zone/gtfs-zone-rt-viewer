@@ -21,8 +21,12 @@ import {
   type ScheduleSourceStatus,
 } from 'gtfs-zone-web-common/gtfs/schedule-page';
 import { renderRoutePage } from 'gtfs-zone-web-common/gtfs/route-page';
-import { renderStopPage } from 'gtfs-zone-web-common/gtfs/stop-page';
+import {
+  renderStopPage,
+  type StopPageHooks,
+} from 'gtfs-zone-web-common/gtfs/stop-page';
 import { vehiclePage } from 'gtfs-zone-web-common/gtfs/vehicle-page';
+import { tripPage } from 'gtfs-zone-web-common/gtfs/trip-page';
 import {
   serviceAlertsPage,
   tripUpdatesPage,
@@ -70,6 +74,11 @@ export class PanelRenderer extends RtPanel<PageState> {
 const PAGE_HOOKS: RtPageHooks<PageState, VehiclePosition> = {
   vehicleLink: (v) => ({ type: 'vehicle', vehicle_key: v.key }),
   vehicleNoun: 'vehicle',
+};
+
+const STOP_HOOKS: StopPageHooks<PageState, VehiclePosition> = {
+  ...PAGE_HOOKS,
+  tripLink: (loc) => loc,
 };
 
 /** An endpoint's status block inputs, or null when it is not configured. */
@@ -158,6 +167,7 @@ function renderPage(
     case 'trip_updates':
       return tripUpdatesPage(ctx, rt(), {
         endpoint: endpoint(ctx.session, 'tripUpdates'),
+        tripLink: (loc) => loc,
       });
     case 'service_alerts':
       return serviceAlertsPage(ctx, {
@@ -166,13 +176,12 @@ function renderPage(
     case 'route':
       return renderRoutePage(ctx, rt(), state.route_id, PAGE_HOOKS);
     case 'stop':
-      return renderStopPage(ctx, rt(), state.stop_id, PAGE_HOOKS);
+      return renderStopPage(ctx, rt(), state.stop_id, STOP_HOOKS);
+    case 'trip':
+      return tripPage(ctx, rt(), state);
     case 'vehicle':
       return vehiclePage(ctx, rt(), state.vehicle_key);
     case 'alert':
       return alertPage(ctx, state.alert_id);
-    default:
-      // Not on the tree yet; these states do not validate.
-      return '';
   }
 }

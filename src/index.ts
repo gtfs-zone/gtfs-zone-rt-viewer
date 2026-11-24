@@ -325,8 +325,8 @@ async function boot(): Promise<void> {
     const failure = await loadFeed(req.selection);
     if (!failure) {
       console.log('[boot] hash selection loaded');
-      appState.finishBoot(req.pending);
       showFeedControls();
+      await appState.finishBoot(req.pending);
       return;
     }
     console.log('[boot] hash selection failed:', failure);

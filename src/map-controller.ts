@@ -3,6 +3,11 @@ import { CONFIG } from './config';
 import type { PageState } from './types/page-state';
 import type { MapFocusTarget } from 'gtfs-zone-web-common/map/layer-manager';
 import { RtMapController } from 'gtfs-zone-web-common/map/rt-map-controller';
+import type { VehiclePosition } from 'gtfs-zone-web-common/gtfs/rt-types';
+import {
+  tripMatches,
+  type TripLocation,
+} from 'gtfs-zone-web-common/gtfs/tree-location';
 
 export class MapController extends RtMapController<PageState> {
   constructor() {
@@ -27,18 +32,29 @@ export class MapController extends RtMapController<PageState> {
     }
   }
 
+  /** The trip's vehicle when one is running it, else its route. */
+  private focusTrip(loc: TripLocation): void {
+    const resolve = (positions: VehiclePosition[]) =>
+      positions.find((v) => tripMatches(loc, v));
+    if (resolve(this.positions)) {
+      this.focusVehicle(resolve);
+    } else if (loc.route_id) {
+      this.focusRoute(loc.route_id);
+    } else {
+      this.focusNone();
+    }
+  }
+
   protected applyFocus(state: PageState): void {
     switch (state.type) {
       case 'home':
         this.focusHome();
         return;
-      // Alerts have no geometry of their own; nothing to highlight or fly to.
-      // The other pages here do not validate until they have a page.
+      // These pages have no geometry of their own; nothing to highlight or fly to.
       case 'alert':
       case 'schedule':
       case 'feed_info':
       case 'agency':
-      case 'trip':
       case 'vehicle_positions':
       case 'trip_updates':
       case 'service_alerts':
@@ -49,6 +65,9 @@ export class MapController extends RtMapController<PageState> {
         return;
       case 'stop':
         this.focusStop(state.stop_id);
+        return;
+      case 'trip':
+        this.focusTrip(state);
         return;
       case 'vehicle':
         this.focusVehicle(

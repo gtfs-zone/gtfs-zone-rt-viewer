@@ -13,6 +13,7 @@ import type { FeedSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { describeSelection } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import type { FeedSession } from './feed-session';
 import { vehicleDisplayName } from 'gtfs-zone-web-common/gtfs/entity-render';
+import { tripInRealtime } from 'gtfs-zone-web-common/gtfs/trip-page';
 import { t } from '../i18n/messages';
 
 /**
@@ -101,16 +102,7 @@ function treeSource(session: FeedSession): RtTreeSource {
         ? { label: alertLabel(session, alertId) }
         : null;
     },
-    realtimeTrip(loc) {
-      const tripId = loc.trip_id;
-      if (!tripId) {
-        return false;
-      }
-      return (
-        session.tripUpdates.some((u) => u.trip?.tripId === tripId) ||
-        [...session.vehicles.values()].some((v) => v.tripId === tripId)
-      );
-    },
+    realtimeTrip: (loc) => tripInRealtime(session, loc),
   };
 }
 
@@ -134,6 +126,7 @@ const RENDERED: ReadonlySet<PageState['type']> = new Set([
   'trip_updates',
   'service_alerts',
   'route',
+  'trip',
   'stop',
   'vehicle',
   'alert',
