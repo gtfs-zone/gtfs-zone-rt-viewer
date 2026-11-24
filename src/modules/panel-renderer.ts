@@ -10,7 +10,6 @@
 import type { PageState } from '../types/page-state';
 import { RtPanel } from 'gtfs-zone-web-common/gtfs/rt-panel';
 import type { RtIndex } from 'gtfs-zone-web-common/gtfs/rt-index';
-import type { RtPageHooks } from 'gtfs-zone-web-common/gtfs/rt-page';
 import type { TreePage } from 'gtfs-zone-web-common/gtfs/tree-page';
 import type { MapDataIssues } from 'gtfs-zone-web-common/map/layer-manager';
 import { alertPage } from 'gtfs-zone-web-common/gtfs/alert-page';
@@ -20,11 +19,12 @@ import {
   schedulePage,
   type ScheduleSourceStatus,
 } from 'gtfs-zone-web-common/gtfs/schedule-page';
-import { renderRoutePage } from 'gtfs-zone-web-common/gtfs/route-page';
 import {
-  renderStopPage,
-  type StopPageHooks,
-} from 'gtfs-zone-web-common/gtfs/stop-page';
+  routePage,
+  type RoutePageOptions,
+} from 'gtfs-zone-web-common/gtfs/route-page';
+import { stopPage } from 'gtfs-zone-web-common/gtfs/stop-page';
+import type { RtPageHooks } from 'gtfs-zone-web-common/gtfs/rt-page';
 import { vehiclePage } from 'gtfs-zone-web-common/gtfs/vehicle-page';
 import { tripPage } from 'gtfs-zone-web-common/gtfs/trip-page';
 import {
@@ -71,14 +71,14 @@ export class PanelRenderer extends RtPanel<PageState> {
   }
 }
 
-const PAGE_HOOKS: RtPageHooks<PageState, VehiclePosition> = {
+const LINKS: RtPageHooks<PageState, VehiclePosition> = {
   vehicleLink: (v) => ({ type: 'vehicle', vehicle_key: v.key }),
-  vehicleNoun: 'vehicle',
+  tripLink: (loc) => loc,
 };
 
-const STOP_HOOKS: StopPageHooks<PageState, VehiclePosition> = {
-  ...PAGE_HOOKS,
-  tripLink: (loc) => loc,
+const ROUTE_OPTIONS: RoutePageOptions<PageState, VehiclePosition> = {
+  ...LINKS,
+  agencyLink: (agency_id) => ({ type: 'agency', agency_id }),
 };
 
 /** An endpoint's status block inputs, or null when it is not configured. */
@@ -145,7 +145,7 @@ function renderPage(
   rt: () => RtIndex,
   state: PageState,
   mapIssues: () => MapDataIssues | null
-): TreePage | string {
+): TreePage {
   switch (state.type) {
     case 'home':
       return homePage(ctx);
@@ -162,21 +162,21 @@ function renderPage(
       return vehiclePositionsPage(ctx, rt(), {
         endpoint: endpoint(ctx.session, 'vehicles'),
         noEndpoint: simulationNote(ctx.session),
-        vehicleLink: PAGE_HOOKS.vehicleLink,
+        vehicleLink: LINKS.vehicleLink,
       });
     case 'trip_updates':
       return tripUpdatesPage(ctx, rt(), {
         endpoint: endpoint(ctx.session, 'tripUpdates'),
-        tripLink: (loc) => loc,
+        tripLink: LINKS.tripLink,
       });
     case 'service_alerts':
       return serviceAlertsPage(ctx, {
         endpoint: endpoint(ctx.session, 'alerts'),
       });
     case 'route':
-      return renderRoutePage(ctx, rt(), state.route_id, PAGE_HOOKS);
+      return routePage(ctx, rt(), state.route_id, ROUTE_OPTIONS);
     case 'stop':
-      return renderStopPage(ctx, rt(), state.stop_id, STOP_HOOKS);
+      return stopPage(ctx, rt(), state.stop_id, LINKS);
     case 'trip':
       return tripPage(ctx, rt(), state);
     case 'vehicle':
