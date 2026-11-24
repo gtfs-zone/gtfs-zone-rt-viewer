@@ -1,3 +1,25 @@
+## v0.27.0 (2026-11-25)
+
+### Feat
+
+- **trip**: show the trip page
+- realtime nodes, Home and Schedule pages from gtfs-zone-web-common v7.10.0
+- **page-state**: adopt the shared tree locations and crumbs
+- **load**: show the Realtime only toggle, on by default
+
+### Fix
+
+- **dev**: pre-bundle gtfs-realtime-bindings
+- **vehicle**: use the spec codes for trips with no schedule entry
+
+### Refactor
+
+- adopt the shared realtime modules from gtfs-zone-web-common v7.9.0
+
+### Perf
+
+- **panel**: build the realtime index only on pages that read it
+
 ## v0.26.0 (2026-11-21)
 
 ### Feat
