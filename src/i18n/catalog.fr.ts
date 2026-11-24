@@ -19,16 +19,10 @@ export const fr: Translation<typeof en> = {
 
   'nav.reload': 'Recharger le flux',
   'nav.edit': 'Modifier les horaires dans edit.gtfs.zone',
-  'nav.alerts': 'Alertes de service',
-  'nav.theme': 'Changer de thème',
-  'nav.guide': 'Guide',
   'nav.load': 'Charger',
 
   'shortcut.openLoad': 'Ouvrir la fenêtre de chargement de flux',
-  'shortcut.focusSearch': 'Aller à la recherche sur la carte',
-  'shortcut.clearSearch': 'Effacer la recherche',
   'search.vehicles': 'Véhicules',
-  'shortcut.showGuide': 'Afficher le guide',
 
   'load.loaded': '{label} chargé',
   'load.reloaded': '{label} rechargé',
@@ -40,7 +34,6 @@ export const fr: Translation<typeof en> = {
   'load.incomplete': 'La sélection est incomplète',
   'load.linkedFeed': 'Flux du lien',
   'load.partialLink': "Ce lien ne désigne qu'une partie d'un flux : {missing}.",
-  'load.decodeFailed': 'Échec du décodage : {message}',
   'load.restored':
     '{label} ouvert depuis la copie enregistrée dans ce navigateur',
   'load.reloadedUnchanged':
@@ -50,175 +43,22 @@ export const fr: Translation<typeof en> = {
   'crumb.feed': 'Flux',
   'crumb.noFeed': 'Aucun flux',
   'crumb.more': '{name} +{count} autres',
-  'crumb.vehicle': 'Véhicule',
-  'crumb.alert': 'Alerte de service',
 
-  'alerts.title': 'Alertes de service',
-  'alerts.close': 'Fermer',
-  'alerts.none': 'Aucune alerte de service.',
-  'alerts.activeOf': '{active} active(s) sur {total} dans le flux.',
-  'alerts.fallback': 'Alerte {id}',
-  'alerts.active': 'active',
-  'alerts.notActive': 'inactive',
-
-  'time.secondsAgo': 'il y a {s} s',
-  'time.minutesAgo': 'il y a {m} min {s} s',
-  'time.hoursAgo': 'il y a {h} h {m} min',
-  'time.now': 'maintenant',
-  'time.seconds': '{s} s',
-
-  'status.notSet': 'non défini',
-  'status.viaProxy': 'via cors.gtfs.zone',
-  'status.localUrl':
-    'URL locale : proxy CORS non appliqué (il ne peut pas atteindre cette machine)',
-  'status.counts': 'Effectifs',
-  'status.stops': 'Arrêts',
-  'status.routes': 'Lignes',
-  'status.trips': 'Courses',
-  'status.shapes': 'Tracés',
-  'status.agencies': 'Agences',
-  'status.services': 'Services',
-  'status.stopTimes': 'Horaires de passage',
-  'status.vehicles': 'Véhicules',
-  'status.scheduledVehicles': 'Véhicules théoriques',
-  'status.tripUpdates': 'Mises à jour de courses',
-  'status.alerts': 'Alertes',
-  'status.never': 'jamais',
-  'status.notReported': 'non indiqué',
-  'status.error': 'erreur',
-  'status.lastFetched': 'Dernière récupération',
-  'status.feedTimestamp': 'Horodatage du flux',
-  'status.dataAge': '(âge des données)',
-  'status.entities': 'Entités',
-  'status.nextRefresh': 'Prochain rafraîchissement',
-  'status.errorAt': 'à {time}',
-  'status.idTrip': 'dérivée de vehicle.id + trip_id + start_date',
-  'status.idEntity': 'dérivée de vehicle.id + trip + entity.id',
-  'status.idIndex':
-    "aucune identité utilisable : dérivée de l'index de l'entité",
-  'status.empty': '(vide)',
-  'status.dupVehicles_one': '{count} véhicule',
-  'status.dupVehicles_other': '{count} véhicules',
-  'status.idNotUnique': "vehicle.id n'est pas unique par véhicule",
-  'status.idNotUniqueText':
-    "GTFS-RT précise que {field} « should be unique per vehicle, and is used for tracking the vehicle as it proceeds through the system ». Ce flux le réutilise : une clé d'instance ({strategy}) a donc été dérivée pour désigner les véhicules.",
-  'status.endpoints': 'Points de terminaison temps réel',
-  'status.uploaded':
-    'Chargé depuis le fichier envoyé {name} : impossible à reproduire par un lien.',
-  'status.scheduled': 'Flux horaire',
-  'status.gapsOptional':
-    "GTFS-RT rend ce champ facultatif : {missing} véhicules sur {total} ne l'indiquent pas.",
-  'status.gapsStopId':
-    "{count} ont désigné l'arrêt par {field} à la place, ce que la spécification autorise tout autant ; leur position en découle.",
-  'status.gapsDerived':
-    "{count} n'ont désigné aucun arrêt : le plus proche {field} encore à venir de la même course a été utilisé ; ils sont marqués « dérivé » partout où ils apparaissent.",
-  'status.gapsUnplaced':
-    "{count} n'ont pu être placés par aucun de ces moyens et restent dans la liste des non placés du bandeau de ligne.",
-  'status.gaps': 'Lacunes des données du flux',
-  'status.gapsNeutral': 'Comment ce flux indique la position',
-  'status.gapsRow': 'Véhicules sans {field}',
-  'status.relVehicles_one': '{count} véhicule indiquant la course {label}',
-  'status.relVehicles_other': '{count} véhicules indiquant la course {label}',
-  'status.relUpdates_one':
-    '{count} mise à jour de course indiquant la course {label}',
-  'status.relUpdates_other':
-    '{count} mises à jour de course indiquant la course {label}',
-  'status.relStopTimes_one': '{count} horaire de passage indiquant {label}',
-  'status.relStopTimes_other': '{count} horaires de passage indiquant {label}',
-  'status.relTitle': 'Courses hors horaires',
-  'status.relNote':
-    "Ce sont des déclarations du flux sur des courses précises, pas des lacunes dans ce qu'il a transmis. CANCELED et SKIPPED signifient que les horaires affichés ne peuvent être pris par personne.",
-  'status.mapIssues': 'Problèmes de données cartographiques',
-  'status.stopsNoId': 'Arrêts écartés (sans stop_id)',
-  'status.stopsNoIdNote': 'Ne peuvent être ni dessinés ni liés.',
-  'status.stopsNoCoords': 'Arrêts écartés (sans coordonnées)',
-  'status.stopsNoCoordsNote': 'stop_lat / stop_lon absents ou illisibles.',
-  'status.vehiclesUnmatched': 'Véhicules sans ligne correspondante',
-  'status.vehiclesUnmatchedNote':
-    "Dessinés dans la couleur neutre au lieu d'une couleur de ligne.",
-  'status.vehiclesCollapsed': 'Véhicules fusionnés en un seul objet de carte',
-  'status.vehiclesCollapsedNote':
-    'Devrait être 0 ; une valeur non nulle signifie que la dérivation de la clé des véhicules est défaillante.',
-  'status.stationIssues': 'Problèmes de hiérarchie des stations',
-  'status.danglingParent': 'parent_station désigne un arrêt manquant',
-  'status.danglingParentNote': "Le parent indiqué n'est pas dans stops.txt.",
-  'status.wrongParent': 'parent_station désigne un type incorrect',
-  'status.wrongParentNote':
-    "Un quai, un accès ou un nœud doit désigner une station ; une zone d'embarquement, un quai.",
-  'status.cycle': 'Arrêts pris dans un cycle de parent_station',
-  'status.cycleNote': 'Le parcours est interrompu pour éviter un blocage.',
-  'status.padded': "Colonnes entourées d'espaces",
-  'status.paddedNote':
-    "{rows} lignes avaient des espaces au début ou à la fin. La référence GTFS l'interdit ; ils ont été supprimés. Sans cela, aucun {column} temps réel ne correspondrait à ce flux.",
-  'status.metadata': 'Métadonnées du flux',
   'status.share': 'Partager',
   'status.copyLink': 'Copier le lien de partage',
   'status.shareNote':
     "Le lien contient les URL des deux flux et l'élément sélectionné.",
   'status.shareFile':
     "Cette session a chargé un flux horaire depuis un fichier envoyé, qu'un lien ne peut pas reproduire.",
-  'status.emptyNote':
-    "Une session nécessite un flux GTFS horaire pour les lignes et les arrêts, et au moins un point de terminaison temps réel pour ce qui s'y passe en ce moment.",
   'status.pickFeed': 'Choisir un flux',
   'status.copied': 'Lien copié',
   'status.copyFailed': 'Impossible de copier dans le presse-papiers',
-  'status.restored':
-    'Restauré depuis la copie enregistrée dans ce navigateur, sans nouveau téléchargement. Le serveur a indiqué la même version, ou le flux a été ouvert depuis Vos flux.',
   'status.noRealtime':
     "Aucun flux temps réel n'est chargé ; la carte affiche seulement l'horaire.",
   'status.simulating':
     "Aucun flux temps réel n'est chargé. La carte affiche les véhicules théoriques là où l'horaire les place maintenant, recalculés toutes les {seconds} s.",
   'status.simulatingCapped':
     '{running} courses circulent maintenant ; seules les {shown} premières sont affichées.',
-
-  'vehicle.notReported': 'non indiqué',
-  'vehicle.seqFromStopId':
-    'stop_id {stop} est le stop_sequence {sequence} de cette course',
-  'vehicle.seqDerived': '{sequence} dérivé des mises à jour de courses',
-  'vehicle.route': 'Ligne',
-  'vehicle.notInSchedule': 'course absente des horaires',
-  'vehicle.noRouteId': 'aucun route_id indiqué',
-  'vehicle.trip': 'Course',
-  'vehicle.noTripId': 'Aucun trip_id indiqué.',
-  'vehicle.loadingStops': 'Chargement des arrêts de la course…',
-  'vehicle.at': 'à',
-  'vehicle.headsign': 'Destination',
-  'vehicle.currently': 'Actuellement {status}',
-  'vehicle.progress': 'Progression',
-  'vehicle.progressValue': '{n} arrêts sur {total}',
-  'vehicle.tripStart': 'Début de la course',
-  'vehicle.predictions': 'Prévisions',
-  'vehicle.noPredictions':
-    'Aucune mise à jour de course du flux ne correspond à cette course.',
-  'vehicle.seq': 'Séq.',
-  'vehicle.stop': 'Arrêt',
-  'vehicle.missing':
-    "Le véhicule {id} n'est pas dans le flux temps réel actuel.",
-  'vehicle.sharedId':
-    'Le {field} {id} du flux désigne {count} véhicules de ce flux. GTFS-RT précise que {descriptor} « should be unique per vehicle » ; ce flux le réutilise.',
-  'vehicle.sharedIdTrip': 'Cette instance se distingue par la course {trip}.',
-  'vehicle.sharedIdTripDate':
-    'Cette instance se distingue par la course {trip} du {date}.',
-  'vehicle.gone':
-    "N'est plus dans le flux depuis {time}. Tout ce qui suit provient du dernier relevé qui le contenait.",
-  'vehicle.scheduled': 'Théorique',
-  'vehicle.scheduledBanner':
-    "Théorique, pas en direct. Cette position est calculée à partir de l'horaire, elle n'est pas transmise par un véhicule.",
-  'vehicle.scheduledGone':
-    "Ne circule plus selon l'horaire depuis {time}. Tout ce qui suit est sa dernière position théorique.",
-  'vehicle.rawScheduled': 'Véhicule théorique (simulé)',
-  'vehicle.live': 'En direct',
-  'vehicle.position': 'Position',
-  'vehicle.bearing': 'Cap',
-  'vehicle.speed': 'Vitesse',
-  'vehicle.speedValue': '{speed} m/s',
-  'vehicle.status': 'Statut',
-  'vehicle.occupancy': 'Affluence',
-  'vehicle.timestamp': 'Horodatage',
-  'vehicle.emptyId': 'vide dans le flux',
-  'vehicle.entityId': "Identifiant d'entité du flux",
-  'vehicle.alerts': 'Alertes',
-  'vehicle.raw': 'VehiclePosition (décodé)',
 
   'help.welcome.label': 'Bienvenue',
   'help.welcome.title': 'Bienvenue sur viz.rt.gtfs.zone',
@@ -262,4 +102,10 @@ export const fr: Translation<typeof en> = {
   'help.mapKey.vehicle': 'Véhicule',
   'help.mapKey.heading': 'Véhicule, avec un cap connu',
   'help.mapKey.unmatched': "Véhicule dont la ligne n'a pas pu être identifiée",
+
+  'home.scheduleLoaded': 'Chargé',
+  'home.scheduleLoading': 'Chargement…',
+  'home.scheduleError': 'Échec du chargement : {message}',
+  'home.noSchedule': 'Aucun horaire chargé',
+  'home.simulated': "Simulé à partir de l'horaire",
 };

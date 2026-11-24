@@ -39,14 +39,17 @@ export class AppState extends ValidatedFocusController<
   PageState,
   BreadcrumbItem<PageState>
 > {
-  constructor(session: FeedSession, hooks: AppStateHooks) {
+  constructor(
+    private session: FeedSession,
+    hooks: AppStateHooks
+  ) {
     super(createPageStateManager(), hooks, {
       breadcrumbs: (state) => buildBreadcrumbs(session, state),
       validate: (state) => validateState(session, state),
     });
 
-    // The selection is half of the hash, so any change to it — a modal load, an
-    // inline URL edit on the status page — has to be reflected there too.
+    // The selection is half of the hash, so any change to it, a modal load or a
+    // reload, has to be reflected there too.
     session.addEventListener('change', () => {
       this.pages.setFeedParams(selectionToParams(session.selection));
     });
@@ -94,8 +97,18 @@ export class AppState extends ValidatedFocusController<
    * Apply the focus a link carried, once its feed has actually loaded. A focus
    * that no longer resolves is reported rather than silently dropped.
    */
-  finishBoot(pending: PageState): void {
+  async finishBoot(pending: PageState): Promise<void> {
     this.pendingFocus = pending;
+    // The schedule mirrors only the trips something asked for, so a linked
+    // trip is fetched before it is validated.
+    const feed = this.session.scheduledFeed;
+    if (pending.type === 'trip' && pending.trip_id && feed) {
+      await feed
+        .loadTrips([pending.trip_id], { stopTimes: false })
+        .catch((err) => {
+          console.error('[boot] loading the linked trip failed', err);
+        });
+    }
     this.resolvePendingFocus(true);
   }
 

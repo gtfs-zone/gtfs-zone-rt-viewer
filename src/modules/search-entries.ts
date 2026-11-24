@@ -57,7 +57,7 @@ export function buildSearchGroups(
       (routeId ? feed?.routes.get(routeId)?.color : undefined) ??
       VEHICLE_UNMATCHED_COLOR;
     vehicles.push({
-      payload: { type: 'vehicle', vehicle_id: vehicle.key },
+      payload: { type: 'vehicle', vehicle_key: vehicle.key },
       icon: dotMarker(color),
       primary: vehicleDisplayName(feed, vehicle),
       secondary: vehicle.vehicleId || vehicle.key,
