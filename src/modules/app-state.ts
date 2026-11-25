@@ -94,10 +94,14 @@ export class AppState extends ValidatedFocusController<
   }
 
   /**
-   * Apply the focus a link carried, once its feed has actually loaded. A focus
-   * that no longer resolves is reported rather than silently dropped.
+   * Apply the focus a link carried, once its feed has actually loaded.
+   *
+   * Vehicles, alerts and realtime-only trips arrive with the first poll, after
+   * the schedule, so the focus is retried on each payload and only reported as
+   * missing once every endpoint has answered.
    */
   async finishBoot(pending: PageState): Promise<void> {
+    const selection = this.session.selection;
     this.pendingFocus = pending;
     // The schedule mirrors only the trips something asked for, so a linked
     // trip is fetched before it is validated.
@@ -108,6 +112,26 @@ export class AppState extends ValidatedFocusController<
         .catch((err) => {
           console.error('[boot] loading the linked trip failed', err);
         });
+    }
+    this.resolvePendingFocus(false);
+    if (!this.pendingFocus) {
+      return;
+    }
+
+    const retry = (): void => this.resolvePendingFocus(false);
+    const kinds = ['vehicles', 'tripUpdates', 'alerts'] as const;
+    for (const kind of kinds) {
+      this.session.addEventListener(kind, retry);
+    }
+    await this.session.realtimeSettled();
+    for (const kind of kinds) {
+      this.session.removeEventListener(kind, retry);
+    }
+
+    // A feed loaded since boot is not the one the link named.
+    if (this.session.selection !== selection) {
+      this.pendingFocus = null;
+      return;
     }
     this.resolvePendingFocus(true);
   }

@@ -27,16 +27,25 @@ export const HOME_ACTIONS = {
   interval: 'interval',
 } as const;
 
-function renderEmpty(): string {
-  return `
-    <div class="flex flex-col gap-6 py-4">
-      ${introHtml()}
-      <div class="flex flex-col items-center text-center gap-3">
-        <button type="button" data-action="${HOME_ACTIONS.openLoad}" class="btn btn-primary btn-sm">
-          ${t('status.pickFeed')}
-        </button>
-      </div>
-    </div>`;
+/** No feed yet: the intro and the button that opens the load modal. */
+function emptyPage(): TreePage {
+  return {
+    eyebrow: t('crumb.feed'),
+    title: t('crumb.noFeed'),
+    sections: [
+      {
+        body: `
+          <div class="flex flex-col gap-6 py-4">
+            ${introHtml()}
+            <div class="flex flex-col items-center text-center gap-3">
+              <button type="button" data-action="${HOME_ACTIONS.openLoad}" class="btn btn-primary btn-sm">
+                ${t('status.pickFeed')}
+              </button>
+            </div>
+          </div>`,
+      },
+    ],
+  };
 }
 
 function scheduleState(session: FeedSession): TreeNodeState {
@@ -103,10 +112,10 @@ function renderShare(session: FeedSession): string {
     </div>`;
 }
 
-export function homePage(ctx: RenderContext): TreePage | string {
+export function homePage(ctx: RenderContext): TreePage {
   const session = ctx.session;
   if (!session.selection) {
-    return renderEmpty();
+    return emptyPage();
   }
   const realtime = hasAnyRealtimeUrl(session.selection.realtime);
   return {

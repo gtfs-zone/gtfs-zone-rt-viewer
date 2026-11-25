@@ -50,7 +50,7 @@
     "fflate": "^0.8.3",
     "gtfs-realtime-bindings": "^2.2.0",
     "gtfs-zone-vocab": "github:gtfs-zone/gtfs-zone-vocab#v0.2.0",
-    "gtfs-zone-web-common": "github:gtfs-zone/gtfs-zone-web-common#v7.12.0",
+    "gtfs-zone-web-common": "github:gtfs-zone/gtfs-zone-web-common#v7.14.1",
     "maplibre-gl": "^6.11.2",
     "papaparse": "^5.7.0"
   }
