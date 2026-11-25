@@ -35,6 +35,8 @@ export const en = {
   'load.reloadedUnchanged':
     'The schedule of {label} is unchanged; restored it from the stored copy',
   'load.storedGone': 'That stored feed is no longer in this browser.',
+  'load.uploadMissing':
+    'The uploaded schedule in this link is not stored in this browser. Upload it again.',
 
   'crumb.feed': 'Feed',
   'crumb.noFeed': 'No feed',

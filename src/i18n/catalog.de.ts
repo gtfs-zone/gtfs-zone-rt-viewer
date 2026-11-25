@@ -41,6 +41,8 @@ export const de: Translation<typeof en> = {
     'Der Fahrplan von {label} ist unverändert; aus der gespeicherten Kopie wiederhergestellt',
   'load.storedGone':
     'Dieser gespeicherte Feed ist nicht mehr in diesem Browser.',
+  'load.uploadMissing':
+    'Der hochgeladene Fahrplan in diesem Link ist nicht in diesem Browser gespeichert. Laden Sie ihn erneut hoch.',
 
   'crumb.feed': 'Feed',
   'crumb.noFeed': 'Kein Feed',

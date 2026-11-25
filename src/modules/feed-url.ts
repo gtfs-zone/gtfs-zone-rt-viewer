@@ -23,10 +23,10 @@
  * rewrites itself in the address bar as soon as the feed loads, since the
  * session change that follows a load rewrites the whole feed param block.
  *
- * A file-backed scheduled source cannot be represented at all — there is no URL
- * to put in the link. Such a selection encodes with no `scheduled` key and
- * reports as non-reproducible, rather than silently producing a link that loads
- * half a session.
+ * An uploaded schedule has no URL. Once it is stored in this browser it is
+ * written as `scheduled=upload:<id>`, which a refresh here restores but no
+ * other browser can, so it still reports as non-reproducible. Before it is
+ * stored the selection encodes with no `scheduled` key.
  */
 
 import type {
@@ -35,6 +35,8 @@ import type {
   ScheduledSource,
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import { t } from '../i18n/messages';
+
+const UPLOAD_PREFIX = 'upload:';
 
 // `static` stays in the list so a legacy-only hash still counts as naming a feed.
 const PARAM_KEYS = [
@@ -51,9 +53,13 @@ export function isReproducible(sel: FeedSelection | null): boolean {
   return sel?.scheduled?.kind === 'url';
 }
 
-/** The hash params describing a selection. Empty when there is nothing to say. */
+/**
+ * The hash params describing a selection. Empty when there is nothing to say.
+ * `uploadId` is the stored entry of a file-backed schedule, if any.
+ */
 export function selectionToParams(
-  sel: FeedSelection | null
+  sel: FeedSelection | null,
+  uploadId: string | null = null
 ): Record<string, string> {
   const params: Record<string, string> = {};
   if (!sel) {
@@ -67,6 +73,8 @@ export function selectionToParams(
     if (sel.scheduled.useCors) {
       corsFlags.push('s');
     }
+  } else if (sel.scheduled?.kind === 'file' && uploadId) {
+    params.scheduled = UPLOAD_PREFIX + uploadId;
   }
 
   const rt = sel.realtime;
@@ -94,12 +102,24 @@ export function selectionToParams(
   return params;
 }
 
+/** The stored upload id a hash names as its schedule, or null. */
+export function linkedUploadId(hash: string): string | null {
+  const value = new URLSearchParams(hash).get('scheduled');
+  return value?.startsWith(UPLOAD_PREFIX)
+    ? value.slice(UPLOAD_PREFIX.length)
+    : null;
+}
+
 /**
  * Rebuild a selection from a hash string (no leading `#`). Returns null when
  * the hash names no feeds at all, and a partial selection when it names some —
  * `isComplete` remains the single gate on whether it can be loaded.
+ * `upload` resolves an `upload:<id>` schedule; null leaves the schedule out.
  */
-export function paramsToSelection(hash: string): FeedSelection | null {
+export function paramsToSelection(
+  hash: string,
+  upload: (id: string) => ScheduledSource | null
+): FeedSelection | null {
   const params = new URLSearchParams(hash);
   if (!PARAM_KEYS.some((k) => params.has(k))) {
     return null;
@@ -112,14 +132,17 @@ export function paramsToSelection(hash: string): FeedSelection | null {
   );
 
   const scheduledUrl = params.get('scheduled') ?? params.get('static');
-  const scheduledSource: ScheduledSource | null = scheduledUrl
-    ? {
-        kind: 'url',
-        url: scheduledUrl,
-        useCors: cors.has('s'),
-        label: labelForUrl(scheduledUrl),
-      }
-    : null;
+  const uploadId = linkedUploadId(hash);
+  const scheduledSource: ScheduledSource | null = uploadId
+    ? upload(uploadId)
+    : scheduledUrl
+      ? {
+          kind: 'url',
+          url: scheduledUrl,
+          useCors: cors.has('s'),
+          label: labelForUrl(scheduledUrl),
+        }
+      : null;
 
   const vehiclesUrl = params.get('rt_vp') ?? undefined;
   const tripUpdatesUrl = params.get('rt_tu') ?? undefined;

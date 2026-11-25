@@ -39,6 +39,8 @@ export const fr: Translation<typeof en> = {
   'load.reloadedUnchanged':
     "L'horaire de {label} n'a pas changé ; restauré depuis la copie enregistrée",
   'load.storedGone': "Ce flux enregistré n'est plus dans ce navigateur.",
+  'load.uploadMissing':
+    "L'horaire importé de ce lien n'est pas enregistré dans ce navigateur. Importez-le à nouveau.",
 
   'crumb.feed': 'Flux',
   'crumb.noFeed': 'Aucun flux',

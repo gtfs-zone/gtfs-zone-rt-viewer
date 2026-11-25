@@ -20,6 +20,7 @@ import type {
   FeedSelection,
   RealtimeEndpointName,
   RealtimeSource,
+  ScheduledSource,
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   REALTIME_ENDPOINT_LABELS,
@@ -78,6 +79,8 @@ export class FeedSession extends FeedSessionBase {
    */
   scheduledRunning: number | null = null;
   protected parseCache = new ParseCache('viz');
+  /** Placeholder files of stored uploads, to the entry each restores. */
+  private uploadFiles = new WeakMap<File, string>();
 
   private intervalMs = readStoredIntervalMs();
   private simTimer: ReturnType<typeof setInterval> | null = null;
@@ -138,6 +141,9 @@ export class FeedSession extends FeedSessionBase {
     const previous = this.selection;
     this.selection = selection;
     const scheduled = selection.scheduled!;
+    if (scheduled.kind === 'file') {
+      storedId ??= this.uploadFiles.get(scheduled.file);
+    }
     // The current schedule is released as the load starts, so its realtime
     // half stops with it.
     this.stopPoller();
@@ -176,6 +182,25 @@ export class FeedSession extends FeedSessionBase {
     this.emitChange();
   }
 
+  /** The stored entry of the current schedule when it was uploaded. */
+  get uploadId(): string | null {
+    return this.scheduleEntry?.kind === 'upload' ? this.scheduleEntry.id : null;
+  }
+
+  /**
+   * A stored upload as a file-backed schedule. The file is an empty
+   * placeholder that `load` maps back to the entry. Null when it is gone.
+   */
+  uploadSource(id: string): ScheduledSource | null {
+    const entry = this.parseCache.get(id);
+    if (entry?.kind !== 'upload') {
+      return null;
+    }
+    const file = new File([], entry.label);
+    this.uploadFiles.set(file, id);
+    return { kind: 'file', file, label: entry.label };
+  }
+
   /** The selection a stored feed was loaded with, or null when it is gone. */
   storedSelection(id: string): FeedSelection | null {
     const entry = this.parseCache.get(id);
@@ -183,6 +208,12 @@ export class FeedSession extends FeedSessionBase {
       return null;
     }
     const extra = entry.extra as StoredExtra | undefined;
+    if (entry.kind === 'upload') {
+      return {
+        scheduled: this.uploadSource(id),
+        realtime: extra?.realtime ?? null,
+      };
+    }
     return {
       scheduled: {
         kind: 'url',
