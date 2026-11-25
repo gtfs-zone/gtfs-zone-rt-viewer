@@ -18,7 +18,11 @@ import {
   describeMissing,
   isComplete,
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
-import { paramsToSelection, selectionToParams } from './feed-url';
+import {
+  linkedUploadId,
+  paramsToSelection,
+  selectionToParams,
+} from './feed-url';
 import { createPageStateManager } from './page-state-manager';
 import { t } from '../i18n/messages';
 
@@ -51,7 +55,9 @@ export class AppState extends ValidatedFocusController<
     // The selection is half of the hash, so any change to it, a modal load or a
     // reload, has to be reflected there too.
     session.addEventListener('change', () => {
-      this.pages.setFeedParams(selectionToParams(session.selection));
+      this.pages.setFeedParams(
+        selectionToParams(session.selection, session.uploadId)
+      );
     });
 
     // A new scheduled feed almost never contains the object that was focused in
@@ -73,8 +79,20 @@ export class AppState extends ValidatedFocusController<
    * prints it rather than a toast, since the modal is where it gets fixed.
    */
   bootRequest(): BootRequest {
-    const selection = paramsToSelection(window.location.hash.slice(1));
+    const hash = window.location.hash.slice(1);
+    const selection = paramsToSelection(hash, (id) =>
+      this.session.uploadSource(id)
+    );
     const pending = this.pages.pendingStateFromURL();
+    const uploadId = linkedUploadId(hash);
+    if (uploadId && !this.session.uploadSource(uploadId)) {
+      return {
+        selection: selection?.realtime ? selection : null,
+        complete: false,
+        problem: t('load.uploadMissing'),
+        pending,
+      };
+    }
     if (!selection) {
       return { selection: null, complete: false, problem: null, pending };
     }
