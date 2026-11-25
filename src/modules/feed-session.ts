@@ -23,6 +23,7 @@ import type {
 } from 'gtfs-zone-web-common/gtfs/feed-selection';
 import {
   REALTIME_ENDPOINT_LABELS,
+  REALTIME_ENDPOINTS,
   hasAnyRealtimeUrl,
   isComplete,
   resolvedRealtimeUrls,
@@ -81,6 +82,11 @@ export class FeedSession extends FeedSessionBase {
   private intervalMs = readStoredIntervalMs();
   private simTimer: ReturnType<typeof setInterval> | null = null;
 
+  /** The payload kinds the current source has not delivered a first round of. */
+  private awaiting = new Set<RealtimeEndpointName>();
+  private firstRound: Promise<void> = Promise.resolve();
+  private finishFirstRound: () => void = () => {};
+
   /** Vehicles come from the timetable, not a realtime feed. */
   get simulating(): boolean {
     return this.simTimer !== null;
@@ -88,6 +94,36 @@ export class FeedSession extends FeedSessionBase {
 
   get status(): FeedStatus | null {
     return this.poller?.getStatus() ?? null;
+  }
+
+  /**
+   * Resolves once every endpoint of the current source has applied its first
+   * payload or failed its first fetch, or once that source is replaced.
+   */
+  realtimeSettled(): Promise<void> {
+    return this.firstRound;
+  }
+
+  private beginFirstRound(kinds: RealtimeEndpointName[]): void {
+    this.endFirstRound();
+    this.awaiting = new Set(kinds);
+    this.firstRound = new Promise((resolve) => {
+      this.finishFirstRound = resolve;
+    });
+    if (this.awaiting.size === 0) {
+      this.finishFirstRound();
+    }
+  }
+
+  private landed(kind: RealtimeEndpointName): void {
+    if (this.awaiting.delete(kind) && this.awaiting.size === 0) {
+      this.finishFirstRound();
+    }
+  }
+
+  private endFirstRound(): void {
+    this.awaiting.clear();
+    this.finishFirstRound();
   }
 
   /**
@@ -193,6 +229,7 @@ export class FeedSession extends FeedSessionBase {
   private stopPoller(): void {
     this.poller?.stop();
     this.poller = null;
+    this.endFirstRound();
     this.rtCounts = { vehicles: 0, tripUpdates: 0, alerts: 0 };
     this.vehicles = new Map();
     this.alerts = new Map();
@@ -211,6 +248,7 @@ export class FeedSession extends FeedSessionBase {
     }
     clearInterval(this.simTimer);
     this.simTimer = null;
+    this.endFirstRound();
     this.scheduledRunning = null;
     this.rtCounts.vehicles = 0;
     this.vehicles = new Map();
@@ -228,6 +266,7 @@ export class FeedSession extends FeedSessionBase {
     if (!feed) {
       throw new Error('[FeedSession] no schedule to simulate');
     }
+    this.beginFirstRound(['vehicles']);
     let busy = false;
     const tick = (): void => {
       if (busy) {
@@ -252,6 +291,7 @@ export class FeedSession extends FeedSessionBase {
               }
               this.scheduledRunning = running;
               this.applyVehicles(vehicles);
+              this.landed('vehicles');
               this.emitChange();
             },
             { stopTimes: false }
@@ -282,11 +322,10 @@ export class FeedSession extends FeedSessionBase {
     this.stopPoller();
     this.stopSimulation();
 
-    const poller = new GTFSRealtime(
-      resolvedRealtimeUrls(selection.realtime!, CONFIG.RT_BASE),
-      this.intervalMs
-    );
+    const urls = resolvedRealtimeUrls(selection.realtime!, CONFIG.RT_BASE);
+    const poller = new GTFSRealtime(urls, this.intervalMs);
     this.poller = poller;
+    this.beginFirstRound(REALTIME_ENDPOINTS.filter((name) => urls[name]));
 
     poller.addEventListener('fetchstart', (e) => {
       const { name, prominent } = (e as CustomEvent<FetchStartDetail>).detail;
@@ -298,9 +337,15 @@ export class FeedSession extends FeedSessionBase {
       }
     });
     poller.addEventListener('fetchend', (e) => {
-      feedProgressIndicator.finishLoading(
-        `rt-${(e as CustomEvent<RealtimeEndpointName>).detail}`
-      );
+      const name = (e as CustomEvent<RealtimeEndpointName>).detail;
+      feedProgressIndicator.finishLoading(`rt-${name}`);
+      // A failed fetch emits no payload, so it ends that endpoint's first round.
+      if (
+        this.poller === poller &&
+        poller.getStatus().endpoints[name].lastError !== null
+      ) {
+        this.landed(name);
+      }
     });
     poller.addEventListener('statuschange', () => this.emitChange());
 
@@ -313,6 +358,7 @@ export class FeedSession extends FeedSessionBase {
         () => {
           if (this.poller === poller) {
             this.applyVehicles(detail);
+            this.landed('vehicles');
           }
         }
       );
@@ -331,6 +377,7 @@ export class FeedSession extends FeedSessionBase {
           this.dispatchEvent(
             new CustomEvent<TripUpdate[]>('tripUpdates', { detail })
           );
+          this.landed('tripUpdates');
         }
       );
     });
@@ -345,6 +392,7 @@ export class FeedSession extends FeedSessionBase {
         this.dispatchEvent(
           new CustomEvent<AlertRecord[]>('alerts', { detail })
         );
+        this.landed('alerts');
       });
     });
 
