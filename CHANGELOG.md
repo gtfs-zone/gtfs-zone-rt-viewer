@@ -1,3 +1,13 @@
+## v0.28.0 (2026-11-25)
+
+### Feat
+
+- **route,stop**: show the route and stop pages on the tree
+
+### Fix
+
+- **boot**: wait for the first realtime poll before reporting a missing linked focus
+
 ## v0.27.0 (2026-11-25)
 
 ### Feat
