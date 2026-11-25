@@ -1,3 +1,9 @@
+## v0.29.0 (2026-11-25)
+
+### Feat
+
+- **feed**: restore an uploaded schedule from the hash after a refresh
+
 ## v0.28.0 (2026-11-25)
 
 ### Feat
